@@ -35,9 +35,15 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
+	"github.com/gorilla/handlers"
 	// ampgosetup "github.com/cjsmocjsmo/ampgosetup"
+	// "github.com/cjsmocjsmo/ampgosetup"
 	"github.com/cjsmocjsmo/ampgosetup"
 	// "ampgosetup"
+)
+
+const (
+	OffSet = 10
 )
 
 type plist struct {
@@ -74,14 +80,14 @@ func sfdbCon() *mgo.Session {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-// //ArtVIEW exported
-// type ArtVIEW struct {
-// 	Artist   string              `bson:"artist"`
-// 	ArtistID string              `bson:"artistID"`
-// 	Albums   []map[string]string `bson:"albums"`
-// 	Page     int                 `bson:"page"`
-// 	Idx      int                 `bson:"idx"`
-// }
+//ArtVIEW exported
+type ArtVIEW struct {
+	Artist   string              `bson:"artist"`
+	ArtistID string              `bson:"artistID"`
+	Albums   []map[string]string `bson:"albums"`
+	Page     int                 `bson:"page"`
+	Idx      int                 `bson:"idx"`
+}
 func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	ofset := OffSet
 	ses := sfdbCon()
@@ -108,17 +114,17 @@ func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
     t.Execute(w, &av)
 	log.Println("Initial Artist Info Complete")
 }
-// type AlbvieW struct {
-// 	Artist   string              `bson:"artist"`
-// 	ArtistID string              `bson:"artistID"`
-// 	Album    string              `bson:"album"`
-// 	AlbumID  string              `bson:"albumID"`
-// 	Songs    []map[string]string `bson:"songs"`
-// 	Page     string              `bson:"page"`
-// 	NumSongs string              `bson:"numsongs"`
-// 	PicPath  string              `bson:"picPath"`
-// 	Idx      string              `bson:"idx"`
-// }
+type AlbvieW struct {
+	Artist   string              `bson:"artist"`
+	ArtistID string              `bson:"artistID"`
+	Album    string              `bson:"album"`
+	AlbumID  string              `bson:"albumID"`
+	Songs    []map[string]string `bson:"songs"`
+	Page     string              `bson:"page"`
+	NumSongs string              `bson:"numsongs"`
+	PicPath  string              `bson:"picPath"`
+	Idx      string              `bson:"idx"`
+}
 func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	ofset := OffSet
 	ses := sfdbCon()
@@ -402,7 +408,7 @@ func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 // }
 
 func setUpHandler(w http.ResponseWriter, r *http.Request) {
-	ampgolib.SetUp()
+	ampgosetup.Setup()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Setup Complete")
 }
@@ -427,7 +433,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	SetUpCheck()
+	ampgosetup.SetUpCheck()
 }
 
 func main() {
