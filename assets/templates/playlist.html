@@ -1,0 +1,99 @@
+Start Playlists Page  
+ <div class='amp' data-role="page" id="playlists" data-theme="b">
+ 	<div id="intro-popups">
+ 		<div id='noAlphaNumPopup' data-role='popup' class='ui-content'>
+ 			<p>Please only enter alpha numeric charcters.</p>
+ 			<a href='#' id='nanp' class='ui-btn'>OK</a>
+ 		</div>
+ 		<div id='noNumPopup' data-role='popup' class='ui-content'>
+ 			<p>Please only enter numeric characters.</p>
+ 			<a href='#' id='nnp' class='ui-btn'>OK</a>
+ 		</div>
+ 	</div>
+ 	<div data-role="header" data-theme="b" data-position="fixed">
+ 		<a href="#intro" class="homeBTN ui-btn-left ui-btn ui-btn-inline ui-icon-home ui-btn-icon-notext ui-mini ui-corner-all"></a>
+ 		<h1>Playlists</h1>
+ 		<div data-role='navbar'>
+ 			<ul>
+ 				<li><a href="#artists" class='navArt' data-theme='a'>Artists</a></li>
+ 				<li><a href="#albums" class='navAlb' data-theme='a'>Album</a></li>
+ 			</ul>
+ 			<ul>
+ 				<li><a href="#songs" class='navSong' data-theme='a'>Songs</a></li>
+ 				<li><a href="#videos" class='navVid' data-theme='a'>Video</a></li>
+ 			</ul>	
+ 		</div>
+ 	</div>
+ 	<div role="main" class="ui-content">
+ 		<div id="plDIV">
+ 			<table class="playlisttable">
+ 				<tr>
+ 					<th class="playlisttableth" rowspan="2"><img id='playlistalbart' src="images/gopher_image.jpg" alt=""></img></th>
+ 					<td class="playlisttabletd"><h3 id="pictext"></h3></td>
+ 				</tr>
+ 				<tr>
+ 					<td class="pltd"><h4 id="pictext2"></h4></td>		
+ 				</tr>
+ 			</table>
+ 		</div>
+ 		<div id="playlistcollapsible" data-role="collapsible">
+ 			<h4>Playlists</h4>
+ 			<ul id='playPlaylistUL' data-role='listview' data-inset='true'></ul>			
+ 		</div>
+ 		<div id="controlGrid">
+ 			<div class="ui-grid-a" id="playlistselect1">					
+ 				<div class="ui-block-a" data-theme='a'>
+ 					<a href='#' id='playlistLoadBtn1' class='plssel show-page-loading-msg ui-btn ui-btn-mini ui-corner-all' data-textonly='false' data-textvisible='false' data-msgtext=''>Load</a>	
+ 				</div>
+ 				<div class="ui-block-b" data-theme='a'>					
+ 					<a href='#' id='playlistDownLoadBtn1' class='pldl show-page-loading-msg ui-btn ui-btn-mini ui-corner-all' data-textonly='false' data-textvisible='false' data-msgtext=''>DownLoad</a>	
+ 				</div>
+ 			</div>
+ 			<div class="ui-grid-a" id="playlistdownload">
+ 				<div class="ui-block-a" data-theme='a'>
+ 					<a href='#' id="playlistDeleteBtn1" class='plssel show-page-loading-msg ui-btn ui-btn-mini ui-corner-all' data-textonly='false' data-textvisible='false' data-msgtext=''>Delete</a>			
+ 				</div>
+ 				<div class="ui-block-b" data-theme='a'>
+ 					<a href='#playlisteditpage' id="playlistEditBtn1" class='plssel show-page-loading-msg ui-btn ui-btn-mini ui-corner-all' data-textonly='false' data-textvisible='false' data-msgtext='' data-transition='slidefade'>Edit</a>					
+ 				</div>
+ 			</div>
+ 		</div>
+ 		<div>
+ 			<form>
+ 				<fieldset id="addnewplaylistDiv" data-role='collapsible'>
+ 					<legend>Add Empty Playlist</legend>
+ 					<label for='text1'><h3>Enter New Playlist Name:</h3></label>
+ 					<input data-theme="a" data-clear-btn='true' type="text" name="text1" id="text1" value="New Playlist">
+ 					<a id="butsub" class="show-page-loading-msg ui-btn ui-corner-all" data-textonly='false' data-textvisible='false' data-msgtext=''>Add Playlist</a>
+ 				</fieldset>			
+ 			</form>		
+ 		</div>
+ 		<div>
+ 			<p></p>
+ 		</div>
+ 		<div>
+ 			<form>
+ 				<fieldset id='addrandomplaylist' data-role='collapsible'>
+ 					<legend>Add Random Playlist</legend>
+ 					<label for="text2"><h3>Enter Playlist Name</h3></label>		
+ 					<input data-theme="a" data-clear-btn='true' type="text" name="text2" id="text2" value="New Random Playlist">
+ 					<label for="text3"><h3>Enter Number Of Random Songs</h3></label>		
+ 					<input data-theme="a" data-clear-btn='true' type="text" name="text3" id="text3" value="Number Of Random Songs">
+ 					<a id="randomInput" class="show-page-loading-msg ui-btn ui-corner-all" data-textonly='false' data-textvisible='false' data-msgtext=''>Add Random Playlist</a>
+ 				</fieldset>
+ 			</form>		
+ 		</div>
+ 	</div>
+ 	<div data-role='footer' data-theme='b' data-position='fixed'>
+ 		<div id="audio100">
+ 			<audio id="audio1" controls="controls"></audio>
+ 		</div>
+ 		<div id="pnButtons">			
+ 			<button class="plprevButton ui-btn ui-btn-inline ui-icon-arrow-l ui-btn-icon-notext ui-corner-all"></button>
+ 			<button class="plnextButton ui-btn ui-btn-inline ui-icon-arrow-r ui-btn-icon-notext ui-corner-all"></button>
+ 		</div>
+ 	</div>
+ </div>
+ nd Playlist Page 
+
+
