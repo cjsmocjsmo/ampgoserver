@@ -4,23 +4,19 @@ RUN mkdir /go/src/ampgo
 WORKDIR /go/src/ampgo
 
 COPY ampgoserver.go .
-COPY ampgosetup.go .
-COPY artist.go .
-COPY album.go .
-COPY songs.go .
-COPY mp3.go .
+
 COPY go.mod .
 COPY go.sum .
-RUN export GOPATH=/go/src/ampgo
-RUN go get -v /go/src/ampgo
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main /go/src/ampgo
+RUN export GOPATH=/go/src/ampgoserver
+RUN go get -v /go/src/ampgoserver
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main /go/src/ampgoserver
 
 # FROM arm32v6/alpine:latest
 FROM alpine:latest
 # RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
-COPY --from=builder /go/src/ampgo/main .
+COPY --from=builder /go/src/ampgoserver/main .
 RUN \
   mkdir ./data && \
   mkdir ./data/db && \

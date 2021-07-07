@@ -35,8 +35,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
-	// ampgosetup "github.com/cjsmocjsmo/ampgosetup"
-	"github.com/cjsmocjsmo/ampgosetup"
+	ampgosetup "github.com/cjsmocjsmo/ampgosetup"
+	// "github.com/cjsmocjsmo/ampgosetup"
 	// "ampgosetup"
 )
 
