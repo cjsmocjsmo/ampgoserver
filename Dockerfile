@@ -1,7 +1,7 @@
 # FROM arm32v7/golang:1.12.13 AS builder
 FROM golang:latest AS builder
-RUN mkdir /go/src/ampgo
-WORKDIR /go/src/ampgo
+RUN mkdir /go/src/ampgoserver
+WORKDIR /go/src/ampgoserver
 
 COPY ampgoserver.go .
 
