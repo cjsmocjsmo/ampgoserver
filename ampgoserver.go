@@ -433,7 +433,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	ampgosetup.SetUpCheck()
+	ampgosetup.Setup()
 }
 
 func main() {
