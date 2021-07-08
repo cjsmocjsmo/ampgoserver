@@ -163,9 +163,7 @@ func artistPageHandler(w http.ResponseWriter, r *http.Request) {
 	ARTVc := ses.DB("artistview").C("artistviews")
 	// var ARDist []map[string]string
 	var ARDist []string
-
-	// err := ARTVc.Find(nil).Distinct("page", &ARDist)
-	err := ARTVc.Distinct("page", &ARDist)
+	err := ARTVc.Find(nil).Distinct("page", &ARDist)
 	if err != nil {
 		log.Println("artist alpha has fucked up")
 		log.Println(err)
@@ -181,9 +179,7 @@ func albumPageHandler(w http.ResponseWriter, r *http.Request) {
 	ALBVc := ses.DB("albview").C("albview")
 	// var ALDist []AlbvieW
 	var ALDist []string
-
-	// err := ALBVc.Find(nil).Distinct("page", &ALDist)
-	err := ALBVc.Distinct("page", &ALDist)
+	err := ALBVc.Find(nil).Distinct("page", &ALDist)
 	if err != nil {
 		log.Println("album alpha fucked up")
 		log.Println(err)
@@ -199,8 +195,7 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 	MAINc := ses.DB("maindb").C("maindb")
 	// var TDist []map[string]string
 	var TDist []string
-	// err := MAINc.Find(nil).Distinct("page", &TDist)
-	err := MAINc.Distinct("page", &TDist)
+	err := MAINc.Find(nil).Distinct("page", &TDist)
 	if err != nil {
 		log.Println("title alpha fucked up")
 		log.Println(err)
