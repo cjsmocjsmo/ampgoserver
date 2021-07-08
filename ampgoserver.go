@@ -474,15 +474,10 @@ func main() {
 	// r.HandleFunc("/SetUp", setUpHandler)
 	
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
-	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/assets/"))))
-	http.ListenAndServe(":8888", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), 
+	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/static/"))))
+	http.ListenAndServe(":9090", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), 
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), 
 		handlers.AllowedOrigins([]string{"*"}))(r))
 
 
-
-
-
-	http.ListenAndServe(":9090", (r))
-	// 		csrf.Protect([]byte(key), csrf.Secure(false))(r))
 }
