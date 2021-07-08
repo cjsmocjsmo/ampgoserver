@@ -28,6 +28,8 @@ RUN \
   chmod -R +rwx ./assets
 
 COPY assets/animals.jpg ./assets/
+COPY assets/p1.jpg ./assets/
+COPY assets/p1thumb.jpg ./assets/
 
 COPY assets/css/loginstyles.css ./assets/css/
 
