@@ -97,23 +97,13 @@ func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	AMPc := ses.DB("artistview").C("artistviews")
 	b1 := bson.M{"_id": 0}
 	var av []ArtVIEW
-	// var av []map[string]string
 	err := AMPc.Find(nil).Select(b1).Sort("artist").Limit(ofset).All(&av)
 	if err != nil {
 		log.Println("find one has failed")
 		log.Println(err)
 	}
-	log.Println(&av)
-	log.Println("GArtView is complete")
-	log.Println(av[0])
-	
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&av)
-	// var p = map[string]string{"Title" : "FuckMeArtists"}
-	// t := template.Must(template.ParseFiles("./static/templates/artist.html"))
-	// t, _ := template.ParseFiles("assets/templates/artist.html")
-    // t.Execute(w, &av)
 	log.Println("Initial Artist Info Complete")
 }
 
@@ -136,7 +126,6 @@ func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	ALBc := ses.DB("albview").C("albview")
 	b1 := bson.M{"_id": 0}
 	var albv []AlbvieW
-	// var albv []map[string]string
 	err := ALBc.Find(nil).Select(b1).Sort("album").Limit(ofset).All(&albv)
 	if err != nil {
 		log.Println("initial album info has fucked up")
@@ -146,9 +135,6 @@ func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(&albv)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&albv)
-	// var p = map[string]string{"Title" : "FuckMeArtists"}
-	// t := template.Must(template.ParseFiles("assets/templates/album.html"))
-    // t.Execute(w, &albv)
 	log.Println("Initial Artist Info Complete")
 }
 
@@ -159,8 +145,7 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	MAINc := ses.DB("maindb").C("maindb")
 	b1 := bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1}
 	var tv []map[string]string
-	// err := MAINc.Find(nil).Select(b1).Sort("title").Limit(ofset).All(&tv)
-	err := MAINc.Find(nil).Select(b1).Limit(ofset).All(&tv)
+	err := MAINc.Find(nil).Select(b1).Limit(ofset).Sort("title").All(&tv)
 	if err != nil {
 		log.Println("intial song info fucked up")
 		log.Println(err)
@@ -169,9 +154,6 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("GInitialSongInfo is complete")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&tv)
-	// var p = map[string]string{"Title" : "FuckMeArtists"}
-	// t := template.Must(template.ParseFiles("assets/templates/song.html"))
-    // t.Execute(w, &tv)
 	log.Println("Initial Artist Info Complete")
 }
 
@@ -179,8 +161,11 @@ func artistPageHandler(w http.ResponseWriter, r *http.Request) {
 	ses := sfdbCon()
 	defer ses.Close()
 	ARTVc := ses.DB("artistview").C("artistviews")
-	var ARDist []map[string]string
-	err := ARTVc.Find(nil).Distinct("page", &ARDist)
+	// var ARDist []map[string]string
+	var ARDist []string
+
+	// err := ARTVc.Find(nil).Distinct("page", &ARDist)
+	err := ARTVc.Distinct("page", &ARDist)
 	if err != nil {
 		log.Println("artist alpha has fucked up")
 		log.Println(err)
@@ -194,8 +179,11 @@ func albumPageHandler(w http.ResponseWriter, r *http.Request) {
 	ses := sfdbCon()
 	defer ses.Close()
 	ALBVc := ses.DB("albview").C("albview")
-	var ALDist []AlbvieW
-	err := ALBVc.Find(nil).Distinct("page", &ALDist)
+	// var ALDist []AlbvieW
+	var ALDist []string
+
+	// err := ALBVc.Find(nil).Distinct("page", &ALDist)
+	err := ALBVc.Distinct("page", &ALDist)
 	if err != nil {
 		log.Println("album alpha fucked up")
 		log.Println(err)
@@ -209,8 +197,10 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 	ses := sfdbCon()
 	defer ses.Close()
 	MAINc := ses.DB("maindb").C("maindb")
-	var TDist []map[string]string
-	err := MAINc.Find(nil).Distinct("page", &TDist)
+	// var TDist []map[string]string
+	var TDist []string
+	// err := MAINc.Find(nil).Distinct("page", &TDist)
+	err := MAINc.Distinct("page", &TDist)
 	if err != nil {
 		log.Println("title alpha fucked up")
 		log.Println(err)
