@@ -172,7 +172,7 @@ func artistPageHandler(w http.ResponseWriter, r *http.Request) {
 	sort.Strings(ARDist)
 	log.Println("ArtistAlpha is complete")
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&ARDist)
+	json.NewEncoder(w).Encode(ARDist)
 }
 
 func albumPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -186,10 +186,11 @@ func albumPageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("album alpha fucked up")
 		log.Println(err)
 	}
+
 	sort.Strings(ALDist)
 	log.Println("AlbumAlpha is complete")
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&ALDist)
+	json.NewEncoder(w).Encode(ALDist)
 }
 
 func titlePageHandler(w http.ResponseWriter, r *http.Request) {
@@ -206,7 +207,7 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 	sort.Strings(TDist)
 	log.Println("TitleAlpha is complete")
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&TDist)
+	json.NewEncoder(w).Encode(TDist)
 }
 
 func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
