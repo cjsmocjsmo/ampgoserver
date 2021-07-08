@@ -80,6 +80,7 @@ func sfdbCon() *mgo.Session {
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
+
 //ArtVIEW exported
 type ArtVIEW struct {
 	Artist   string              `bson:"artist"`
@@ -88,6 +89,7 @@ type ArtVIEW struct {
 	Page     int                 `bson:"page"`
 	Idx      int                 `bson:"idx"`
 }
+
 func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	ofset := OffSet
 	ses := sfdbCon()
@@ -106,14 +108,15 @@ func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(av[0])
 	
 
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(&av)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&av)
 	// var p = map[string]string{"Title" : "FuckMeArtists"}
 	// t := template.Must(template.ParseFiles("./static/templates/artist.html"))
-	t, _ := template.ParseFiles("assets/templates/artist.html")
-    t.Execute(w, &av)
+	// t, _ := template.ParseFiles("assets/templates/artist.html")
+    // t.Execute(w, &av)
 	log.Println("Initial Artist Info Complete")
 }
+
 type AlbvieW struct {
 	Artist   string              `bson:"artist"`
 	ArtistID string              `bson:"artistID"`
@@ -125,6 +128,7 @@ type AlbvieW struct {
 	PicPath  string              `bson:"picPath"`
 	Idx      string              `bson:"idx"`
 }
+
 func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	ofset := OffSet
 	ses := sfdbCon()
@@ -140,11 +144,11 @@ func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("GInitialAlbumInfo is complete")
 	log.Println(&albv)
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(&albv)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&albv)
 	// var p = map[string]string{"Title" : "FuckMeArtists"}
-	t := template.Must(template.ParseFiles("assets/templates/album.html"))
-    t.Execute(w, &albv)
+	// t := template.Must(template.ParseFiles("assets/templates/album.html"))
+    // t.Execute(w, &albv)
 	log.Println("Initial Artist Info Complete")
 }
 
@@ -163,11 +167,11 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println(&tv)
 	log.Println("GInitialSongInfo is complete")
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(&tv)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&tv)
 	// var p = map[string]string{"Title" : "FuckMeArtists"}
-	t := template.Must(template.ParseFiles("assets/templates/song.html"))
-    t.Execute(w, &tv)
+	// t := template.Must(template.ParseFiles("assets/templates/song.html"))
+    // t.Execute(w, &tv)
 	log.Println("Initial Artist Info Complete")
 }
 
