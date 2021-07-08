@@ -27,18 +27,9 @@ RUN \
   chmod -R +rwx ./static && \
   chmod -R +rwx ./assets
 
-COPY assets/animals.jpg ./assets/
-COPY assets/p1.jpg ./assets/
 COPY assets/p1thumb.jpg ./assets/
-
 COPY assets/css/loginstyles.css ./assets/css/
-
 COPY assets/templates/home.html ./assets/templates/
-COPY assets/templates/intro.html ./assets/templates/
-COPY assets/templates/artist.html ./assets/templates/
-COPY assets/templates/album.html ./assets/templates/
-COPY assets/templates/song.html ./assets/templates/
-COPY assets/templates/playlist.html ./assets/templates/
 
 RUN \
   mkdir ./fsData && \

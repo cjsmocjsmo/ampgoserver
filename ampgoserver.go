@@ -419,11 +419,11 @@ func setUpHandler(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode("Setup Complete")
 // }
 
-func introHandler(w http.ResponseWriter, r *http.Request) {
-	var p = map[string]string{"Title" : "AmpGo"}
-    t := template.Must(template.ParseFiles("assets/templates/intro.html"))
-    t.Execute(w, p)
-}
+// func introHandler(w http.ResponseWriter, r *http.Request) {
+// 	var p = map[string]string{"Title" : "AmpGo"}
+//     t := template.Must(template.ParseFiles("assets/templates/intro.html"))
+//     t.Execute(w, p)
+// }
 
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -439,7 +439,7 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 	s := r.PathPrefix("/assets").Subrouter()
-	r.HandleFunc("/Intro", introHandler)
+	// r.HandleFunc("/Intro", introHandler)
 	r.HandleFunc("/Home", homeHandler)
 
 	r.HandleFunc("/InitialArtistInfo", initialArtistInfoHandler)
@@ -473,8 +473,8 @@ func main() {
 	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
 	// r.HandleFunc("/SetUp", setUpHandler)
 	
-	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/media/"))))
+	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
+	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/assets/"))))
 	http.ListenAndServe(":8888", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), 
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), 
 		handlers.AllowedOrigins([]string{"*"}))(r))
