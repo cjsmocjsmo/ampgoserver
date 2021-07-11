@@ -37,9 +37,9 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gorilla/handlers"
-	// ampgosetup "github.com/cjsmocjsmo/ampgosetup"
-	// "github.com/cjsmocjsmo/ampgosetup"
+	
 	"github.com/cjsmocjsmo/ampgosetup"
+	
 	// "ampgosetup"
 )
 
@@ -91,6 +91,31 @@ type ArtVIEW struct {
 	Idx      int                 `bson:"idx"`
 }
 
+//Albview exported
+type AlbvieW struct {
+	Artist   string              `bson:"artist"`
+	ArtistID string              `bson:"artistID"`
+	Album    string              `bson:"album"`
+	AlbumID  string              `bson:"albumID"`
+	Songs    []map[string]string `bson:"songs"`
+	Page     string              `bson:"page"`
+	NumSongs string              `bson:"numsongs"`
+	PicPath  string              `bson:"picPath"`
+	Idx      string              `bson:"idx"`
+}
+
+func setUpHandler(w http.ResponseWriter, r *http.Request) {
+	ampgosetup.Setup()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("Setup Complete")
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	var p = map[string]string{"Title" : "AmpGo"}
+    t := template.Must(template.ParseFiles("assets/templates/home.html"))
+    t.Execute(w, p)
+}
+
 func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	ofset := OffSet
 	ses := sfdbCon()
@@ -106,18 +131,6 @@ func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&av)
 	log.Println("Initial Artist Info Complete")
-}
-
-type AlbvieW struct {
-	Artist   string              `bson:"artist"`
-	ArtistID string              `bson:"artistID"`
-	Album    string              `bson:"album"`
-	AlbumID  string              `bson:"albumID"`
-	Songs    []map[string]string `bson:"songs"`
-	Page     string              `bson:"page"`
-	NumSongs string              `bson:"numsongs"`
-	PicPath  string              `bson:"picPath"`
-	Idx      string              `bson:"idx"`
 }
 
 func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -210,60 +223,6 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(TDist)
 }
 
-func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
-	albid := r.URL.Query().Get("selected")
-	ses := sfdbCon()
-	defer ses.Close()
-	ALBc := ses.DB("albview").C("albview")
-	b1 := bson.M{"albumID": albid}
-	b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "hsimage": 1}
-	var iM []iMgfa
-	err := ALBc.Find(b1).Select(b2).One(&iM)
-	if err != nil {
-		log.Println("gimage song for album fucked up")
-		log.Println(err)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&iM)
-}
-
-func statsHandler(w http.ResponseWriter, r *http.Request) {
-	// ST := ampgolib.GStats()
-	ses := sfdbCon()
-	defer ses.Close()
-	STATc := ses.DB("goampgo").C("dbstats")
-	b1 := bson.M{"_id": 0}
-	var st map[string]string
-	err := STATc.Find(nil).Select(b1).One(&st)
-	if err != nil {
-		log.Println("stats has fucked up")
-		log.Println(err)
-	}
-	log.Println("GStats is complete")
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&st)
-}
-
-// func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
-// 	RandomPics := ampgolib.RPics()
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(RandomPics)
-// }
-
-// func ramdomAlbumPicPlaySongHandler(w http.ResponseWriter, r *http.Request) {
-// 	qu := r.URL.Query().Get("sid")
-// 	rapp := ampgolib.RamdomAlbPicPlay(qu)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(rapp)
-// }
-
-// func pathArtHandler(w http.ResponseWriter, r *http.Request) {
-// 	qu := r.URL.Query().Get("selected")
-// 	pa := ampgolib.PathArt(qu)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(pa)
-// }
-
 func songInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
 	ses := sfdbCon()
@@ -317,6 +276,69 @@ func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&ARTI)
 }
+
+
+
+
+
+
+func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
+	albid := r.URL.Query().Get("selected")
+	ses := sfdbCon()
+	defer ses.Close()
+	ALBc := ses.DB("albview").C("albview")
+	b1 := bson.M{"albumID": albid}
+	b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "hsimage": 1}
+	var iM []iMgfa
+	err := ALBc.Find(b1).Select(b2).One(&iM)
+	if err != nil {
+		log.Println("gimage song for album fucked up")
+		log.Println(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&iM)
+}
+
+// func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
+// 	RandomPics := ampgosetup.RPics()
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(RandomPics)
+// }
+
+// func statsHandler(w http.ResponseWriter, r *http.Request) {
+// 	// ST := ampgolib.GStats()
+// 	ses := sfdbCon()
+// 	defer ses.Close()
+// 	STATc := ses.DB("goampgo").C("dbstats")
+// 	b1 := bson.M{"_id": 0}
+// 	var st map[string]string
+// 	err := STATc.Find(nil).Select(b1).One(&st)
+// 	if err != nil {
+// 		log.Println("stats has fucked up")
+// 		log.Println(err)
+// 	}
+// 	log.Println("GStats is complete")
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(&st)
+// }
+
+
+
+// func ramdomAlbumPicPlaySongHandler(w http.ResponseWriter, r *http.Request) {
+// 	qu := r.URL.Query().Get("sid")
+// 	rapp := ampgolib.RamdomAlbPicPlay(qu)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(rapp)
+// }
+
+// func pathArtHandler(w http.ResponseWriter, r *http.Request) {
+// 	qu := r.URL.Query().Get("selected")
+// 	pa := ampgolib.PathArt(qu)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(pa)
+// }
+
+
 
 // func songSearchHandler(w http.ResponseWriter, r *http.Request) {
 // 	qu := r.URL.Query().Get("searchval")
@@ -401,39 +423,16 @@ func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(dsfp)
 // }
 
-func setUpHandler(w http.ResponseWriter, r *http.Request) {
-	ampgosetup.Setup()
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Setup Complete")
-}
 
-// func setUpHandler(w http.ResponseWriter, r *http.Request) {
-// 	ampgolib.SetUp()
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode("Setup Complete")
-// }
-
-// func introHandler(w http.ResponseWriter, r *http.Request) {
-// 	var p = map[string]string{"Title" : "AmpGo"}
-//     t := template.Must(template.ParseFiles("assets/templates/intro.html"))
-//     t.Execute(w, p)
-// }
-
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	var p = map[string]string{"Title" : "AmpGo"}
-    t := template.Must(template.ParseFiles("assets/templates/home.html"))
-    t.Execute(w, p)
-}
 
 func init() {
-	ampgosetup.Setup()
+	ampgosetup.SetUpCheck()
 }
 
 func main() {
 	r := mux.NewRouter()
-	s := r.PathPrefix("/assets").Subrouter()
-	// r.HandleFunc("/Intro", introHandler)
+	s := r.PathPrefix("/static").Subrouter()
+	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
 
 	r.HandleFunc("/InitialArtistInfo", initialArtistInfoHandler)
@@ -448,11 +447,15 @@ func main() {
 	r.HandleFunc("/AlbumInfo", albumInfoHandler)
 	r.HandleFunc("/SongInfo", songInfoHandler)
 
-	r.HandleFunc("/ImageSongsForAlbum", imageSongsForAlbumHandler)
 
+
+
+	r.HandleFunc("/ImageSongsForAlbum", imageSongsForAlbumHandler)
 	// r.HandleFunc("/RandomPics", randomPicsHandler)
+
+
 	// r.HandleFunc("/RamdomAlbumPicPlaySong", ramdomAlbumPicPlaySongHandler)
-	r.HandleFunc("/Stats", statsHandler)
+	// r.HandleFunc("/Stats", statsHandler)
 	// r.HandleFunc("/PathArt", pathArtHandler)
 	// r.HandleFunc("/SongSearch", songSearchHandler)
 	// r.HandleFunc("/AlbumSearch", albumSearchHandler)
@@ -465,10 +468,10 @@ func main() {
 	// r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
 	// r.HandleFunc("/DeletePlaylistFromDB", deletePlaylistFromDBHandler)
 	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
-	// r.HandleFunc("/SetUp", setUpHandler)
+
 	
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
-	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/static/"))))
+	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
+	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/static/"))))
 	http.ListenAndServe(":9090", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), 
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), 
 		handlers.AllowedOrigins([]string{"*"}))(r))
