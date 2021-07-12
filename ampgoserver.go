@@ -21,10 +21,13 @@
 package main
 
 import (
-	// "fmt"
-	"log"
-	// "math/rand"
 	"os"
+	"fmt"
+	"log"
+	// "bytes"
+	"time"
+	"math/rand"
+	
 	// "path"
 	// "strconv"
 	// "strings"
@@ -303,19 +306,30 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	ses := sfdbCon()
 	defer ses.Close()
 	ALBc := ses.DB("coverart").C("coverart")
-	albumcount := AlBc.Count()
-
-	//this makes 
-	c := 5
-	b := make([]byte, c)
-	_, err := rand.Read(b)
+	albumcount, err := ALBc.Count()
 	if err != nil {
 		fmt.Println("error:", err)
 		return
 	}
-	// The slice should now contain random bytes instead of only zeroes.
-	fmt.Println(bytes.Equal(b, make([]byte, c)))
-	five_rand_num := bytes.Equal(b, make([]byte, c))
+	min := 1
+	max := albumcount
+	rand.Seed(time.Now().UnixNano())
+	random1 := rand.Intn(max - min) + min
+	time.Sleep(1 * time.Second)
+	rand.Seed(time.Now().UnixNano())
+	random2 := rand.Intn(max - min) + min
+	time.Sleep(1 * time.Second)
+	rand.Seed(time.Now().UnixNano())
+	random3 := rand.Intn(max - min) + min
+	time.Sleep(1 * time.Second)
+	rand.Seed(time.Now().UnixNano())
+	random4 := rand.Intn(max - min) + min
+	time.Sleep(1 * time.Second)
+	rand.Seed(time.Now().UnixNano())
+	random5 := rand.Intn(max - min) + min
+
+	five_rand_num := []int{random1, random2, random3, random4, random5}
+	fmt.Println(five_rand_num)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(five_rand_num)
