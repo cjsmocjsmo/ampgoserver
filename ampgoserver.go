@@ -341,7 +341,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	five_rand_num := []string{random1, random2, random3, random4, random5}
 
 	var randpics []map[string]string
-	for f, _ := range five_rand_num {
+	for _, f := range five_rand_num {
 		ses := sfdbCon()
 		defer ses.Close()
 		ALBc := ses.DB("coverart").C("coverart")
