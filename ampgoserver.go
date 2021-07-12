@@ -340,21 +340,21 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 	five_rand_num := []string{random1, random2, random3, random4, random5}
 
-	var randpics []iMgfa
+	var randpics []map[string]string
 	for f, _ := range five_rand_num {
 		ses := sfdbCon()
 		defer ses.Close()
 		ALBc := ses.DB("coverart").C("coverart")
 		b1 := bson.M{"index": f}
 		b2 := bson.M{"_id": 0}
-		var iM []iMgfa
+		var iM map[string]string
 		err := ALBc.Find(b1).Select(b2).One(&iM)
 		if err != nil {
 			log.Println("gimage song for album fucked up")
 			log.Println(err)
 		}
-		randpics := append(randpics, iM)
-		return randpics
+		randpics = append(randpics, iM)
+		// return randpics
 		
 	}
 	fmt.Println(randpics)
