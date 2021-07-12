@@ -26,6 +26,7 @@ import (
 	"log"
 	// "bytes"
 	"time"
+	"strconv"
 	"math/rand"
 	
 	// "path"
@@ -314,25 +315,51 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	min := 1
 	max := albumcount
 	rand.Seed(time.Now().UnixNano())
-	random1 := rand.Intn(max - min) + min
+	random11 := rand.Intn(max - min) + min
+	random1 := strconv.Itoa(random11)
 	time.Sleep(1 * time.Second)
-	rand.Seed(time.Now().UnixNano())
-	random2 := rand.Intn(max - min) + min
-	time.Sleep(1 * time.Second)
-	rand.Seed(time.Now().UnixNano())
-	random3 := rand.Intn(max - min) + min
-	time.Sleep(1 * time.Second)
-	rand.Seed(time.Now().UnixNano())
-	random4 := rand.Intn(max - min) + min
-	time.Sleep(1 * time.Second)
-	rand.Seed(time.Now().UnixNano())
-	random5 := rand.Intn(max - min) + min
 
-	five_rand_num := []int{random1, random2, random3, random4, random5}
-	fmt.Println(five_rand_num)
+	rand.Seed(time.Now().UnixNano())
+	random22 := rand.Intn(max - min) + min
+	random2 := strconv.Itoa(random22)
+	time.Sleep(1 * time.Second)
 
+	rand.Seed(time.Now().UnixNano())
+	random33 := rand.Intn(max - min) + min
+	random3 := strconv.Itoa(random33)
+	time.Sleep(1 * time.Second)
+
+	rand.Seed(time.Now().UnixNano())
+	random44 := rand.Intn(max - min) + min
+	random4 := strconv.Itoa(random44)
+	time.Sleep(1 * time.Second)
+
+	rand.Seed(time.Now().UnixNano())
+	random55 := rand.Intn(max - min) + min
+	random5 := strconv.Itoa(random55)
+
+	five_rand_num := []string{random1, random2, random3, random4, random5}
+
+	var randpics []iMgfa
+	for f, _ := range five_rand_num {
+		ses := sfdbCon()
+		defer ses.Close()
+		ALBc := ses.DB("coverart").C("coverart")
+		b1 := bson.M{"index": f}
+		b2 := bson.M{"_id": 0}
+		var iM []iMgfa
+		err := ALBc.Find(b1).Select(b2).One(&iM)
+		if err != nil {
+			log.Println("gimage song for album fucked up")
+			log.Println(err)
+		}
+		randpics := append(randpics, iM)
+		return randpics
+		
+	}
+	fmt.Println(randpics)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(five_rand_num)
+	json.NewEncoder(w).Encode(randpics)
 }
 
 // func statsHandler(w http.ResponseWriter, r *http.Request) {
