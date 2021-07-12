@@ -20,7 +20,7 @@ services:
     environment:
       - AMPGO_SETUP=1
       - AMPGO_OFFSET=10
-      - AMP_AMPDB_ADDR=mongodb://db:27017/ampgodb
+      - AMPGO_AMPDB_ADDR=mongodb://db:27017/ampgodb
       - AMPGO_TEMP_DIRPATH=/root/fsData/tmp
       - AMPGO_NUM_RAND_PICS=10
       - AMPGO_MONGODB_THUMB_ADDRESS=mongodb://db:27017/ampgothumb
