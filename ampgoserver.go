@@ -299,11 +299,27 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&iM)
 }
 
-// func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
-// 	RandomPics := ampgosetup.RPics()
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(RandomPics)
-// }
+func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
+	ses := sfdbCon()
+	defer ses.Close()
+	ALBc := ses.DB("coverart").C("coverart")
+	albumcount := AlBc.Count()
+
+	//this makes 
+	c := 5
+	b := make([]byte, c)
+	_, err := rand.Read(b)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	// The slice should now contain random bytes instead of only zeroes.
+	fmt.Println(bytes.Equal(b, make([]byte, c)))
+	five_rand_num := bytes.Equal(b, make([]byte, c))
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(five_rand_num)
+}
 
 // func statsHandler(w http.ResponseWriter, r *http.Request) {
 // 	// ST := ampgolib.GStats()
@@ -450,8 +466,8 @@ func main() {
 
 
 
-	r.HandleFunc("/ImageSongsForAlbum", imageSongsForAlbumHandler)
-	// r.HandleFunc("/RandomPics", randomPicsHandler)
+	// r.HandleFunc("/ImageSongsForAlbum", imageSongsForAlbumHandler)
+	r.HandleFunc("/RandomPics", randomPicsHandler)
 
 
 	// r.HandleFunc("/RamdomAlbumPicPlaySong", ramdomAlbumPicPlaySongHandler)
