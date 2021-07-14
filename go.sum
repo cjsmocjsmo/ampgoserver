@@ -94,6 +94,8 @@ github.com/cjsmocjsmo/ampgosetup v0.0.45 h1:bx3junfa5jee1n8j1mbbkvQnQTl6dMfUPudP
 github.com/cjsmocjsmo/ampgosetup v0.0.45/go.mod h1:Acc+UTNUzJzI/0yjI0alg0cmbnAtdTv31A63/4MYPgM=
 github.com/cjsmocjsmo/ampgosetup v0.0.46 h1:0s7j2ermAo6e9U4N4eRCoDJaIi++UGtGY3Hiuzdh2UE=
 github.com/cjsmocjsmo/ampgosetup v0.0.46/go.mod h1:Acc+UTNUzJzI/0yjI0alg0cmbnAtdTv31A63/4MYPgM=
+github.com/cjsmocjsmo/ampgosetup v0.0.47 h1:T6fKgGB609n9IcERGVJNdof/nJqEMIc4Yb71joJgEMA=
+github.com/cjsmocjsmo/ampgosetup v0.0.47/go.mod h1:Acc+UTNUzJzI/0yjI0alg0cmbnAtdTv31A63/4MYPgM=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/felixge/httpsnoop v1.0.1 h1:lvB5Jl89CsZtGIWuTcDM1E/vkVs49/Ml7JJe07l8SPQ=
