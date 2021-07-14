@@ -7,11 +7,13 @@ services:
     # image: andresvidal/rpi3-mongodb3:latest
     container_name: "ampgodb_container"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=porthose
-      - MONGO_INITDB_ROOT_PASSWORD=789789
+      - MONGO_INITDB_ROOT_USERNAME=porthoseadmin
+      - MONGO_INITDB_ROOT_PASSWORD=789789admin
       - MONGO_INITDB_DATABASE=ampgodb
+      - MONGO_DATABASE_USERNAME=porthose
+      - MONGO_DATABASE_PASSWORD=789789
     volumes:
-      - ./home/mongodb:/home/mongodb
+      - mongohomevol:/home/mongodb
       - /root/data/db/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - mongovol:/root/data/db
     networks:
@@ -76,14 +78,14 @@ volumes:
       # device: /media/pi/HD/Thumbnails
       o: bind
 
-  # ampgostaticvol:
-    # driver: local
-    # driver_opts:
-      # type: none
+  mongohomevol:
+    driver: local
+    driver_opts:
+      type: none
       # device: /home/pi/Thumbnails
       # device: /home/pi/Thumbnails
-      # device: /media/pi/HD/Thumbnails
-      # o: bind
+      device: /home/pipi/mongodb
+      o: bind
 
 
   mongovol:
