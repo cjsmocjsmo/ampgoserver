@@ -14,7 +14,7 @@ services:
       - MONGO_DATABASE_PASSWORD=789789
     volumes:
       - mongohomevol:/home/mongodb
-      - /root/data/db/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - mongojsvol:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - mongovol:/root/data/db
     networks:
       - ampgo
@@ -96,11 +96,11 @@ volumes:
       # device: /media/pi/HD/data/db
       o: bind
 
-  # mgojsvol:
-  #   driver: local
-  #   driver_opts: 
-  #     type: none
-  #     device: /home/charlie/ampgo/init-mongo.js
-  #     o: bind
+  mongojsvol:
+    driver: local
+    driver_opts: 
+      type: none
+      device: /home/pipi/ampgoserver/init-mongo.js
+      o: bind
 
 
