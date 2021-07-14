@@ -121,13 +121,15 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
-	ofset := OffSet
+	// ofset := OffSet
 	ses := sfdbCon()
 	defer ses.Close()
 	AMPc := ses.DB("artistview").C("artistviews")
-	b1 := bson.M{"_id": 0}
+	b1 := bson.M{"page":"1"}
+	b2 := bson.M{"_id": 0}
 	var av []ArtVIEW
-	err := AMPc.Find(nil).Select(b1).Sort("artist").Limit(ofset).All(&av)
+	// err := AMPc.Find(nil).Select(b1).Sort("artist").Limit(ofset).All(&av)
+	err := AMPc.Find(b1).Select(b2).Sort("artist").All(&av)
 	if err != nil {
 		log.Println("find one has failed")
 		log.Println(err)
