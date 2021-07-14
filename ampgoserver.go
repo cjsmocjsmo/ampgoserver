@@ -286,6 +286,8 @@ func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
+
+
 func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	albid := r.URL.Query().Get("selected")
 	ses := sfdbCon()
@@ -317,22 +319,22 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	rand.Seed(time.Now().UnixNano())
 	random11 := rand.Intn(max - min) + min
 	random1 := strconv.Itoa(random11)
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Milliseconds)
 
 	rand.Seed(time.Now().UnixNano())
 	random22 := rand.Intn(max - min) + min
 	random2 := strconv.Itoa(random22)
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Milliseconds)
 
 	rand.Seed(time.Now().UnixNano())
 	random33 := rand.Intn(max - min) + min
 	random3 := strconv.Itoa(random33)
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Milliseconds)
 
 	rand.Seed(time.Now().UnixNano())
 	random44 := rand.Intn(max - min) + min
 	random4 := strconv.Itoa(random44)
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Milliseconds)
 
 	rand.Seed(time.Now().UnixNano())
 	random55 := rand.Intn(max - min) + min
