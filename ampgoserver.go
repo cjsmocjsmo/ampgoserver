@@ -44,10 +44,13 @@ import (
 	"github.com/cjsmocjsmo/ampgosetup"
 )
 
-const (
-	OffSet := os.Getenv("AMPGO_OFFSET")
-	// OffSet = 10
-)
+var offset string = os.Getenv("AMPGO_OFFSET")
+var OffSet int = strconv.Atoi(offset)
+
+// const (
+// 	OffSet = os.Getenv("AMPGO_OFFSET")
+// 	// OffSet = 10
+// )
 
 type plist struct {
 	PLName string              `bson:"PLName"`

@@ -6,6 +6,10 @@ services:
     image: mongo:4.4
     # image: andresvidal/rpi3-mongodb3:latest
     container_name: "ampgodb_container"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=porthose
+      - MONGO_INITDB_ROOT_PASSWORD=789789
+      - MONGO_INITDB_DATABASE
     volumes:
       - mongovol:/root/data/db
     networks:
@@ -19,7 +23,7 @@ services:
     build: .
     environment:
       - AMPGO_SETUP=1
-      - AMPGO_OFFSET=10
+      - AMPGO_OFFSET=25
       - AMPGO_AMPDB_ADDR=mongodb://db:27017/ampgodb
       - AMPGO_TEMP_DIRPATH=/root/fsData/tmp
       - AMPGO_NUM_RAND_PICS=10
@@ -32,7 +36,7 @@ services:
       - AMPGO_SERVER_ADDRESS=http://192.168.0.91
       - MONGO_INITDB_ROOT_USERNAME=porthose
       - MONGO_INITDB_ROOT_PASSWORD=789789
-      - MONGO_INITDB_DATABASE
+      # - MONGO_INITDB_DATABASE
 
     networks:
       - ampgo
