@@ -100,7 +100,7 @@ volumes:
     driver: local
     driver_opts: 
       type: none
-      device: /home/pipi/ampgoserver/init-mongo.js
+      device: /home/pipi/ampgoserver/
       o: bind
 
 
