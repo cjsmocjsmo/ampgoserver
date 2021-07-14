@@ -41,14 +41,12 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gorilla/handlers"
-	
 	"github.com/cjsmocjsmo/ampgosetup"
-	
-	// "ampgosetup"
 )
 
 const (
-	OffSet = 10
+	OffSet := os.Getenv("AMPGO_OFFSET")
+	// OffSet = 10
 )
 
 type plist struct {
