@@ -92,9 +92,11 @@ type ArtVIEW struct {
 	Artist   string              `bson:"artist"`
 	ArtistID string              `bson:"artistID"`
 	Albums   []map[string]string `bson:"albums"`
-	Page     int                 `bson:"page"`
-	Idx      int                 `bson:"idx"`
+	Page     string                 `bson:"page"`
+	Idx      string                 `bson:"idx"`
 }
+
+
 
 //Albview exported
 type AlbvieW struct {
