@@ -44,8 +44,8 @@ import (
 	"github.com/cjsmocjsmo/ampgosetup"
 )
 
-var offset string = os.Getenv("AMPGO_OFFSET")
-var OffSet int = strconv.Atoi(offset)
+// var offset string = os.Getenv("AMPGO_OFFSET")
+// OffSet, _ := strconv.Atoi(offset)
 
 // const (
 // 	OffSet = os.Getenv("AMPGO_OFFSET")
@@ -141,7 +141,8 @@ func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
-	ofset := OffSet
+	OffSet := os.Getenv("AMPGO_OFFSET")
+	ofset, _ := strconv.Atoi(OffSet)
 	ses := sfdbCon()
 	defer ses.Close()
 	ALBc := ses.DB("albview").C("albview")
@@ -160,7 +161,8 @@ func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
-	ofset := OffSet
+	OffSet := os.Getenv("AMPGO_OFFSET")
+	ofset, _ := strconv.Atoi(OffSet)
 	ses := sfdbCon()
 	defer ses.Close()
 	MAINc := ses.DB("maindb").C("maindb")
