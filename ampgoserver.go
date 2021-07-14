@@ -294,7 +294,7 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	defer ses.Close()
 	ALBc := ses.DB("albview").C("albview")
 	b1 := bson.M{"albumID": albid}
-	b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "hsimage": 1}
+	b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "picPath": 1}
 	var iM []iMgfa
 	err := ALBc.Find(b1).Select(b2).One(&iM)
 	if err != nil {
@@ -314,33 +314,17 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("error:", err)
 		return
 	}
+
 	min := 1
 	max := albumcount
-	rand.Seed(time.Now().UnixNano())
-	random11 := rand.Intn(max - min) + min
-	random1 := strconv.Itoa(random11)
-	time.Sleep(100 * time.Milliseconds)
-
-	rand.Seed(time.Now().UnixNano())
-	random22 := rand.Intn(max - min) + min
-	random2 := strconv.Itoa(random22)
-	time.Sleep(100 * time.Milliseconds)
-
-	rand.Seed(time.Now().UnixNano())
-	random33 := rand.Intn(max - min) + min
-	random3 := strconv.Itoa(random33)
-	time.Sleep(100 * time.Milliseconds)
-
-	rand.Seed(time.Now().UnixNano())
-	random44 := rand.Intn(max - min) + min
-	random4 := strconv.Itoa(random44)
-	time.Sleep(100 * time.Milliseconds)
-
-	rand.Seed(time.Now().UnixNano())
-	random55 := rand.Intn(max - min) + min
-	random5 := strconv.Itoa(random55)
-
-	five_rand_num := []string{random1, random2, random3, random4, random5}
+	var five_rand_num []string
+	for i := 0; i < 5; i++ {
+		rand.Seed(time.Now().UnixNano())
+		random11 := rand.Intn(max - min) + min
+		random1 := strconv.Itoa(random11)
+		time.Sleep(100 * time.Millisecond)
+		five_rand_num = append(five_rand_num, random1)
+	}
 
 	var randpics []map[string]string
 	for _, f := range five_rand_num {
@@ -509,7 +493,7 @@ func main() {
 
 
 
-	// r.HandleFunc("/ImageSongsForAlbum", imageSongsForAlbumHandler)
+	r.HandleFunc("/ImageSongsForAlbum", imageSongsForAlbumHandler)
 	r.HandleFunc("/RandomPics", randomPicsHandler)
 
 
