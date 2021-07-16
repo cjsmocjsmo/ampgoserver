@@ -27,6 +27,7 @@ RUN \
   chmod -R +rwx ./static && \
   chmod -R +rwx ./assets
 
+COPY init-mongo.js ./data
 COPY assets/p1thumb.jpg ./assets/
 COPY assets/css/loginstyles.css ./assets/css/
 COPY assets/templates/home.html ./assets/templates/
