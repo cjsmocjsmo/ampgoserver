@@ -480,9 +480,9 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-func init() {
-	ampgosetup.SetUpCheck()
-}
+// func init() {
+// 	ampgosetup.SetUpCheck()
+// }
 
 func main() {
 	// clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
