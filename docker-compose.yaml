@@ -39,6 +39,7 @@ services:
     volumes:
       - ampgovol:/root/fsData/
       - ampgopicvol:/root/static
+      - ampgologvol:/root/logs/
     depends_on:
       - db
 
@@ -67,5 +68,10 @@ volumes:
       device: /home/pipi/Data/db
       o: bind
 
-
+  ampgologvol:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/pipi/Ampgologs
+      o: bind
 
