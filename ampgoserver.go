@@ -36,7 +36,7 @@ import (
 	// "io/ioutil"
 	"sort"
 	"net/http"
-	"html/template"
+	// "html/template"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
@@ -123,9 +123,11 @@ func setUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	var p = map[string]string{"Title" : "AmpGo"}
-    t := template.Must(template.ParseFiles("assets/templates/home.html"))
-    t.Execute(w, p)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("Hello From Ampgo Home \n It works")
+	// var p = map[string]string{"Title" : "AmpGo"}
+    // t := template.Must(template.ParseFiles("assets/templates/home.html"))
+    // t.Execute(w, p)
 }
 
 func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
