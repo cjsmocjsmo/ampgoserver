@@ -96,8 +96,10 @@ type AlbvieW struct {
 	Idx      string              `bson:"idx"`
 }
 
+var MONGO_ADDR string = os.Getenv("AMP_AMPDB_ADDR")
+
 func sfdbCon() *mgo.Session {
-	s, err := mgo.Dial(os.Getenv("AMP_AMPDB_ADDR"))
+	s, err := mgo.Dial(MONGO_ADDR)
 	if err != nil {
 		log.Println("Session creation dial error")
 		log.Println(err)
@@ -105,9 +107,6 @@ func sfdbCon() *mgo.Session {
 	log.Println("Session Connection to db established")
 	return s
 }
-
-
-
 
 func setUpHandler(w http.ResponseWriter, r *http.Request) {
 	ampgosetup.Setup()
@@ -168,7 +167,7 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	// OffSet, _ := strconv.Atoi(OFFSET)
 	filter := bson.D{{}}
 	opts := options.Find().SetProjection(bson.D{{"_id", 0}, {"artist", 1}, {"title", 1}, {"fileID", 1}}).SetMax(bson.D{{"max", OFFSET}})
-	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgo")
+	client, ctx, cancel, err := ampgosetup.Connect(MONGO_ADDR)
 	defer ampgosetup.Close(client, ctx, cancel)
 	ampgosetup.CheckError(err, "MongoDB connection has failed")
 	coll := client.Database("maindb").Collection("maindb")
