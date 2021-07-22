@@ -26,12 +26,11 @@ import (
 	"log"
 	// "bytes"
 	"time"
-	"context"
+	
 	"strconv"
 	"math/rand"
 	
 	// "path"
-	// "strconv"
 	// "strings"
 	// "io/ioutil"
 	"sort"
@@ -41,7 +40,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 	"go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/mongo"
+	"context"
+    // "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/globalsign/mgo"
 	// "github.com/globalsign/mgo/bson"
@@ -49,13 +49,9 @@ import (
 	"github.com/cjsmocjsmo/ampgosetup"
 )
 
-// var offset string = os.Getenv("AMPGO_OFFSET")
+var OFFSET string = os.Getenv("AMPGO_OFFSET")
 // OffSet, _ := strconv.Atoi(offset)
 
-// const (
-// 	OffSet = os.Getenv("AMPGO_OFFSET")
-// 	// OffSet = 10
-// )
 
 type plist struct {
 	PLName string              `bson:"PLName"`
@@ -64,44 +60,28 @@ type plist struct {
 }
 
 type iMgfa struct {
-	Album   string
-	HSImage string
-	Songs   []map[string]string
+	Album   string              `bson:"album"`
+	HSImage string              `bson:"hsimage"`
+	Songs   []map[string]string `bson:"songs"`
 }
 
 type rAlbinfo struct {
 	Songs   []map[string]string `bson:"songs"`
-	HSImage string
+	HSImage string              `bson:"hsimage"`
 }
 
 type voodoo struct {
-	Playlists []map[string]string
+	Playlists []map[string]string `bson:"playlists"`
 }
-
-func sfdbCon() *mgo.Session {
-	s, err := mgo.Dial(os.Getenv("AMP_AMPDB_ADDR"))
-	if err != nil {
-		log.Println("Session creation dial error")
-		log.Println(err)
-	}
-	log.Println("Session Connection to db established")
-	return s
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 //ArtVIEW exported
 type ArtVIEW struct {
 	Artist   string              `bson:"artist"`
 	ArtistID string              `bson:"artistID"`
 	Albums   []map[string]string `bson:"albums"`
-	Page     string                 `bson:"page"`
-	Idx      string                 `bson:"idx"`
+	Page     string              `bson:"page"`
+	Idx      string              `bson:"idx"`
 }
-
-
 
 //Albview exported
 type AlbvieW struct {
@@ -115,6 +95,19 @@ type AlbvieW struct {
 	PicPath  string              `bson:"picPath"`
 	Idx      string              `bson:"idx"`
 }
+
+func sfdbCon() *mgo.Session {
+	s, err := mgo.Dial(os.Getenv("AMP_AMPDB_ADDR"))
+	if err != nil {
+		log.Println("Session creation dial error")
+		log.Println(err)
+	}
+	log.Println("Session Connection to db established")
+	return s
+}
+
+
+
 
 func setUpHandler(w http.ResponseWriter, r *http.Request) {
 	ampgosetup.Setup()
@@ -170,20 +163,40 @@ func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
-	OffSet := os.Getenv("AMPGO_OFFSET")
-	ofset, _ := strconv.Atoi(OffSet)
-	ses := sfdbCon()
-	defer ses.Close()
-	MAINc := ses.DB("maindb").C("maindb")
-	b1 := bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1}
+	// OffSet := os.Getenv("AMPGO_OFFSET")
+	// ofset, _ := strconv.Atoi(OffSet)
+	// OffSet, _ := strconv.Atoi(OFFSET)
+	filter := bson.D{{}}
+	opts := options.Find().SetProjection(bson.D{{"_id", 0}, {"artist", 1}, {"title", 1}, {"fileID", 1}}).SetMax(bson.D{{"max", OFFSET}})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgo")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ampgosetup.CheckError(err, "ArtPipeline find has failed")
 	var tv []map[string]string
-	err := MAINc.Find(nil).Select(b1).Limit(ofset).Sort("title").All(&tv)
-	if err != nil {
-		log.Println("intial song info fucked up")
-		log.Println(err)
+	// var results []map[string]string //all albums for artist to include double entries
+	if err = cur.All(context.TODO(), &tv); err != nil {
+		log.Fatal(err)
 	}
-	log.Println(&tv)
-	log.Println("GInitialSongInfo is complete")
+	log.Printf("%s this is tv", tv)
+	
+
+
+	// ses := sfdbCon()
+	// defer ses.Close()
+	// MAINc := ses.DB("maindb").C("maindb")
+	// b1 := bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1}
+	// var tv []map[string]string
+	// err := MAINc.Find(nil).Select(b1).Limit(ofset).Sort("title").All(&tv)
+	// if err != nil {
+	// 	log.Println("intial song info fucked up")
+	// 	log.Println(err)
+	// }
+	// log.Println(&tv)
+	// log.Println("GInitialSongInfo is complete")
+
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&tv)
 	log.Println("Initial Artist Info Complete")
@@ -553,28 +566,28 @@ func main() {
 }
 
 
-func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
-	defer cancel()
+// func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
+// 	defer cancel()
 
-	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
-			panic(err)
-		}
-	}()
-}
+// 	defer func() {
+// 		if err := client.Disconnect(ctx); err != nil {
+// 			panic(err)
+// 		}
+// 	}()
+// }
 
-func Connect(uri string) (*mongo.Client, context.Context, context.CancelFunc, error) {
+// func Connect(uri string) (*mongo.Client, context.Context, context.CancelFunc, error) {
  
-    ctx, cancel := context.WithTimeout(context.Background(),
-                                       30 * time.Second)
-    client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
-    return client, ctx, cancel, err
-}
+//     ctx, cancel := context.WithTimeout(context.Background(),
+//                                        30 * time.Second)
+//     client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+//     return client, ctx, cancel, err
+// }
 
-func InsertOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
+// func InsertOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
  
-    collection := client.Database(dataBase).Collection(col)
+//     collection := client.Database(dataBase).Collection(col)
      
-    result, err := collection.InsertOne(ctx, doc)
-    return result, err
-}
+//     result, err := collection.InsertOne(ctx, doc)
+//     return result, err
+// }
