@@ -224,8 +224,8 @@ func albumPageHandler(w http.ResponseWriter, r *http.Request) {
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ampgosetup.CheckError(err, "MongoDB connection has failed")
-	collection := client.Database("albview").Collection("albview")
-	DD1, err2 := collection.Distinct(context.TODO(), "page", filter, opts)
+	collection := client.Database("albumview").Collection("albumview")
+	DD1, err2 := collection.Distinct(context.TODO(), "albumpage", filter, opts)
 	ampgosetup.CheckError(err2, "MongoDB distinct album has failed")
 	var ALDist []string
 	for _, DD := range DD1 {
@@ -260,7 +260,7 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 	defer ampgosetup.Close(client, ctx, cancel)
 	ampgosetup.CheckError(err, "MongoDB connection has failed")
 	collection := client.Database("maindb").Collection("maindb")
-	DD1, err2 := collection.Distinct(context.TODO(), "page", filter, opts)
+	DD1, err2 := collection.Distinct(context.TODO(), "titlepage", filter, opts)
 	ampgosetup.CheckError(err2, "MongoDB distinct album has failed")
 	var TDist []string
 	for _, DD := range DD1 {
