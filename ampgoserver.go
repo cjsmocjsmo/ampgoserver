@@ -168,7 +168,7 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
 	opts := options.Find()
 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
-	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	client, ctx, cancel, err := ampgosetup.Connect(MONGO_ADDR)
 	defer ampgosetup.Close(client, ctx, cancel)
 	ampgosetup.CheckError(err, "MongoDB connection has failed")
 	coll := client.Database("maindb").Collection("maindb")
