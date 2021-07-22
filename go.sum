@@ -255,6 +255,12 @@ github.com/cjsmocjsmo/ampgosetup v0.1.14 h1:NHoXudCr0jz9Cc0wwc6prc1YJAlH0YThdaRu
 github.com/cjsmocjsmo/ampgosetup v0.1.14/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
 github.com/cjsmocjsmo/ampgosetup v0.1.15 h1:W9YLIYYzaN+vyBcCXrOnBPeoLyZuHaqqCSWIYtSbjuA=
 github.com/cjsmocjsmo/ampgosetup v0.1.15/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
+github.com/cjsmocjsmo/ampgosetup v0.1.16 h1:aVXiac3xT0IZEsn/rtXWBzRAT6caR5AkX9E18SSgJow=
+github.com/cjsmocjsmo/ampgosetup v0.1.16/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
+github.com/cjsmocjsmo/ampgosetup v0.1.17 h1:L0zKKwvnrwr1OPG1S+1Xt4sm1MTsMl/8u4USu9K6wvE=
+github.com/cjsmocjsmo/ampgosetup v0.1.17/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
+github.com/cjsmocjsmo/ampgosetup v0.1.18 h1:U3qd54JxYhaGg8bnwHHTmCRUugToWzotqooG9xEvDQE=
+github.com/cjsmocjsmo/ampgosetup v0.1.18/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
