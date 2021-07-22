@@ -200,17 +200,6 @@ func artistPageHandler(w http.ResponseWriter, r *http.Request) {
 		zoo := fmt.Sprintf("%s", DD)
 		ARDist = append(ARDist, zoo)
 	}
-
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// ARTVc := ses.DB("artistview").C("artistviews")
-	// // var ARDist []map[string]string
-	// var ARDist []string
-	// err := ARTVc.Find(nil).Distinct("page", &ARDist)
-	// if err != nil {
-	// 	log.Println("artist alpha has fucked up")
-	// 	log.Println(err)
-	// }
 	sort.Strings(ARDist)
 	log.Println("ArtistAlpha is complete")
 	w.Header().Set("Content-Type", "application/json")
@@ -232,20 +221,6 @@ func albumPageHandler(w http.ResponseWriter, r *http.Request) {
 		zoo := fmt.Sprintf("%s", DD)
 		ALDist = append(ALDist, zoo)
 	}
-
-
-
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// ALBVc := ses.DB("albview").C("albview")
-	// // var ALDist []AlbvieW
-	// var ALDist []string
-	// err := ALBVc.Find(nil).Distinct("page", &ALDist)
-	// if err != nil {
-	// 	log.Println("album alpha fucked up")
-	// 	log.Println(err)
-	// }
-
 	sort.Strings(ALDist)
 	log.Println("AlbumAlpha is complete")
 	w.Header().Set("Content-Type", "application/json")
@@ -267,16 +242,6 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 		zoo := fmt.Sprintf("%s", DD)
 		TDist = append(TDist, zoo)
 	}
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// MAINc := ses.DB("maindb").C("maindb")
-	// // var TDist []map[string]string
-	// var TDist []string
-	// err := MAINc.Find(nil).Distinct("page", &TDist)
-	// if err != nil {
-	// 	log.Println("title alpha fucked up")
-	// 	log.Println(err)
-	// }
 	sort.Strings(TDist)
 	log.Println("TitleAlpha is complete")
 	w.Header().Set("Content-Type", "application/json")
@@ -285,17 +250,34 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 
 func songInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
-	ses := sfdbCon()
-	defer ses.Close()
-	MAINc := ses.DB("maindb").C("maindb")
-	b1 := bson.M{"page": pagenum}
-	b2 := bson.M{"_id": 0, "title": 1, "fileID": 1, "artist": 1}
+
+	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	ampgosetup.CheckError(err, "convert to int64 has failed")
+	filter := bson.D{{"titlepage", pagenum}}
+	opts := options.Find()
+	opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ampgosetup.CheckError(err, "ArtPipeline find has failed")
 	var SIS []map[string]string
-	err := MAINc.Find(b1).Select(b2).All(&SIS)
-	if err != nil {
-		log.Println("song info has fucked up")
-		log.Println(err)
+	if err = cur.All(context.TODO(), &SIS); err != nil {
+		log.Fatal(err)
 	}
+	// ses := sfdbCon()
+	// defer ses.Close()
+	// MAINc := ses.DB("maindb").C("maindb")
+	// b1 := bson.M{"page": pagenum}
+	// b2 := bson.M{"_id": 0, "title": 1, "fileID": 1, "artist": 1}
+	// var SIS []map[string]string
+	// err := MAINc.Find(b1).Select(b2).All(&SIS)
+	// if err != nil {
+	// 	log.Println("song info has fucked up")
+	// 	log.Println(err)
+	// }
 	log.Println("SongInfo is complete")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&SIS)
@@ -303,17 +285,35 @@ func songInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 func albumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
-	ses := sfdbCon()
-	defer ses.Close()
-	ALBVc := ses.DB("albview").C("albview")
-	b1 := bson.M{"page": pagenum}
+	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	ampgosetup.CheckError(err, "convert to int64 has failed")
+	filter := bson.D{{"albumpage", pagenum}}
+	opts := options.Find()
+	opts.SetLimit(int64(limit))
 	b2 := bson.M{"_id": 0, "artist": 1, "artistID": 1, "album": 1, "albumID": 1, "hsimage": 1, "songs": 1, "numsongs": 1}
+	opts.SetProjection(b2)
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("albumview").Collection("albumview")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ampgosetup.CheckError(err, "AlbPipeline find has failed")
 	var AI []AlbvieW
-	err := ALBVc.Find(b1).Select(b2).All(&AI)
-	if err != nil {
-		log.Println("AlbumInfo has fucked up")
-		log.Println(err)
+	if err = cur.All(context.TODO(), &AI); err != nil {
+		log.Fatal(err)
 	}
+
+	// ses := sfdbCon()
+	// defer ses.Close()
+	// ALBVc := ses.DB("albview").C("albview")
+	// b1 := bson.M{"page": pagenum}
+	// b2 := bson.M{"_id": 0, "artist": 1, "artistID": 1, "album": 1, "albumID": 1, "hsimage": 1, "songs": 1, "numsongs": 1}
+	// var AI []AlbvieW
+	// err := ALBVc.Find(b1).Select(b2).All(&AI)
+	// if err != nil {
+	// 	log.Println("AlbumInfo has fucked up")
+	// 	log.Println(err)
+	// }
 	log.Println("AlbumInfo is complete")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&AI)
@@ -321,28 +321,38 @@ func albumInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
-	ses := sfdbCon()
-	defer ses.Close()
-	ARTc := ses.DB("artistview").C("artistviews")
-	b1 := bson.M{"page": pagenum}
-	b2 := bson.M{"_id": 0, "artist": 1, "artistID": 1, "albums": 1, "page": 1}
+	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	ampgosetup.CheckError(err, "convert to int64 has failed")
+	filter := bson.D{{"page", pagenum}}
+	opts := options.Find()
+	opts.SetLimit(int64(limit))
+	b2 := bson.M{"_id": 0, "artist": 1, "artistID": 1, "album": 1, "albumID": 1, "hsimage": 1, "songs": 1, "numsongs": 1}
+	opts.SetProjection(b2)
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ampgosetup.CheckError(err, "ArtPipeline find has failed")
 	var ARTI []ArtVIEW
-	err := ARTc.Find(b1).Select(b2).All(&ARTI)
-	if err != nil {
-		log.Println("ArtistInfo has fucked up")
-		log.Println(err)
+	if err = cur.All(context.TODO(), &ARTI); err != nil {
+		log.Fatal(err)
 	}
+	// ses := sfdbCon()
+	// defer ses.Close()
+	// ARTc := ses.DB("artistview").C("artistviews")
+	// b1 := bson.M{"page": pagenum}
+	// b2 := bson.M{"_id": 0, "artist": 1, "artistID": 1, "albums": 1, "page": 1}
+	// var ARTI []ArtVIEW
+	// err := ARTc.Find(b1).Select(b2).All(&ARTI)
+	// if err != nil {
+	// 	log.Println("ArtistInfo has fucked up")
+	// 	log.Println(err)
+	// }
 	log.Println("ArtistInfo is complete")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&ARTI)
 }
-
-
-
-
-
-
-
 
 func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	albid := r.URL.Query().Get("selected")
@@ -529,22 +539,6 @@ func init() {
 }
 
 func main() {
-	// clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-	// client, err := mongo.Connect(context.Ampgo(), clientOptions)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// err = client.Ping(context.Ampgo(), nil)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Println("Connected to MongoDB!")
-
-	// maindb := client.Database("maindb").Collection("maindb")
-
-
 	r := mux.NewRouter()
 	s := r.PathPrefix("/static").Subrouter()
 	r.HandleFunc("/SetUp", setUpHandler)
