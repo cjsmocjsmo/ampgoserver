@@ -403,12 +403,13 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s this is indexliststring", idxint)
 		indexlistint = append(indexlistint, idxint)
 	}
-	log.Printf("%s THIS IS indexlistint", indexlistint)
+	log.Println(indexlistint)
 
 
 
 	albumcount := indexlistint[:len(indexlistint)-1]
-	log.Printf("%s THIS IS albumcount", albumcount)
+	log.Println(albumcount)
+	log.Printf("%T albumcount", albumcount)
 	// filter := bson.D{{}}
 	// opts := options.Count().SetMaxTime(2 * time.Second)
 	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
