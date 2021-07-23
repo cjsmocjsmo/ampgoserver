@@ -393,12 +393,17 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &indexliststring); err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("%s THIS IS indexliststring", indexliststring)
-	for _, idx := range indexliststring {
-		log.Printf("%T  idx type is", idx)
-		log.Printf("%s this is indexliststring", idx)
-	}
 
+	log.Printf("%s THIS IS indexliststring", indexliststring)
+	var indexlistint []int 
+	for _, idx := range indexliststring {
+		idxint, err := strconv.Atoi(idx["idx"])
+		ampgosetup.CheckError(err, "ParseInt has failed")
+		log.Printf("%T  idx type is", idx)
+		log.Printf("%s this is indexliststring", idxint)
+		indexlistint = append(indexlistint, idxint)
+	}
+	log.Printf("%s THIS IS indexlistint", indexlistint)
 
 
 
