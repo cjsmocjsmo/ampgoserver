@@ -57,7 +57,7 @@ type plist struct {
 
 type iMgfa struct {
 	Album   string              `bson:"album"`
-	HSImage string              `bson:"hsimage"`
+	PicPath string              `bson:"picPath"`
 	Songs   []map[string]string `bson:"songs"`
 }
 
