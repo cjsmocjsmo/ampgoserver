@@ -487,7 +487,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	// json.NewEncoder(w).Encode(randpics)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(randpics)
+	json.NewEncoder(w).Encode("randpics")
 }
 
 // func statsHandler(w http.ResponseWriter, r *http.Request) {
