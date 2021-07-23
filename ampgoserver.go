@@ -371,7 +371,7 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{"albumID", albumid}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
-	b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "picPath": 1}
+	b2 := bson.M{"_id": 0, "album": 1, "picPath": 1, "songs": 1}
 	opts.SetProjection(b2)
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -379,8 +379,8 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "imageSongsForAlbumHandler has failed")
-	var iM []iMgfa
-	if err = cur.All(context.TODO(), &iM); err != nil {
+	var sfora []iMgfa
+	if err = cur.All(context.TODO(), &sfora); err != nil {
 		log.Fatal(err)
 	}
 	// ses := sfdbCon()
@@ -395,7 +395,7 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	// 	log.Println(err)
 	// }
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&iM)
+	json.NewEncoder(w).Encode(&sfora)
 }
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
@@ -424,14 +424,6 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	var albumcount int = len(indexlistint) - 1
 	log.Println(albumcount)
 	log.Printf("%T albumcount", albumcount)
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// ALBc := ses.DB("coverart").C("coverart")
-	// albumcount, err := ALBc.Count()
-	// if err != nil {
-	// 	fmt.Println("error:", err)
-	// 	return
-	// }
 
 	var min int = 1
 	maxx := albumcount
@@ -468,25 +460,6 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		randpics = append(randpics, rpics)
 	}
-	// 	// ses := sfdbCon()
-	// 	// defer ses.Close()
-	// 	// ALBc := ses.DB("coverart").C("coverart")
-	// 	// b1 := bson.M{"index": f}
-	// 	// b2 := bson.M{"_id": 0}
-	// 	// var iM map[string]string
-	// 	// err := ALBc.Find(b1).Select(b2).One(&iM)
-	// 	// if err != nil {
-	// 	// 	log.Println("gimage song for album fucked up")
-	// 	// 	log.Println(err)
-	// 	// }
-		
-	// 	// return randpics
-		
-	
-	// fmt.Println(randpics)
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(randpics)
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(randpics)
 }
