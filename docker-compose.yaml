@@ -21,6 +21,7 @@ services:
       - AMPGO_SETUP=1
       - AMPGO_OFFSET=25
       - AMPGO_LOG_PATH=/root/logs/ampgo_log.txt
+      - AMPGO_SERVER_LOG_PATH=/root/logs/ampgo_server_log.txt
       - AMPGO_AMPDB_ADDR=mongodb://db:27017/ampgodb
       - AMPGO_MONGODB_THUMB_ADDRESS=mongodb://db:27017/ampgothumb
       - AMPGO_TEMP_DIRPATH=/root/fsData/tmp

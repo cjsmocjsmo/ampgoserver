@@ -49,10 +49,6 @@ import (
 	"github.com/cjsmocjsmo/ampgosetup"
 )
 
-var OFFSET string = os.Getenv("AMPGO_OFFSET")
-// OffSet, _ := strconv.Atoi(offset)
-
-
 type plist struct {
 	PLName string              `bson:"PLName"`
 	PLId   string              `bson:"PLId"`
@@ -96,6 +92,28 @@ type AlbvieW struct {
 	Idx      string              `bson:"idx"`
 }
 
+var OFFSET string = os.Getenv("AMPGO_OFFSET")
+
+func StartServerLogging() string {
+	var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
+	// If the file doesn't exist, create it or append to the file
+	file, err := os.OpenFile(logtxtfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(file)
+	return "Logging started"
+}
+
+
+func ServerCheckError(err error, msg string) {
+	if err != nil {
+		fmt.Println(msg)
+		log.Println(msg)
+		panic(err)
+	}
+}
+
 func sfdbCon() *mgo.Session {
 	s, err := mgo.Dial("mongodb://db:27017/ampgodb")
 	if err != nil {
@@ -110,26 +128,29 @@ func setUpHandler(w http.ResponseWriter, r *http.Request) {
 	ampgosetup.Setup()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Setup Complete")
+	//this needs work
+	log.Println("Setup Complete")
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Hello From Ampgo Home \n It works")
+	log.Println("homeHandler is complete")
 }
 
 func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ampgosetup.CheckError(err, "convert to int64 has failed")
+	ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("artistview").Collection("artistview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "initialArtistInfo find has failed")
+	ServerCheckError(err, "initialArtistInfo find has failed")
 	var av []ArtVIEW
 	if err = cur.All(context.TODO(), &av); err != nil {
 		log.Fatal(err)
@@ -142,17 +163,17 @@ func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ampgosetup.CheckError(err, "convert to int64 has failed")
+	ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "initialalbumInfo find has failed")
+	ServerCheckError(err, "initialalbumInfo find has failed")
 	var albv []AlbvieW
 	if err = cur.All(context.TODO(), &albv); err != nil {
 	}
@@ -164,17 +185,17 @@ func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ampgosetup.CheckError(err, "convert to int64 has failed")
+	ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("maindb").Collection("maindb")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "ArtPipeline find has failed")
+	ServerCheckError(err, "ArtPipeline find has failed")
 	var tv []map[string]string
 	if err = cur.All(context.TODO(), &tv); err != nil {
 		log.Fatal(err)
@@ -191,10 +212,10 @@ func artistPageHandler(w http.ResponseWriter, r *http.Request) {
 	opts.SetMaxTime(2 * time.Second)
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	collection := client.Database("artistview").Collection("artistview")
 	DD1, err2 := collection.Distinct(context.TODO(), "page", filter, opts)
-	ampgosetup.CheckError(err2, "MongoDB distinct album has failed")
+	ServerCheckError(err2, "MongoDB distinct album has failed")
 	var ARDist []string
 	for _, DD := range DD1 {
 		zoo := fmt.Sprintf("%s", DD)
@@ -212,10 +233,10 @@ func albumPageHandler(w http.ResponseWriter, r *http.Request) {
 	opts.SetMaxTime(2 * time.Second)
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	collection := client.Database("albumview").Collection("albumview")
 	DD1, err2 := collection.Distinct(context.TODO(), "albumpage", filter, opts)
-	ampgosetup.CheckError(err2, "MongoDB distinct album has failed")
+	ServerCheckError(err2, "MongoDB distinct album has failed")
 	var ALDist []string
 	for _, DD := range DD1 {
 		zoo := fmt.Sprintf("%s", DD)
@@ -233,10 +254,10 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 	opts.SetMaxTime(2 * time.Second)
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	collection := client.Database("maindb").Collection("maindb")
 	DD1, err2 := collection.Distinct(context.TODO(), "titlepage", filter, opts)
-	ampgosetup.CheckError(err2, "MongoDB distinct album has failed")
+	ServerCheckError(err2, "MongoDB distinct album has failed")
 	var TDist []string
 	for _, DD := range DD1 {
 		zoo := fmt.Sprintf("%s", DD)
@@ -252,17 +273,17 @@ func songInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
 
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ampgosetup.CheckError(err, "convert to int64 has failed")
+	ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{"titlepage", pagenum}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("maindb").Collection("maindb")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "ArtPipeline find has failed")
+	ServerCheckError(err, "ArtPipeline find has failed")
 	var SIS []map[string]string
 	if err = cur.All(context.TODO(), &SIS); err != nil {
 		log.Fatal(err)
@@ -286,7 +307,7 @@ func songInfoHandler(w http.ResponseWriter, r *http.Request) {
 func albumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ampgosetup.CheckError(err, "convert to int64 has failed")
+	ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{"albumpage", pagenum}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
@@ -294,10 +315,10 @@ func albumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	opts.SetProjection(b2)
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "AlbPipeline find has failed")
+	ServerCheckError(err, "AlbPipeline find has failed")
 	var AI []AlbvieW
 	if err = cur.All(context.TODO(), &AI); err != nil {
 		log.Fatal(err)
@@ -322,7 +343,7 @@ func albumInfoHandler(w http.ResponseWriter, r *http.Request) {
 func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ampgosetup.CheckError(err, "convert to int64 has failed")
+	ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{"page", pagenum}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
@@ -330,10 +351,10 @@ func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	opts.SetProjection(b2)
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("artistview").Collection("artistview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "ArtPipeline find has failed")
+	ServerCheckError(err, "ArtPipeline find has failed")
 	var ARTI []ArtVIEW
 	if err = cur.All(context.TODO(), &ARTI); err != nil {
 		log.Fatal(err)
@@ -346,7 +367,7 @@ func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	albumid := r.URL.Query().Get("selected")
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ampgosetup.CheckError(err, "ParseInt has failed")
+	ServerCheckError(err, "ParseInt has failed")
 	filter := bson.D{{"albumID", albumid}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
@@ -354,10 +375,10 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	opts.SetProjection(b2)
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "imageSongsForAlbumHandler has failed")
+	ServerCheckError(err, "imageSongsForAlbumHandler has failed")
 	var iM []iMgfa
 	if err = cur.All(context.TODO(), &iM); err != nil {
 		log.Fatal(err)
@@ -385,10 +406,10 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	opts.SetProjection(bson.M{"_id": 0, "idx": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	ServerCheckError(err, "MongoDB connection has failed")
 	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ampgosetup.CheckError(err, "imageSongsForAlbumHandler has failed")
+	ServerCheckError(err, "imageSongsForAlbumHandler has failed")
 	var indexliststring []map[string]string
 	if err = cur.All(context.TODO(), &indexliststring); err != nil {
 		log.Fatal(err)
@@ -398,26 +419,27 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	var indexlistint []int 
 	for _, idx := range indexliststring {
 		idxint, err := strconv.Atoi(idx["idx"])
-		ampgosetup.CheckError(err, "ParseInt has failed")
+		ServerCheckError(err, "ParseInt has failed")
 		log.Printf("%T  idx type is", idx)
 		log.Printf("%s this is indexliststring", idxint)
 		indexlistint = append(indexlistint, idxint)
 	}
 	log.Println(indexlistint)
+	var albumcount int = len(indexlistint)
 
 
 
-	albumcount := indexlistint[:len(indexlistint)-1]
+	// albumcount := indexlistint[:len(indexlistint)-1]
 	log.Println(albumcount)
 	log.Printf("%T albumcount", albumcount)
 	// filter := bson.D{{}}
 	// opts := options.Count().SetMaxTime(2 * time.Second)
 	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	// defer ampgosetup.Close(client, ctx, cancel)
-	// ampgosetup.CheckError(err, "MongoDB connection has failed")
+	// ServerCheckError(err, "MongoDB connection has failed")
 	// coll := client.Database("artistview").Collection("artistview")
 	// albumcount, err := coll.CountDocuments(context.TODO(), filter, opts)
-	// ampgosetup.CheckError(err, "randomPicsHandler has failed")
+	// ServerCheckError(err, "randomPicsHandler has failed")
 
 	log.Printf("%s THIS IS ALBUM COUNT", albumcount)
 	// fmt.Printf("\n %s THIS IS ALBUM COUNT", albumcount)
@@ -455,16 +477,16 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	// for _, f := range five_rand_num {
 	// 	filter := bson.D{{"index", f}}
 	// 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	// 	ampgosetup.CheckError(err, "Int conversion has failed")
+	// 	ServerCheckError(err, "Int conversion has failed")
 	// 	opts := options.Find()
 	// 	opts.SetLimit(int64(limit))
 	// 	opts.SetProjection(bson.M{"_id": 0})
 	// 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	// 	defer ampgosetup.Close(client, ctx, cancel)
-	// 	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	// 	ServerCheckError(err, "MongoDB connection has failed")
 	// 	coll := client.Database("coverart").Collection("coverart")
 	// 	cur, err := coll.Find(context.TODO(), filter, opts)
-	// 	ampgosetup.CheckError(err, "randomPicsHandler find has failed")
+	// 	ServerCheckError(err, "randomPicsHandler find has failed")
 	// 	var iM map[string]string
 	// 	if err = cur.All(context.TODO(), &iM); err != nil {
 	// 	}
@@ -613,6 +635,8 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 func init() {
 	ampgosetup.SetUpCheck()
+	var logging_status string = StartServerLogging()
+	log.Println(logging_status)
 }
 
 func main() {

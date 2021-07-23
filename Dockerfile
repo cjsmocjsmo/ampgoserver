@@ -33,8 +33,11 @@ RUN \
   chmod -R +rwx ./fsData && \
   mkdir ./logs && \
   chmod -R +rwx ./logs && \
-  echo "Creating log file" > ./logs/ampgo_log.txt && \
-  chmod -R +rwx ./logs/ampgo_log.txt
+  echo "Creating ampgo_log.txt" > ./logs/ampgo_log.txt && \
+  echo "Creating ampgo_server_log.txt" > ./logs/ampgo_server_log.txt && \
+  chmod -R +rwx ./logs/ampgo_log.txt && \
+  chmod -R +rwx ./logs/ampgo_server_log.txt
+
 STOPSIGNAL SIGINT
 CMD ["./main"]
 
