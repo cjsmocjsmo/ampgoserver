@@ -387,6 +387,8 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	albumcount, err := coll.CountDocuments(context.TODO(), filter, opts)
 	ampgosetup.CheckError(err, "randomPicsHandler has failed")
 
+	log.Printf("%s THIS IS ALBUM COUNT")
+
 	// ses := sfdbCon()
 	// defer ses.Close()
 	// ALBc := ses.DB("coverart").C("coverart")
