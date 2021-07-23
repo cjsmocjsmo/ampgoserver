@@ -407,14 +407,8 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-
-	// var indexlistint []int64
-	// for _, idx := range indexliststring {
-	// 	idxx, err := strconv.ParseInt(idx, 10, 32)
-	// 	ampgosetup.CheckError(err, "ParseInt has failed")
-	// 	indexlistint = append(indexlistint, idxx)
-	// }
-	// albumcount := indexlistint[:len(indexlistint)-1]
+	albumcount := indexlistint[:len(indexlistint)-1]
+	log.Printf("%s THIS IS albumcount", albumcount)
 	// filter := bson.D{{}}
 	// opts := options.Count().SetMaxTime(2 * time.Second)
 	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
@@ -424,7 +418,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	// albumcount, err := coll.CountDocuments(context.TODO(), filter, opts)
 	// ampgosetup.CheckError(err, "randomPicsHandler has failed")
 
-	// log.Printf("%s THIS IS ALBUM COUNT", albumcount)
+	log.Printf("%s THIS IS ALBUM COUNT", albumcount)
 	// fmt.Printf("\n %s THIS IS ALBUM COUNT", albumcount)
 	// fmt.Printf("\n %s THIS IS ALBUM COUNT", albumcount)
 	// fmt.Printf("\n %s THIS IS ALBUM COUNT", albumcount)

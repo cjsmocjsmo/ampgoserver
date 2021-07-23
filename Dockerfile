@@ -22,14 +22,10 @@ RUN \
   mkdir ./data/db && \
   mkdir ./static && \
   mkdir ./assets && \
-  mkdir ./assets/css && \
-  mkdir ./assets/templates && \
   chmod -R +rwx ./static && \
   chmod -R +rwx ./assets
 
 COPY assets/p1thumb.jpg ./assets/
-COPY assets/css/loginstyles.css ./assets/css/
-COPY assets/templates/home.html ./assets/templates/
 
 RUN \
   mkdir ./fsData && \
