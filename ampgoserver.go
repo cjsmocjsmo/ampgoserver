@@ -338,73 +338,105 @@ func artistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &ARTI); err != nil {
 		log.Fatal(err)
 	}
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// ARTc := ses.DB("artistview").C("artistviews")
-	// b1 := bson.M{"page": pagenum}
-	// b2 := bson.M{"_id": 0, "artist": 1, "artistID": 1, "albums": 1, "page": 1}
-	// var ARTI []ArtVIEW
-	// err := ARTc.Find(b1).Select(b2).All(&ARTI)
-	// if err != nil {
-	// 	log.Println("ArtistInfo has fucked up")
-	// 	log.Println(err)
-	// }
 	log.Println("ArtistInfo is complete")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&ARTI)
 }
 
 func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
-	albid := r.URL.Query().Get("selected")
-	ses := sfdbCon()
-	defer ses.Close()
-	ALBc := ses.DB("albview").C("albview")
-	b1 := bson.M{"albumID": albid}
+	albumid := r.URL.Query().Get("selected")
+	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	ampgosetup.CheckError(err, "ParseInt has failed")
+	filter := bson.D{{"albumID", albumid}}
+	opts := options.Find()
+	opts.SetLimit(int64(limit))
 	b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "picPath": 1}
+	opts.SetProjection(b2)
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("albumview").Collection("albumview")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ampgosetup.CheckError(err, "imageSongsForAlbumHandler has failed")
 	var iM []iMgfa
-	err := ALBc.Find(b1).Select(b2).One(&iM)
-	if err != nil {
-		log.Println("gimage song for album fucked up")
-		log.Println(err)
+	if err = cur.All(context.TODO(), &iM); err != nil {
+		log.Fatal(err)
 	}
+	// ses := sfdbCon()
+	// defer ses.Close()
+	// ALBc := ses.DB("albview").C("albview")
+	// b1 := bson.M{"albumID": albid}
+	// b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "picPath": 1}
+	// var iM []iMgfa
+	// err := ALBc.Find(b1).Select(b2).One(&iM)
+	// if err != nil {
+	// 	log.Println("gimage song for album fucked up")
+	// 	log.Println(err)
+	// }
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&iM)
 }
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
-	ses := sfdbCon()
-	defer ses.Close()
-	ALBc := ses.DB("coverart").C("coverart")
-	albumcount, err := ALBc.Count()
-	if err != nil {
-		fmt.Println("error:", err)
-		return
-	}
+	filter := bson.D{{}}
+	opts := options.Count().SetMaxTime(2 * time.Second)
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("artistview").Collection("artistview")
+	albumcount, err := coll.CountDocuments(context.TODO(), filter, opts)
+	ampgosetup.CheckError(err, "randomPicsHandler has failed")
 
-	min := 1
-	max := albumcount
+	// ses := sfdbCon()
+	// defer ses.Close()
+	// ALBc := ses.DB("coverart").C("coverart")
+	// albumcount, err := ALBc.Count()
+	// if err != nil {
+	// 	fmt.Println("error:", err)
+	// 	return
+	// }
+
+	var min int = 1
+	maxx := albumcount
+	max := int(maxx)
+
 	var five_rand_num []string
 	for i := 0; i < 5; i++ {
 		rand.Seed(time.Now().UnixNano())
 		random11 := rand.Intn(max - min) + min
 		random1 := strconv.Itoa(random11)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 		five_rand_num = append(five_rand_num, random1)
 	}
 
 	var randpics []map[string]string
 	for _, f := range five_rand_num {
-		ses := sfdbCon()
-		defer ses.Close()
-		ALBc := ses.DB("coverart").C("coverart")
-		b1 := bson.M{"index": f}
-		b2 := bson.M{"_id": 0}
+		filter := bson.D{{"index", f}}
+		limit, err := strconv.ParseInt(OFFSET, 10, 64)
+		ampgosetup.CheckError(err, "Int conversion has failed")
+		opts := options.Find()
+		opts.SetLimit(int64(limit))
+		opts.SetProjection(bson.M{"_id": 0})
+		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+		defer ampgosetup.Close(client, ctx, cancel)
+		ampgosetup.CheckError(err, "MongoDB connection has failed")
+		coll := client.Database("coverart").Collection("coverart")
+		cur, err := coll.Find(context.TODO(), filter, opts)
+		ampgosetup.CheckError(err, "randomPicsHandler find has failed")
 		var iM map[string]string
-		err := ALBc.Find(b1).Select(b2).One(&iM)
-		if err != nil {
-			log.Println("gimage song for album fucked up")
-			log.Println(err)
+		if err = cur.All(context.TODO(), &iM); err != nil {
 		}
+		// ses := sfdbCon()
+		// defer ses.Close()
+		// ALBc := ses.DB("coverart").C("coverart")
+		// b1 := bson.M{"index": f}
+		// b2 := bson.M{"_id": 0}
+		// var iM map[string]string
+		// err := ALBc.Find(b1).Select(b2).One(&iM)
+		// if err != nil {
+		// 	log.Println("gimage song for album fucked up")
+		// 	log.Println(err)
+		// }
 		randpics = append(randpics, iM)
 		// return randpics
 		
