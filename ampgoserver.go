@@ -447,26 +447,28 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println(five_rand_num)
 
-	// var randpics []map[string]string
-	// for _, f := range five_rand_num {
-	// 	filter := bson.D{{"index", f}}
-	// 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	// 	ServerCheckError(err, "Int conversion has failed")
-	// 	opts := options.Find()
-	// 	opts.SetLimit(int64(limit))
-	// 	opts.SetProjection(bson.M{"_id": 0})
-	// 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	// 	defer ampgosetup.Close(client, ctx, cancel)
-	// 	ServerCheckError(err, "MongoDB connection has failed")
-	// 	coll := client.Database("coverart").Collection("coverart")
-	// 	cur, err := coll.Find(context.TODO(), filter, opts)
-	// 	ServerCheckError(err, "randomPicsHandler find has failed")
-	// 	var iM map[string]string
-	// 	if err = cur.All(context.TODO(), &iM); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	randpics = append(randpics, iM)
-	// }
+	var randpics []map[string]string
+	for _, ff := range five_rand_num {
+		f, err := strconv.Atoi(ff)
+		ServerCheckError(err, "strconv.Atoi has failed")
+		filter := bson.D{{"index", f}}
+		limit, err := strconv.ParseInt(OFFSET, 10, 64)
+		ServerCheckError(err, "Int conversion has failed")
+		opts := options.Find()
+		opts.SetLimit(int64(limit))
+		opts.SetProjection(bson.M{"_id": 0})
+		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+		defer ampgosetup.Close(client, ctx, cancel)
+		ServerCheckError(err, "MongoDB connection has failed")
+		coll := client.Database("coverart").Collection("coverart")
+		cur, err := coll.Find(context.TODO(), filter, opts)
+		ServerCheckError(err, "randomPicsHandler find has failed")
+		var iM map[string]string
+		if err = cur.All(context.TODO(), &iM); err != nil {
+			log.Fatal(err)
+		}
+		randpics = append(randpics, iM)
+	}
 	// 	// ses := sfdbCon()
 	// 	// defer ses.Close()
 	// 	// ALBc := ses.DB("coverart").C("coverart")
@@ -487,7 +489,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	// json.NewEncoder(w).Encode(randpics)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("randpics")
+	json.NewEncoder(w).Encode(randpics)
 }
 
 // func statsHandler(w http.ResponseWriter, r *http.Request) {
