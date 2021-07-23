@@ -389,13 +389,14 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ampgosetup.CheckError(err, "imageSongsForAlbumHandler has failed")
-	var indexliststring []string
+	var indexliststring []map[string]string
 	if err = cur.All(context.TODO(), &indexliststring); err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("%s THIS IS indexliststring", indexliststring)
 	for _, idx := range indexliststring {
 		log.Printf("%T  idx type is", idx)
+		log.Printf("%s this is indexliststring", idx)
 	}
 
 
