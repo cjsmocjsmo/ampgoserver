@@ -448,9 +448,8 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(five_rand_num)
 
 	var randpics []map[string]string
-	for _, ff := range five_rand_num {
-		f, err := strconv.Itoa(ff)
-		ServerCheckError(err, "strconv.Atoi has failed")
+	for _, f := range five_rand_num {
+		log.Printf("%s This is frn")
 		filter := bson.D{{"index", f}}
 		limit, err := strconv.ParseInt(OFFSET, 10, 64)
 		ServerCheckError(err, "Int conversion has failed")
@@ -463,11 +462,11 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		coll := client.Database("coverart").Collection("coverart")
 		cur, err := coll.Find(context.TODO(), filter, opts)
 		ServerCheckError(err, "randomPicsHandler find has failed")
-		var iM map[string]string
-		if err = cur.All(context.TODO(), &iM); err != nil {
+		var rpics map[string]string
+		if err = cur.All(context.TODO(), &rpics); err != nil {
 			log.Fatal(err)
 		}
-		randpics = append(randpics, iM)
+		randpics = append(randpics, rpics)
 	}
 	// 	// ses := sfdbCon()
 	// 	// defer ses.Close()
