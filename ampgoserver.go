@@ -449,7 +449,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var randpics []map[string]string
 	for _, ff := range five_rand_num {
-		f, err := strconv.Atoi(ff)
+		f, err := strconv.Itoa(ff)
 		ServerCheckError(err, "strconv.Atoi has failed")
 		filter := bson.D{{"index", f}}
 		limit, err := strconv.ParseInt(OFFSET, 10, 64)
