@@ -445,26 +445,28 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(50 * time.Millisecond)
 		five_rand_num = append(five_rand_num, random1)
 	}
+	log.Println(five_rand_num)
 
-	var randpics []map[string]string
-	for _, f := range five_rand_num {
-		filter := bson.D{{"index", f}}
-		limit, err := strconv.ParseInt(OFFSET, 10, 64)
-		ServerCheckError(err, "Int conversion has failed")
-		opts := options.Find()
-		opts.SetLimit(int64(limit))
-		opts.SetProjection(bson.M{"_id": 0})
-		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-		defer ampgosetup.Close(client, ctx, cancel)
-		ServerCheckError(err, "MongoDB connection has failed")
-		coll := client.Database("coverart").Collection("coverart")
-		cur, err := coll.Find(context.TODO(), filter, opts)
-		ServerCheckError(err, "randomPicsHandler find has failed")
-		var iM map[string]string
-		if err = cur.All(context.TODO(), &iM); err != nil {
-			log.Fatal(err)
-		}
-		randpics = append(randpics, iM)
+	// var randpics []map[string]string
+	// for _, f := range five_rand_num {
+	// 	filter := bson.D{{"index", f}}
+	// 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// 	ServerCheckError(err, "Int conversion has failed")
+	// 	opts := options.Find()
+	// 	opts.SetLimit(int64(limit))
+	// 	opts.SetProjection(bson.M{"_id": 0})
+	// 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	// 	defer ampgosetup.Close(client, ctx, cancel)
+	// 	ServerCheckError(err, "MongoDB connection has failed")
+	// 	coll := client.Database("coverart").Collection("coverart")
+	// 	cur, err := coll.Find(context.TODO(), filter, opts)
+	// 	ServerCheckError(err, "randomPicsHandler find has failed")
+	// 	var iM map[string]string
+	// 	if err = cur.All(context.TODO(), &iM); err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	randpics = append(randpics, iM)
+	// }
 	// 	// ses := sfdbCon()
 	// 	// defer ses.Close()
 	// 	// ALBc := ses.DB("coverart").C("coverart")
@@ -479,7 +481,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		
 	// 	// return randpics
 		
-	}
+	
 	// fmt.Println(randpics)
 	// w.Header().Set("Content-Type", "application/json")
 	// json.NewEncoder(w).Encode(randpics)
