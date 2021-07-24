@@ -405,7 +405,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	var randpics []map[string]string
 	for _, f := range five_rand_num {
 		log.Printf("%s This is frn", f)
-		log.Printf("%T frn type")
+		log.Printf("%T frn type", f)
 		filter := bson.D{{"index", f}}
 		// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 		ServerCheckError(err, "Int conversion has failed")
