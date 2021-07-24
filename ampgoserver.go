@@ -405,11 +405,12 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	var randpics []map[string]string
 	for _, f := range five_rand_num {
 		log.Printf("%s This is frn", f)
+		log.Printf("%T frn type")
 		filter := bson.D{{"index", f}}
-		limit, err := strconv.ParseInt(OFFSET, 10, 64)
+		// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 		ServerCheckError(err, "Int conversion has failed")
 		opts := options.Find()
-		opts.SetLimit(int64(limit))
+		// opts.SetLimit(int64(limit))
 		opts.SetProjection(bson.M{"_id": 0})
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
