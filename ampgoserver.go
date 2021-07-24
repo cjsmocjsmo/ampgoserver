@@ -96,7 +96,6 @@ var OFFSET string = os.Getenv("AMPGO_OFFSET")
 
 func StartServerLogging() string {
 	var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
-	// If the file doesn't exist, create it or append to the file
 	file, err := os.OpenFile(logtxtfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
@@ -104,7 +103,6 @@ func StartServerLogging() string {
 	log.SetOutput(file)
 	return "Logging started"
 }
-
 
 func ServerCheckError(err error, msg string) {
 	if err != nil {
@@ -271,7 +269,6 @@ func titlePageHandler(w http.ResponseWriter, r *http.Request) {
 
 func songInfoHandler(w http.ResponseWriter, r *http.Request) {
 	pagenum := r.URL.Query().Get("selected")
-
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{"titlepage", pagenum}}
@@ -288,17 +285,6 @@ func songInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &SIS); err != nil {
 		log.Fatal(err)
 	}
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// MAINc := ses.DB("maindb").C("maindb")
-	// b1 := bson.M{"page": pagenum}
-	// b2 := bson.M{"_id": 0, "title": 1, "fileID": 1, "artist": 1}
-	// var SIS []map[string]string
-	// err := MAINc.Find(b1).Select(b2).All(&SIS)
-	// if err != nil {
-	// 	log.Println("song info has fucked up")
-	// 	log.Println(err)
-	// }
 	log.Println("SongInfo is complete")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&SIS)
@@ -323,18 +309,6 @@ func albumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &AI); err != nil {
 		log.Fatal(err)
 	}
-
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// ALBVc := ses.DB("albview").C("albview")
-	// b1 := bson.M{"page": pagenum}
-	// b2 := bson.M{"_id": 0, "artist": 1, "artistID": 1, "album": 1, "albumID": 1, "hsimage": 1, "songs": 1, "numsongs": 1}
-	// var AI []AlbvieW
-	// err := ALBVc.Find(b1).Select(b2).All(&AI)
-	// if err != nil {
-	// 	log.Println("AlbumInfo has fucked up")
-	// 	log.Println(err)
-	// }
 	log.Println("AlbumInfo is complete")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&AI)
@@ -383,17 +357,6 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &sfora); err != nil {
 		log.Fatal(err)
 	}
-	// ses := sfdbCon()
-	// defer ses.Close()
-	// ALBc := ses.DB("albview").C("albview")
-	// b1 := bson.M{"albumID": albid}
-	// b2 := bson.M{"_id": 0, "album": 1, "songs": 1, "picPath": 1}
-	// var iM []iMgfa
-	// err := ALBc.Find(b1).Select(b2).One(&iM)
-	// if err != nil {
-	// 	log.Println("gimage song for album fucked up")
-	// 	log.Println(err)
-	// }
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&sfora)
 }
@@ -441,7 +404,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var randpics []map[string]string
 	for _, f := range five_rand_num {
-		log.Printf("%s This is frn")
+		log.Printf("%s This is frn", f)
 		filter := bson.D{{"index", f}}
 		limit, err := strconv.ParseInt(OFFSET, 10, 64)
 		ServerCheckError(err, "Int conversion has failed")
@@ -456,6 +419,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		ServerCheckError(err, "randomPicsHandler find has failed")
 		var rpics map[string]string
 		if err = cur.All(context.TODO(), &rpics); err != nil {
+			log.Printf("rpics has failed this is err: \n %s", f)
 			log.Fatal(err)
 		}
 		randpics = append(randpics, rpics)
