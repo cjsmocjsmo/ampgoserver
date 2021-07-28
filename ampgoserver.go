@@ -170,7 +170,7 @@ func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("maindb")
+	coll := client.Database("tempdb2").Collection("tempdb2")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "initArtistInfo find has failed")
 	var allartist []map[string]string
