@@ -41,7 +41,7 @@ import (
 	"github.com/gorilla/handlers"
 	"go.mongodb.org/mongo-driver/bson"
 	"context"
-    // "go.mongodb.org/mongo-driver/mongo"
+    "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
 	"github.com/globalsign/mgo"
 	// "github.com/globalsign/mgo/bson"
@@ -157,6 +157,31 @@ func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&av)
 	log.Println("Initial Artist Info Complete")
+}
+
+func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
+
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
+	filter := bson.D{{}}
+	opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "artistID":1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "initArtistInfo find has failed")
+	var allartist []string
+	if err = cur.All(context.TODO(), &allartist); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s this is allartist-", allartist)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allartist)
+	log.Println("Init Artist Info Complete")
+
 }
 
 func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -362,8 +387,10 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
+
 	filter := bson.D{{}}
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	ServerCheckError(err, "string conversion has failed")
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "idx": 1})
@@ -404,25 +431,36 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var randpics []map[string]string
 	for _, f := range five_rand_num {
-		log.Printf("%s This is frn", f)
-		log.Printf("%T frn type", f)
 		filter := bson.D{{"index", f}}
-		// limit, err := strconv.ParseInt(OFFSET, 10, 64)
-		ServerCheckError(err, "Int conversion has failed")
-		opts := options.Find()
-		// opts.SetLimit(int64(limit))
-		opts.SetProjection(bson.M{"_id": 0})
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
-		ServerCheckError(err, "MongoDB connection has failed")
-		coll := client.Database("coverart").Collection("coverart")
-		cur, err := coll.Find(context.TODO(), filter, opts)
-		ServerCheckError(err, "randomPicsHandler find has failed")
-		var rpics map[string]string
-		if err = cur.All(context.TODO(), &rpics); err != nil {
-			log.Printf("rpics has failed this is err: \n %s", f)
-			log.Fatal(err)
-		}
+		ampgosetup.CheckError(err, "MongoDB connection has failed")
+		collection := client.Database("coverart").Collection("coverart")
+		var rpics map[string]string = make(map[string]string)
+		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
+		if err != nil { log.Fatal(err) }
+		
+
+
+		// log.Printf("%s This is frn", f)
+		// log.Printf("%T frn type", f)
+		// filter := bson.D{{"index", f}}
+		// // limit, err := strconv.ParseInt(OFFSET, 10, 64)
+		// ServerCheckError(err, "Int conversion has failed")
+		// opts := options.Find()
+		// // opts.SetLimit(int64(limit))
+		// opts.SetProjection(bson.M{})
+		// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+		// defer ampgosetup.Close(client, ctx, cancel)
+		// ServerCheckError(err, "MongoDB connection has failed")
+		// coll := client.Database("coverart").Collection("coverart")
+		// cur, err := coll.Find(context.TODO(), filter, opts)
+		// ServerCheckError(err, "randomPicsHandler find has failed")
+		// var rpics []map[string]string
+		// if err = cur.All(context.TODO(), &rpics); err != nil {
+		// 	log.Printf("rpics has failed this is err: \n %s", f)
+		// 	log.Fatal(err)
+		// }
 		randpics = append(randpics, rpics)
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -561,6 +599,8 @@ func main() {
 	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
 
+	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
+
 	r.HandleFunc("/InitialArtistInfo", initialArtistInfoHandler)
 	r.HandleFunc("/InitialAlbumInfo", initialalbumInfoHandler)
 	r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
@@ -606,28 +646,29 @@ func main() {
 }
 
 
-// func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
-// 	defer cancel()
+func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
+	defer cancel()
+	defer func() {
+		if err := client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+}
 
-// 	defer func() {
-// 		if err := client.Disconnect(ctx); err != nil {
-// 			panic(err)
-// 		}
-// 	}()
-// }
+func Connect(uri string) (*mongo.Client, context.Context, context.CancelFunc, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Second)
+    client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+    return client, ctx, cancel, err
+}
 
-// func Connect(uri string) (*mongo.Client, context.Context, context.CancelFunc, error) {
- 
-//     ctx, cancel := context.WithTimeout(context.Background(),
-//                                        30 * time.Second)
-//     client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
-//     return client, ctx, cancel, err
-// }
+func InsertOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
+    collection := client.Database(dataBase).Collection(col)
+    result, err := collection.InsertOne(ctx, doc)
+    return result, err
+}
 
-// func InsertOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
- 
-//     collection := client.Database(dataBase).Collection(col)
-     
-//     result, err := collection.InsertOne(ctx, doc)
-//     return result, err
-// }
+func Query(client *mongo.Client, ctx context.Context, dataBase, col string, query, field interface{}) (result *mongo.Cursor, err error) {
+	collection := client.Database(dataBase).Collection(col)
+	result, err = collection.Find(ctx, query, options.Find().SetProjection(field))
+	return
+}
