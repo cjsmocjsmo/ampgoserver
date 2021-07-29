@@ -136,31 +136,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("homeHandler is complete")
 }
 
-func initialArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
-	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ServerCheckError(err, "convert to int64 has failed")
-	filter := bson.D{{}}
-	opts := options.Find()
-	opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0})
-	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	defer ampgosetup.Close(client, ctx, cancel)
-	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("artistview").Collection("artistview")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	ServerCheckError(err, "initialArtistInfo find has failed")
-	var av []ArtVIEW
-	if err = cur.All(context.TODO(), &av); err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%s this is av", av)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&av)
-	log.Println("Initial Artist Info Complete")
-}
-
 func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
-
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	// ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
@@ -184,26 +160,50 @@ func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func initialalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
-	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ServerCheckError(err, "convert to int64 has failed")
+func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
-	opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0})
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "album": 1, "albumID":1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("albumview").Collection("albumview")
+	coll := client.Database("tempdb2").Collection("artidpic")
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ServerCheckError(err, "initialalbumInfo find has failed")
-	var albv []AlbvieW
-	if err = cur.All(context.TODO(), &albv); err != nil {
+	ServerCheckError(err, "initAlbumInfo find has failed")
+	var allalbums []map[string]string
+	if err = cur.All(context.TODO(), &allalbums); err != nil {
+		log.Fatal(err)
 	}
-	log.Printf("%s this is albv", albv)
+	log.Printf("%s this is allalbums", allalbums)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&albv)
-	log.Println("Initial Album Info Complete")
+	json.NewEncoder(w).Encode(&allalbums)
+	log.Println("Init albumsInfo Complete")	
+
+
+
+
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
+	// filter := bson.D{{}}
+	// opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	// opts.SetProjection(bson.M{"_id": 0})
+	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	// defer ampgosetup.Close(client, ctx, cancel)
+	// ServerCheckError(err, "MongoDB connection has failed")
+	// coll := client.Database("albumview").Collection("albumview")
+	// cur, err := coll.Find(context.TODO(), filter, opts)
+	// ServerCheckError(err, "initialalbumInfo find has failed")
+	// var albv []AlbvieW
+	// if err = cur.All(context.TODO(), &albv); err != nil {
+	// }
+	// log.Printf("%s this is albv", albv)
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode(&albv)
+	// log.Println("Initial Album Info Complete")
 }
 
 func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -600,9 +600,9 @@ func main() {
 	r.HandleFunc("/Home", homeHandler)
 
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
-
-	r.HandleFunc("/InitialArtistInfo", initialArtistInfoHandler)
-	r.HandleFunc("/InitialAlbumInfo", initialalbumInfoHandler)
+	r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
+	// r.HandleFunc("/InitialArtistInfo", initialArtistInfoHandler)
+	// r.HandleFunc("/InitialAlbumInfo", initialalbumInfoHandler)
 	r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
 
 	r.HandleFunc("/ArtistAlpha", artistPageHandler)
