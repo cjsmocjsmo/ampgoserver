@@ -166,7 +166,7 @@ func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
 	opts := options.Find()
 	// opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "Album": 1, "AlbumID": 1, "PicHttpAddr": 1}) //must be uppercase did not use a struct
+	opts.SetProjection(bson.M{"_id": 0, "Album": 1, "AlbumID": 1, "PicPath": 1}) //must be uppercase did not use a struct
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
