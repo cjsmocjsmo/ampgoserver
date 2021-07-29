@@ -283,6 +283,8 @@ github.com/cjsmocjsmo/ampgosetup v0.1.28 h1:Nw32YcOio3T2hxTxyioRPksnZJDrMemsV9hb
 github.com/cjsmocjsmo/ampgosetup v0.1.28/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
 github.com/cjsmocjsmo/ampgosetup v0.1.29 h1:tfjm6akAY5Ef63M6KHJ2MrRISW6+jCCQZrWN+PGkuck=
 github.com/cjsmocjsmo/ampgosetup v0.1.29/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
+github.com/cjsmocjsmo/ampgosetup v0.1.30 h1:i8x3fbtWXY7OKkS+TGHx3+6QpcJESUhb0H/1INqfhqo=
+github.com/cjsmocjsmo/ampgosetup v0.1.30/go.mod h1:jso5SXbz2QIQJ/bMBGTYfX3Eo6HfYa8Oa0TzdKfZqpE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
