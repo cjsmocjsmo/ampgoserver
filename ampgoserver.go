@@ -162,8 +162,9 @@ func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Starting albumsForArtistHandler")
-	artistid := r.URL.Query().Get("selected")
+	var artistid string = r.URL.Query().Get("selected")
 	log.Printf("%s this is artistid", artistid)
+	log.Printf("%T this is artistid type", artistid)
 
 	filter := bson.D{{"artistID", artistid}}
 	opts := options.Find()
@@ -176,7 +177,7 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	ServerCheckError(err, "albumsForArtistHandler find has failed")
 	var albfart []map[string]string
 	if err = cur.All(context.TODO(), &albfart); err != nil {
-		log.Printf("albumsForArtistHandler has failed")
+		log.Printf("albumsForArtistHandler cur.All has failed")
 		log.Fatal(err)
 	}
 	for _, alb := range albfart {
