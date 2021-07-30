@@ -160,6 +160,36 @@ func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
+	artistid := r.URL.Query().Get("selected")
+
+	filter := bson.D{{"artistID", artistid}}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0, "albums": 1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("artistview").Collection("artistview")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "ArtPipeline find has failed")
+	var albfart []map[string]string
+	if err = cur.All(context.TODO(), &albfart); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s this is albfart", albfart)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&albfart)
+	log.Println("Initial albfart Complete")
+}
+
+
+
+
+
+
+
+
+
 func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	// ServerCheckError(err, "convert to int64 has failed")
@@ -183,28 +213,34 @@ func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Init albumsInfo Complete")
 }
 
-func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
-	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ServerCheckError(err, "convert to int64 has failed")
-	filter := bson.D{{}}
-	opts := options.Find()
-	opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
-	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	defer ampgosetup.Close(client, ctx, cancel)
-	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("maindb")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	ServerCheckError(err, "ArtPipeline find has failed")
-	var tv []map[string]string
-	if err = cur.All(context.TODO(), &tv); err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%s this is tv", tv)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&tv)
-	log.Println("Initial Song Info Complete")
-}
+
+// func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
+// 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+// 	ServerCheckError(err, "convert to int64 has failed")
+// 	filter := bson.D{{}}
+// 	opts := options.Find()
+// 	opts.SetLimit(int64(limit))
+// 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
+// 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+// 	defer ampgosetup.Close(client, ctx, cancel)
+// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	coll := client.Database("maindb").Collection("maindb")
+// 	cur, err := coll.Find(context.TODO(), filter, opts)
+// 	ServerCheckError(err, "ArtPipeline find has failed")
+// 	var tv []map[string]string
+// 	if err = cur.All(context.TODO(), &tv); err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	log.Printf("%s this is tv", tv)
+// 	w.Header().Set("Content-Type", "application/json")
+// 	json.NewEncoder(w).Encode(&tv)
+// 	log.Println("Initial Song Info Complete")
+// }
+
+
+
+
+
 
 func artistPageHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{}
@@ -577,9 +613,11 @@ func main() {
 	r.HandleFunc("/Home", homeHandler)
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
 	r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
+	r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler) 
+	
+
 
 	
-	r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
 
 	r.HandleFunc("/ArtistAlpha", artistPageHandler)
 	r.HandleFunc("/AlbumAlpha", albumPageHandler)
@@ -595,7 +633,7 @@ func main() {
 	r.HandleFunc("/ImageSongsForAlbum", imageSongsForAlbumHandler)
 	r.HandleFunc("/RandomPics", randomPicsHandler)
 
-
+	// r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
 	// r.HandleFunc("/RamdomAlbumPicPlaySong", ramdomAlbumPicPlaySongHandler)
 	// r.HandleFunc("/Stats", statsHandler)
 	// r.HandleFunc("/PathArt", pathArtHandler)
