@@ -170,7 +170,7 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	collection := client.Database("maindb").Collection("maindb")
+	collection := client.Database("artistview").Collection("artistview")
 	var albuminfo ArtVIEW
 	err = collection.FindOne(context.Background(), filter).Decode(&albuminfo)
 	if err != nil { log.Fatal(err) }
