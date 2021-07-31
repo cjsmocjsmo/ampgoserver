@@ -177,7 +177,7 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	// log.Printf("%s this is album", alb)
 	// log.Printf("%s this is AlbumID", albuminfo.AlbumID)
 	log.Printf("%s this is albuminfo.albums", albuminfo.Albums)
-
+	fmt.Printf("%s this is albuminfo.albums", albuminfo.Albums)
 	// var albinfo map[string]string = make(map[string]string)
 	// albinfo["Album"] = alb
 	// albinfo["AlbumID"] = albuminfo.AlbumID
