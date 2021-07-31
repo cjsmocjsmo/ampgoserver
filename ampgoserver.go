@@ -43,7 +43,7 @@ import (
 	"context"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/globalsign/mgo"
+	// "github.com/globalsign/mgo"
 	// "github.com/globalsign/mgo/bson"
 	
 	"github.com/cjsmocjsmo/ampgosetup"
@@ -112,15 +112,15 @@ func ServerCheckError(err error, msg string) {
 	}
 }
 
-func sfdbCon() *mgo.Session {
-	s, err := mgo.Dial("mongodb://db:27017/ampgodb")
-	if err != nil {
-		log.Println("Session creation dial error")
-		log.Println(err)
-	}
-	log.Println("Session Connection to db established")
-	return s
-}
+// func sfdbCon() *mgo.Session {
+// 	s, err := mgo.Dial("mongodb://db:27017/ampgodb")
+// 	if err != nil {
+// 		log.Println("Session creation dial error")
+// 		log.Println(err)
+// 	}
+// 	log.Println("Session Connection to db established")
+// 	return s
+// }
 
 func setUpHandler(w http.ResponseWriter, r *http.Request) {
 	ampgosetup.Setup()
@@ -174,75 +174,12 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	var albuminfo ArtVIEW
 	err = collection.FindOne(context.Background(), filter).Decode(&albuminfo)
 	if err != nil { log.Fatal(err) }
-	// log.Printf("%s this is album", alb)
-	// log.Printf("%s this is AlbumID", albuminfo.AlbumID)
 	log.Printf("%s this is albuminfo.albums", albuminfo)
 	log.Printf("%s this is albuminfo.albums", albuminfo.Albums)
-	// var albinfo map[string]string = make(map[string]string)
-	// albinfo["Album"] = alb
-	// albinfo["AlbumID"] = albuminfo.AlbumID
-	// albinfo["PicPath"] = albuminfo.PicHttpAddr
-	// AmpgoInsertOne("tempdb2", "artidpic", albinfo)
-	// fmt.Println(albinfo)
-	// log.Println(albinfo)
-	// return albinfo
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// log.Println("Starting albumsForArtistHandler")
-	// var artistid string = r.URL.Query().Get("selected")
-	// log.Printf("%s this is artistid", artistid)
-	// log.Printf("%T this is artistid type", artistid)
-
-	// filter := bson.D{{"artistID", artistid}}
-	// opts := options.Find()
-	// opts.SetProjection(bson.M{"_id": 0, "albums": 1})
-	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	// defer ampgosetup.Close(client, ctx, cancel)
-	// ServerCheckError(err, "albumsForArtistHandler connection has failed")
-	// coll := client.Database("artistview").Collection("artistview")
-	// cur, err := coll.Find(context.TODO(), filter, opts)
-	// ServerCheckError(err, "albumsForArtistHandler find has failed")
-	// var albfart []ArtVIEW
-	// if err = cur.All(context.TODO(), &albfart); err != nil {
-	// 	log.Printf("albumsForArtistHandler cur.All has failed")
-	// 	log.Fatal(err)
-	// }
-	// // for _, alb := range albfart {
-	// // 	log.Println(alb)
-	// // }
-	// // log.Printf("%s this is albfart", albfart)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&albuminfo)
 	log.Println("Initial albfart Complete")
 }
-
-
-
-
-
-
-
-
 
 func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
