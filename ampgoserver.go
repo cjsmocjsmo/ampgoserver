@@ -94,8 +94,22 @@ type AlbvieW struct {
 
 var OFFSET string = os.Getenv("AMPGO_OFFSET")
 
+func RemoveLogFile(logtxtfile string) string {
+	// var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
+	_, err := os.Stat(logtxtfile)
+    if err == nil {
+        log.Printf("logfile %s exists removing", logtxtfile)
+		os.Remove(logtxtfile)
+    } else if os.IsNotExist(err) {
+        log.Printf("logfile %s does not exists", logtxtfile)
+    } else {
+        log.Printf("logfile %s stat error: %v", logtxtfile, err)
+    }
+}
+
 func StartServerLogging() string {
 	var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
+	RemoveLogFile(logtxtfile)
 	file, err := os.OpenFile(logtxtfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
@@ -389,6 +403,8 @@ func imageSongsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &sfora); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("this is sfora")
+	log.Println(sfora)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&sfora)
 }
