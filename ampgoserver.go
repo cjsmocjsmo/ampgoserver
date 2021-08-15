@@ -94,27 +94,36 @@ type AlbvieW struct {
 
 var OFFSET string = os.Getenv("AMPGO_OFFSET")
 
-func RemoveLogFile(logtxtfile string) string {
+func RemoveLogFile(logtxtfile string) bool {
 	// var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
+	var result bool
 	_, err := os.Stat(logtxtfile)
     if err == nil {
         log.Printf("logfile %s exists removing", logtxtfile)
 		os.Remove(logtxtfile)
+		result = true
     } else if os.IsNotExist(err) {
         log.Printf("logfile %s does not exists", logtxtfile)
+		result = true
     } else {
         log.Printf("logfile %s stat error: %v", logtxtfile, err)
+		result = false
     }
+	return result
 }
 
 func StartServerLogging() string {
 	var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
-	RemoveLogFile(logtxtfile)
-	file, err := os.OpenFile(logtxtfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
+	result := RemoveLogFile(logtxtfile)
+	if result {
+		file, err := os.OpenFile(logtxtfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.SetOutput(file)
+	} else {
+		fmt.Println("Unable to setup logging")
 	}
-	log.SetOutput(file)
 	return "Logging started"
 }
 
