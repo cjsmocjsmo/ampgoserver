@@ -205,7 +205,9 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("artistview").Collection("artistview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "albumsForArtistHandler has failed")
-	var tv []map[string]string
+	// var tv []map[string]string
+	var tv []
+
 	if err = cur.All(context.TODO(), &tv); err != nil {
 		log.Fatal(err)
 	}
