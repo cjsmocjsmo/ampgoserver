@@ -206,8 +206,8 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "albumsForArtistHandler has failed")
 	// var tv []map[string]string
-	
-	var tv [][]map[string]string
+
+	var tv [][]string
 
 	if err = cur.All(context.TODO(), &tv); err != nil {
 		log.Fatal(err)
