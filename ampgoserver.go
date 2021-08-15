@@ -223,6 +223,8 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%T this is artistid type", artistid)
 	filter := bson.D{{"artistID", artistid}}
 
+
+	
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
