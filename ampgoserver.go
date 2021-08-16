@@ -659,8 +659,11 @@ func main() {
 	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
+	r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
+	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
+
 	r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
-	r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler) 
+	 
 	
 
 
