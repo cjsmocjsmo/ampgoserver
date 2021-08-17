@@ -189,18 +189,46 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("%s this is artistid", artistid)
 	log.Printf("%T this is artistid type", artistid)
 	filter := bson.D{{"artistID", artistid}}
-	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
-	defer Close(client, ctx, cancel)
+
+	// filter := bson.D{{}}
+	opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "album": 1, "albumID": 1, "numsongs": 1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	collection := client.Database("artistview").Collection("artistview")
-	var albuminfo ArtVIEW
-	err = collection.FindOne(context.Background(), filter).Decode(&albuminfo)
-	if err != nil { log.Fatal(err) }
-	log.Printf("%s this is albuminfo", albuminfo)
-	log.Printf("%s this is albuminfo.albums", albuminfo.Albums)
+	coll := client.Database("albumview").Collection("albumview")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "initArtistInfo find has failed")
+	var allalbum []map[string]string
+	if err = cur.All(context.TODO(), &allartist); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s this is allalbum-", allalbum)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&albuminfo.Albums)
-	log.Println("Initial albfart Complete")
+	json.NewEncoder(w).Encode(&allalbum)
+	log.Println("Init Album Info Complete")
+
+
+
+
+	// log.Println("Starting albumsForArtistHandler")
+	// var artistid string = r.URL.Query().Get("selected")
+	// log.Printf("%s this is artistid", artistid)
+	// log.Printf("%T this is artistid type", artistid)
+	// filter := bson.D{{"artistID", artistid}}
+	// client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	// defer Close(client, ctx, cancel)
+	// ServerCheckError(err, "MongoDB connection has failed")
+	// collection := client.Database("artistview").Collection("artistview")
+	// var albuminfo ArtVIEW
+	// err = collection.FindOne(context.Background(), filter).Decode(&albuminfo)
+	// if err != nil { log.Fatal(err) }
+	// log.Printf("%s this is albuminfo", albuminfo)
+	// log.Printf("%s this is albuminfo.albums", albuminfo.Albums)
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode(&albuminfo.Albums)
+	// log.Println("Initial albfart Complete")
 }
 
 func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
