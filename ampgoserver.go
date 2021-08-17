@@ -201,7 +201,7 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "initArtistInfo find has failed")
 	var allalbum []map[string]string
-	if err = cur.All(context.TODO(), &allartist); err != nil {
+	if err = cur.All(context.TODO(), &allalbum); err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("%s this is allalbum-", allalbum)
