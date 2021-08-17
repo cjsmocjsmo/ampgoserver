@@ -193,7 +193,8 @@ func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	// filter := bson.D{{}}
 	opts := options.Find()
 	// opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "album": 1, "albumID": 1, "numsongs": 1})
+	// opts.SetProjection(bson.M{"_id": 0, "album": 1, "albumID": 1, "numsongs": 1})
+	opts.SetProjection(bson.M{"_id": 0, "songs": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
