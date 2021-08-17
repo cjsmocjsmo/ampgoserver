@@ -165,11 +165,11 @@ func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
 	opts := options.Find()
 	// opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "artistID":1})
+	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "artistID":, "albcount":1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("tempdb2").Collection("artistid")
+	coll := client.Database("artistview").Collection("artistview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "initArtistInfo find has failed")
 	var allartist []map[string]string
