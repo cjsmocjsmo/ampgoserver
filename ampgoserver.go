@@ -684,8 +684,8 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
-	s := r.PathPrefix("/static").Subrouter()
-	t := r.PathPrefix("/music").Subrouter()
+	// s := r.PathPrefix("/static").Subrouter()
+	// t := r.PathPrefix("/fsData").Subrouter()
 	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
@@ -732,8 +732,8 @@ func main() {
 	// r.HandleFunc("/DeletePlaylistFromDB", deletePlaylistFromDBHandler)
 	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
 
-	t.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/fsData/"))))
-	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
+	// t.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/fsData/"))))
+	// s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/static/"))))
 	http.ListenAndServe(":9090", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), 
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), 
