@@ -732,7 +732,7 @@ func main() {
 	// r.HandleFunc("/DeletePlaylistFromDB", deletePlaylistFromDBHandler)
 	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
 
-	t.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/music/"))))
+	t.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/fsData/"))))
 	s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
 	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/static/"))))
 	http.ListenAndServe(":9090", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), 
