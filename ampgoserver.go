@@ -684,8 +684,6 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
-	// s := r.PathPrefix("/static").Subrouter()
-	// t := r.PathPrefix("/fsData").Subrouter()
 	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
@@ -731,8 +729,6 @@ func main() {
 	// r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
 	// r.HandleFunc("/DeletePlaylistFromDB", deletePlaylistFromDBHandler)
 	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
-
-	// t.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/fsData/"))))
 
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("/root/static/"))))
