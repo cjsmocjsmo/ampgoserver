@@ -736,6 +736,7 @@ func main() {
 
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("/root/static/"))))
+	r.PathPrefix("/fsData/").Handler(http.StripPrefix("/fsData/", http.FileServer(http.Dir("/root/fsData/"))))
 
 	// s.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir(""))))
 	// r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("/static/"))))
