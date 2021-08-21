@@ -709,6 +709,8 @@ type AmpgoRandomPlaylistData struct {
 func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plname := r.URL.Query().Get("name")
 	plc := r.URL.Query().Get("songcount")
+	log.Printf("planame: %s", plname)
+	log.Printf("plc: %s", plc)
 	plcount, _ := strconv.Atoi(plc)
 	plID, _ := UUID()
 
@@ -729,8 +731,8 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("indexcount: %s", indexcount)
 	log.Printf("indexcount type %T ", indexcount)
 
-	log.Printf("indexcount type %T ", plcount)
-	log.Printf("indexcount type %s ", plcount)
+	log.Printf("plcount type %T ", plcount)
+	log.Printf("plcount type %v ", plcount)
 
 	var min int = 1
 	maxx := indexcount
@@ -744,7 +746,7 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(25 * time.Millisecond)
 		rand_num = append(rand_num, random1)
 	}
-	log.Printf("rand_num: %s", rand_num)
+	log.Printf("rand_num: %v", rand_num)
 
 	var randsongs []map[string]string
 	for _, f := range rand_num {
