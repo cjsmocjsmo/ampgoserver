@@ -261,6 +261,10 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("songsForAlbumHandler Complete")
 }
 
+
+
+
+
 func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	// ServerCheckError(err, "convert to int64 has failed")
@@ -651,13 +655,39 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(apsf)
 // }
 
-// func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
-// 	plname := r.URL.Query().Get("playlistname")
-// 	plcount := r.URL.Query().Get("playlistcount")
-// 	rpl := ampgolib.AddRandomPlaylist(plname, plcount)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(rpl)
-// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+	plname := r.URL.Query().Get("playlistname")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(plname)
+}
+
+func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+	plname := r.URL.Query().Get("name")
+	plcount := r.URL.Query().Get("songcount")
+
+
+
+	// rpl := ampgolib.AddRandomPlaylist(plname, plcount)
+	rpl := []string{plname, plcount}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(rpl)
+}
 
 // func deletePlaylistFromDBHandler(w http.ResponseWriter, r *http.Request) {
 // 	plid := r.URL.Query().Get("playlistid")
@@ -689,6 +719,20 @@ func main() {
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
 	r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
+
+	////////////////////////////////////////////////////////////////
+
+	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
+
+	r.HandleFunc("/CreateRandomPlaylist", createRandomPlaylistHandler)
+
+	// r.HandleFunc("/DeletPlaylist", deletePlaylistHandler)
+	// r.HandleFunc("/EditPlaylist", editPlaylistHandler)
+	// r.HandleFunc("/AddSongToPlaylist", addSongToPlaylistHandler)
+	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
+
+	
+	/////////////////////////////////////////////////////
 
 	r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
 	 
