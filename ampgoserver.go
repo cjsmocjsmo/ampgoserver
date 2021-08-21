@@ -726,8 +726,11 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	var indexcount int = len(indexlist) - 1
-	log.Println(indexcount)
-	log.Printf("%T indexcount", indexcount)
+	log.Printf("indexcount: %s", indexcount)
+	log.Printf("indexcount type %T ", indexcount)
+
+	log.Printf("indexcount type %T ", plcount)
+	log.Printf("indexcount type %s ", plcount)
 
 	var min int = 1
 	maxx := indexcount
@@ -741,7 +744,7 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(25 * time.Millisecond)
 		rand_num = append(rand_num, random1)
 	}
-	log.Println(rand_num)
+	log.Printf("rand_num: %s", rand_num)
 
 	var randsongs []map[string]string
 	for _, f := range rand_num {
@@ -755,10 +758,14 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil { log.Fatal(err) }
 		randsongs = append(randsongs, rpics)
 	}
+	log.Println(randsongs)
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
 	plz.PlayListID = plID
 	plz.PlayList = randsongs
+
+	log.Println("This is plz")
+	log.Println(plz)
 	
 	
 	
