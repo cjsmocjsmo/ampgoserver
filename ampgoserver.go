@@ -707,6 +707,7 @@ type AmpgoRandomPlaylistData struct {
 }
 
 func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL.Query())
 	plname := r.URL.Query().Get("name")
 	plc := r.URL.Query().Get("songcount")
 	log.Printf("planame: %s", plname)
