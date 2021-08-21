@@ -710,7 +710,6 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plname := r.URL.Query().Get("name")
 	plc := r.URL.Query().Get("songcount")
 	plcount, _ := strconv.Atoi(plc)
-
 	plID, _ := UUID()
 
 	filter := bson.D{{}}
@@ -722,7 +721,7 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("maindb").Collection("maindb")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "allIdx has failed")
-	var indexlist []string
+	var indexlist []map[string]string
 	if err = cur.All(context.TODO(), &indexlist); err != nil {
 		log.Fatal(err)
 	}
