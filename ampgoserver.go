@@ -700,8 +700,25 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plname := r.URL.Query().Get("playlistname")
+	plID, _ := UUID()
+
+	var emptymap []map[string]string
+	var plzz AmpgoRandomPlaylistData
+	plzz.PlayListName = plname
+	plzz.PlayListID = plID
+	plzz.PlayList = emptymap
+
+	log.Println("This is plzz")
+	log.Println(plzz)
+	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
+	ServerCheckError(err3, "Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plzz)
+	ServerCheckError(err2, "plz insertion has failed")
+
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(plname)
+	json.NewEncoder(w).Encode(plzz)
 }
 
 type AmpgoRandomPlaylistData struct {
@@ -719,15 +736,12 @@ func Shuffle(slice []int) {
  }
 
 func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
-	log.Println(r.URL.Query())
 	plname := r.URL.Query().Get("name")
 	plc := r.URL.Query().Get("songcount")
 	log.Printf("planame: %s", plname)
 	log.Printf("plc: %s", plc)
 	plcount, _ := strconv.Atoi(plc)
 	plID, _ := UUID()
-
 	filter := bson.D{{}}
 	opts := options.Find()
 	opts.SetProjection(bson.M{"_id": 0, "idx": 1})
@@ -741,78 +755,41 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &indexlist); err != nil {
 		log.Fatal(err)
 	}
-
 	var num_list []int
 	for _, idx := range indexlist {
 		index := idx["idx"]
 		index1, _ := strconv.Atoi(index)
 		num_list = append(num_list, index1)
 	}
-
 	Shuffle(num_list)
-
-
-
-
-
-	// var indexcount int = len(indexlist) - 1
-	// log.Printf("indexcount: %v", indexcount)
-	// log.Printf("indexcount type %T ", indexcount)
-
-	// log.Printf("plcount type %T ", plcount)
-	// log.Printf("plcount type %v ", plcount)
-
-	// var min int = 1
-	// maxx := indexcount
-	// max := int(maxx)
-
-	// var rand_num []string
-	// for i := 0; i < plcount; i++ {
-	// 	rand.Seed(time.Now().UnixNano())
-	// 	random11 := rand.Intn(max - min) + min
-	// 	random1 := strconv.Itoa(random11)
-	// 	time.Sleep(25 * time.Millisecond)
-	// 	rand_num = append(rand_num, random1)
-	// }
-	// log.Printf("rand_num: %v", rand_num)
-
 	var randsongs []map[string]string
 	for _, f := range num_list {
 		ff := strconv.Itoa(f)
 		log.Printf("this is f: %s", f)
-
 		filter := bson.D{{"idx", ff}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-
 		defer ampgosetup.Close(client, ctx, cancel)
 		ampgosetup.CheckError(err, "MongoDB connection has failed")
 		collection := client.Database("maindb").Collection("maindb")
 		var rpics map[string]string
 		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
-		// if err != nil { log.Fatal(err)}
 		if err != nil { log.Fatal(err) }
 		log.Printf("rpics: %v", rpics)
 
 		randsongs = append(randsongs, rpics)
 	}
-
-
 	log.Println(randsongs)
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
 	plz.PlayListID = plID
 	plz.PlayList = randsongs[:plcount]
-
 	log.Println("This is plz")
 	log.Println(plz)
-	
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
 	ServerCheckError(err3, "Connections has failed")
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plz)
 	ServerCheckError(err2, "plz insertion has failed")
-
-	
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(plz)
 }
