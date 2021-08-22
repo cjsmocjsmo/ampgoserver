@@ -752,15 +752,19 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 	var randsongs []map[string]string
 	for _, f := range rand_num {
+		log.Printf("this is f: %s", f)
+
 		filter := bson.D{{"idx", f}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-		
+
 		defer ampgosetup.Close(client, ctx, cancel)
 		ampgosetup.CheckError(err, "MongoDB connection has failed")
 		collection := client.Database("maindb").Collection("maindb")
 		var rpics map[string]string
 		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
 		if err != nil { log.Fatal(err) }
+		log.Printf("rpics: %v", rpics)
+
 		randsongs = append(randsongs, rpics)
 	}
 	log.Println(randsongs)
