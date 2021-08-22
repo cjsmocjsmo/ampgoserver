@@ -564,6 +564,10 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		// }
 		randpics = append(randpics, rpics)
 	}
+
+
+	
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(randpics)
 }
@@ -802,7 +806,12 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("This is plz")
 	log.Println(plz)
 	
-	
+	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
+	ServerCheckError(err3, "Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plz)
+	ServerCheckError(err2, "plz insertion has failed")
+
 	
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(plz)
