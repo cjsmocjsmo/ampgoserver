@@ -730,7 +730,7 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	var indexcount int = len(indexlist) - 1
-	log.Printf("indexcount: %s", indexcount)
+	log.Printf("indexcount: %v", indexcount)
 	log.Printf("indexcount type %T ", indexcount)
 
 	log.Printf("plcount type %T ", plcount)
@@ -752,8 +752,9 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 	var randsongs []map[string]string
 	for _, f := range rand_num {
-		filter := bson.D{{"index", f}}
+		filter := bson.D{{"idx", f}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+		
 		defer ampgosetup.Close(client, ctx, cancel)
 		ampgosetup.CheckError(err, "MongoDB connection has failed")
 		collection := client.Database("maindb").Collection("maindb")
