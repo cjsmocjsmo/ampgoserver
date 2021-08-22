@@ -464,7 +464,6 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 // }
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
-
 	filter := bson.D{{}}
 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	ServerCheckError(err, "string conversion has failed")
@@ -506,7 +505,19 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println(five_rand_num)
 
-	var randpics []map[string]string
+	// var randpics []map[string]string
+	// for _, f := range five_rand_num {
+	// 	filter := bson.D{{"index", f}}
+	// 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	// 	defer ampgosetup.Close(client, ctx, cancel)
+	// 	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	// 	collection := client.Database("coverart").Collection("coverart")
+	// 	var rpics map[string]string = make(map[string]string)
+	// 	err = collection.FindOne(context.Background(), filter).Decode(&rpics)
+	// 	if err != nil { log.Fatal(err) }
+	// 	randpics = append(randpics, rpics)
+	// }
+	var randpics []string
 	for _, f := range five_rand_num {
 		filter := bson.D{{"index", f}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
@@ -516,34 +527,8 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		var rpics map[string]string = make(map[string]string)
 		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
 		if err != nil { log.Fatal(err) }
-		
-
-
-		// log.Printf("%s This is frn", f)
-		// log.Printf("%T frn type", f)
-		// filter := bson.D{{"index", f}}
-		// // limit, err := strconv.ParseInt(OFFSET, 10, 64)
-		// ServerCheckError(err, "Int conversion has failed")
-		// opts := options.Find()
-		// // opts.SetLimit(int64(limit))
-		// opts.SetProjection(bson.M{})
-		// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-		// defer ampgosetup.Close(client, ctx, cancel)
-		// ServerCheckError(err, "MongoDB connection has failed")
-		// coll := client.Database("coverart").Collection("coverart")
-		// cur, err := coll.Find(context.TODO(), filter, opts)
-		// ServerCheckError(err, "randomPicsHandler find has failed")
-		// var rpics []map[string]string
-		// if err = cur.All(context.TODO(), &rpics); err != nil {
-		// 	log.Printf("rpics has failed this is err: \n %s", f)
-		// 	log.Fatal(err)
-		// }
-		randpics = append(randpics, rpics)
+		randpics = append(randpics, rpics["imagehttpaddr"])
 	}
-
-
-	
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(randpics)
 }
@@ -774,13 +759,16 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
+
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
 	r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
+
 	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
 	r.HandleFunc("/CreateRandomPlaylist", createRandomPlaylistHandler)
 	r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
 	
+	r.HandleFunc("/RandomPics", randomPicsHandler)
 	////////////////////////////////////////////////////////////////
 
 	
@@ -815,7 +803,7 @@ func main() {
 	// r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 
 
-	r.HandleFunc("/RandomPics", randomPicsHandler)
+	
 
 	// r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
 	// r.HandleFunc("/RamdomAlbumPicPlaySong", ramdomAlbumPicPlaySongHandler)
