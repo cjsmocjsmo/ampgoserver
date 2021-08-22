@@ -706,6 +706,14 @@ type AmpgoRandomPlaylistData struct {
 	PlayList []map[string]string `bson:"playlist"`
 }
 
+func Shuffle(slice []int) {
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	for n := len(slice); n > 0; n-- {
+	   randIndex := r.Intn(n)
+	   slice[n-1], slice[randIndex] = slice[randIndex], slice[n-1]
+	}
+ }
+
 func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
 	log.Println(r.URL.Query())
@@ -729,32 +737,47 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &indexlist); err != nil {
 		log.Fatal(err)
 	}
-	var indexcount int = len(indexlist) - 1
-	log.Printf("indexcount: %v", indexcount)
-	log.Printf("indexcount type %T ", indexcount)
 
-	log.Printf("plcount type %T ", plcount)
-	log.Printf("plcount type %v ", plcount)
-
-	var min int = 1
-	maxx := indexcount
-	max := int(maxx)
-
-	var rand_num []string
-	for i := 0; i < plcount; i++ {
-		rand.Seed(time.Now().UnixNano())
-		random11 := rand.Intn(max - min) + min
-		random1 := strconv.Itoa(random11)
-		time.Sleep(25 * time.Millisecond)
-		rand_num = append(rand_num, random1)
+	var num_list []int
+	for _, idx := range indexlist {
+		index := idx["idx"]
+		index1, _ := strconv.Atoi(index)
+		num_list = append(num_list, index1)
 	}
-	log.Printf("rand_num: %v", rand_num)
+
+	Shuffle(num_list)
+
+
+
+
+
+	// var indexcount int = len(indexlist) - 1
+	// log.Printf("indexcount: %v", indexcount)
+	// log.Printf("indexcount type %T ", indexcount)
+
+	// log.Printf("plcount type %T ", plcount)
+	// log.Printf("plcount type %v ", plcount)
+
+	// var min int = 1
+	// maxx := indexcount
+	// max := int(maxx)
+
+	// var rand_num []string
+	// for i := 0; i < plcount; i++ {
+	// 	rand.Seed(time.Now().UnixNano())
+	// 	random11 := rand.Intn(max - min) + min
+	// 	random1 := strconv.Itoa(random11)
+	// 	time.Sleep(25 * time.Millisecond)
+	// 	rand_num = append(rand_num, random1)
+	// }
+	// log.Printf("rand_num: %v", rand_num)
 
 	var randsongs []map[string]string
-	for _, f := range rand_num {
+	for _, f := range num_list {
+		ff := strconv.Itoa(f)
 		log.Printf("this is f: %s", f)
 
-		filter := bson.D{{"idx", f}}
+		filter := bson.D{{"idx", ff}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 
 		defer ampgosetup.Close(client, ctx, cancel)
@@ -762,16 +785,19 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("maindb").Collection("maindb")
 		var rpics map[string]string
 		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
+		// if err != nil { log.Fatal(err)}
 		if err != nil { log.Fatal(err) }
 		log.Printf("rpics: %v", rpics)
 
 		randsongs = append(randsongs, rpics)
 	}
+
+
 	log.Println(randsongs)
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
 	plz.PlayListID = plID
-	plz.PlayList = randsongs
+	plz.PlayList = randsongs[:plcount]
 
 	log.Println("This is plz")
 	log.Println(plz)
