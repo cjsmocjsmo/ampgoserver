@@ -604,17 +604,6 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(artS)
 // }
 
-// func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-// 	plc := ampgolib.PlaylistCheck()
-// 	if plc != 1 {
-// 		json.NewEncoder(w).Encode("Please create a playlist")
-// 	} else {
-// 		allpls := ampgolib.AllPlayLists()
-// 		json.NewEncoder(w).Encode(allpls)
-// 	}
-// }
-
 // func addPlayListNameToDBHandler(w http.ResponseWriter, r *http.Request) {
 // 	qu := r.URL.Query().Get("playlistname")
 // 	aplntdb := ampgolib.AddPlayListNameToDB(qu)
@@ -687,7 +676,7 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plzz)
 	ServerCheckError(err2, "plz insertion has failed")
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Playlist Created")
+	json.NewEncoder(w).Encode(&plzz)
 }
 
 func Shuffle(slice []int) {
@@ -790,10 +779,11 @@ func main() {
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
 	r.HandleFunc("/CreateRandomPlaylist", createRandomPlaylistHandler)
+	r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
 	
 	////////////////////////////////////////////////////////////////
 
-	r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
+	
 
 	// r.HandleFunc("/DeletPlaylist", deletePlaylistHandler)
 	// r.HandleFunc("/EditPlaylist", editPlaylistHandler)
@@ -825,7 +815,7 @@ func main() {
 	// r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 
 
-	// r.HandleFunc("/RandomPics", randomPicsHandler)
+	r.HandleFunc("/RandomPics", randomPicsHandler)
 
 	// r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
 	// r.HandleFunc("/RamdomAlbumPicPlaySong", ramdomAlbumPicPlaySongHandler)
