@@ -522,7 +522,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(num_list)
 	var randpics []string
 	for _, f := range num_list {
-		filter := bson.D{{"index", f}}
+		filter := bson.D{{"idx", f}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
 		ampgosetup.CheckError(err, "MongoDB connection has failed")
