@@ -496,7 +496,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	max := int(maxx)
 
 	var five_rand_num []string
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 12; i++ {
 		rand.Seed(time.Now().UnixNano())
 		random11 := rand.Intn(max - min) + min
 		random1 := strconv.Itoa(random11)
