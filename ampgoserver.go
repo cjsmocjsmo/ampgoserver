@@ -465,10 +465,7 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
-	// limit, err := strconv.ParseInt(OFFSET, 12, 64)
-	// ServerCheckError(err, "string conversion has failed")
 	opts := options.Find()
-	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "index": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -480,31 +477,6 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &indexliststring); err != nil {
 		log.Fatal(err)
 	}
-	// var indexlistint []int 
-	// for _, idx := range indexliststring {
-	// 	idxint, err := strconv.Atoi(idx["idx"])
-	// 	ServerCheckError(err, "ParseInt has failed")
-	// 	indexlistint = append(indexlistint, idxint)
-	// }
-	// log.Println(indexlistint)
-	// var albumcount int = len(indexlistint) - 1
-	// log.Println(albumcount)
-	// log.Printf("%T albumcount", albumcount)
-
-	// var min int = 1
-	// maxx := albumcount
-	// max := int(maxx)
-
-	// var five_rand_num []string
-	// for i := 0; i < 12; i++ {
-	// 	rand.Seed(time.Now().UnixNano())
-	// 	random11 := rand.Intn(max - min) + min
-	// 	random1 := strconv.Itoa(random11)
-	// 	time.Sleep(50 * time.Millisecond)
-	// 	five_rand_num = append(five_rand_num, random1)
-	// }
-
-
 	var num_list []int
 	for _, idx := range indexliststring {
 		indexx := idx["index"]
@@ -512,13 +484,6 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		num_list = append(num_list, index1)
 	}
 	Shuffle(num_list)
-
-
-
-
-
-
-
 	log.Println(num_list)
 	var randpics []string
 	for _, f := range num_list[:12] {
@@ -757,6 +722,14 @@ func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&allplaylists)
 }
 
+// func setCurrentPlaylist(w http.ResponseWriter, r *http.Request) {
+
+// }
+
+// func getCurrentPlaylist(w http.ResponseWriter, r *http.Request) {
+
+// }
+
 func init() {
 	ampgosetup.SetUpCheck()
 	var logging_status string = StartServerLogging()
@@ -779,6 +752,8 @@ func main() {
 	r.HandleFunc("/RandomPics", randomPicsHandler)
 	////////////////////////////////////////////////////////////////
 
+	// r.HandleFunc("/SetCurrentPlaylist", setCurrentPlaylistHandler) 
+	// r.HandleFunc("/GetCurrentPlaylist", getCurrentPlaylistHandler) 
 	
 
 	// r.HandleFunc("/DeletPlaylist", deletePlaylistHandler)

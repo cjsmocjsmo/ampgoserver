@@ -21,11 +21,9 @@ RUN \
   mkdir ./data && \
   mkdir ./data/db && \
   mkdir ./static && \
-  mkdir ./assets && \
-  chmod -R +rwx ./static && \
-  chmod -R +rwx ./assets
+  chmod -R +rwx ./static
 
-COPY assets/p1thumb.jpg ./assets/
+COPY assets/p1thumb.jpg ./static/
 
 RUN \
   mkdir ./fsData && \

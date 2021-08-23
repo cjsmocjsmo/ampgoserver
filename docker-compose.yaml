@@ -28,7 +28,7 @@ services:
       - AMPGO_TEMP_DIRPATH=/root/fsData/tmp
       - AMPGO_NUM_RAND_PICS=25
       - AMPGO_MEDIA_PATH=/root/fsData
-      - AMPGO_NO_ART_PIC_PATH=/root/assets/p1thumb.jpg
+      - AMPGO_NO_ART_PIC_PATH=/root/static/p1thumb.jpg
       - AMPGO_THUMB_PATH=/root/static/
       - AMPGO_TEMPLATE_ADDRESS=./static/templates/
       - AMPGO_SERVER_PORT=9090
