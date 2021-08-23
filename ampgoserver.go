@@ -465,15 +465,15 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
-	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	// ServerCheckError(err, "string conversion has failed")
+	limit, err := strconv.ParseInt(OFFSET, 12, 64)
+	ServerCheckError(err, "string conversion has failed")
 	opts := options.Find()
-	// opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "idx": 1})
+	opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "index": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("albumview").Collection("albumview")
+	coll := client.Database("coverart").Collection("coverart")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "imageSongsForAlbumHandler has failed")
 	var indexliststring []map[string]string
