@@ -527,12 +527,12 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		ff := strconv.Itoa(f)
 		log.Printf("ff type %T", ff)
 		log.Printf("ff type %s", ff)
-		filter := bson.D{{"idx", ff}}
+		filter := bson.D{{"index", ff}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
 		ampgosetup.CheckError(err, "MongoDB connection has failed")
 		collection := client.Database("coverart").Collection("coverart")
-		var rpics map[string]string = make(map[string]string)
+		var rpics map[string]string
 		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
 		if err != nil { log.Fatal(err) }
 		randpics = append(randpics, rpics["imagehttpaddr"])
