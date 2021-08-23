@@ -465,10 +465,10 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
-	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ServerCheckError(err, "string conversion has failed")
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "string conversion has failed")
 	opts := options.Find()
-	opts.SetLimit(int64(limit))
+	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "idx": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -525,6 +525,8 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("f type: %T", f)
 		log.Printf("f: %s", f)
 		ff := strconv.Itoa(f)
+		log.Printf("ff type %T", ff)
+		log.Printf("ff type %s", ff)
 		filter := bson.D{{"idx", ff}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
