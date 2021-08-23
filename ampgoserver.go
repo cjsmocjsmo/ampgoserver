@@ -521,7 +521,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(num_list)
 	var randpics []string
-	for _, f := range num_list {
+	for _, f := range num_list[:12] {
 		log.Printf("f type: %T", f)
 		log.Printf("f: %s", f)
 		ff := strconv.Itoa(f)
