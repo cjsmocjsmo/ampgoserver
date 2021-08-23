@@ -465,10 +465,10 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
-	limit, err := strconv.ParseInt(OFFSET, 12, 64)
-	ServerCheckError(err, "string conversion has failed")
+	// limit, err := strconv.ParseInt(OFFSET, 12, 64)
+	// ServerCheckError(err, "string conversion has failed")
 	opts := options.Find()
-	opts.SetLimit(int64(limit))
+	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "index": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -507,8 +507,8 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var num_list []int
 	for _, idx := range indexliststring {
-		index := idx["idx"]
-		index1, _ := strconv.Atoi(index)
+		indexx := idx["index"]
+		index1, _ := strconv.Atoi(indexx)
 		num_list = append(num_list, index1)
 	}
 	Shuffle(num_list)
