@@ -220,7 +220,7 @@ func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 	log.Println(allartist)
-	log.Printf("%T this is alrtist type", allartist)
+	log.Printf("%T this is allartist type", allartist)
 	log.Printf("%s this is allartist-", allartist)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&allartist)
