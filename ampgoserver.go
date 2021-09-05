@@ -206,7 +206,7 @@ func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	// ServerCheckError(err, "convert to int64 has failed")
 	// filter := bson.D{{}}
-	opts := options.Find()
+	// opts := options.Find()
 	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "albums": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
