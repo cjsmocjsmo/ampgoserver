@@ -273,28 +273,28 @@ func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-// func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
-// 	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-// 	ServerCheckError(err, "convert to int64 has failed")
-// 	filter := bson.D{{}}
-// 	opts := options.Find()
-// 	opts.SetLimit(int64(limit))
-// 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
-// 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-// 	defer ampgosetup.Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("maindb").Collection("maindb")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "ArtPipeline find has failed")
-// 	var tv []map[string]string
-// 	if err = cur.All(context.TODO(), &tv); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Printf("%s this is tv", tv)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&tv)
-// 	log.Println("Initial Song Info Complete")
-// }
+func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
+	limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	ServerCheckError(err, "convert to int64 has failed")
+	filter := bson.D{{}}
+	opts := options.Find()
+	opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "ArtPipeline find has failed")
+	var tv []map[string]string
+	if err = cur.All(context.TODO(), &tv); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s this is tv", tv)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&tv)
+	log.Println("Initial Song Info Complete")
+}
 
 
 
@@ -765,7 +765,7 @@ func main() {
 	/////////////////////////////////////////////////////
 
 	r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
-	 
+	r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
 	
 
 
@@ -788,7 +788,7 @@ func main() {
 
 	
 
-	// r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
+	
 	// r.HandleFunc("/RamdomAlbumPicPlaySong", ramdomAlbumPicPlaySongHandler)
 	// r.HandleFunc("/Stats", statsHandler)
 	// r.HandleFunc("/PathArt", pathArtHandler)
