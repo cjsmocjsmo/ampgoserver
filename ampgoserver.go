@@ -219,11 +219,14 @@ func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &allartist); err != nil {
 		log.Fatal(err)
 	}
+	for _, a := range allartist {
+		log.Println(a)
+	}
 	log.Println(allartist)
 	log.Printf("%T this is allartist type", allartist)
 	log.Printf("%s this is allartist-", allartist)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&allartist)
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode(&allartist)
 	log.Println("Init Artist Info Complete")
 
 }
