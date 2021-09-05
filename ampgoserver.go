@@ -217,7 +217,7 @@ func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
 	var artistid string = r.URL.Query().Get("selected")
 	log.Printf("%s this is artistid", artistid)
 	log.Printf("%T this is artistid type", artistid)
-	allalbums := ArtViewFindOne("artistview", "artistview", "artistID", "artistID")
+	allalbums := ArtViewFindOne("artistview", "artistview", "artistID", artistid)
 	// filter := bson.D{{"artistID", artistid}}
 	// opts := options.Find()
 	// opts.SetProjection(bson.M{"_id": 0, "songs": 0})
