@@ -249,28 +249,28 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-// func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
-// 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
-// 	// ServerCheckError(err, "convert to int64 has failed")
-// 	filter := bson.D{{}}
-// 	opts := options.Find()
-// 	// opts.SetLimit(int64(limit))
-// 	opts.SetProjection(bson.M{"_id": 0, "Album": 1, "AlbumID": 1, "PicPath": 1}) //must be uppercase did not use a struct
-// 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-// 	defer ampgosetup.Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("tempdb2").Collection("artidpic")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "initAlbumInfo find has failed")
-// 	var allalbums []map[string]string
-// 	if err = cur.All(context.TODO(), &allalbums); err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Printf("%s this is allalbums", allalbums)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&allalbums)
-// 	log.Println("Init albumsInfo Complete")
-// }
+func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
+	filter := bson.D{{}}
+	opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "Album": 1, "AlbumID": 1, "PicPath": 1}) //must be uppercase did not use a struct
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("tempdb2").Collection("artidpic")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "initAlbumInfo find has failed")
+	var allalbums []map[string]string
+	if err = cur.All(context.TODO(), &allalbums); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s this is allalbums", allalbums)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allalbums)
+	log.Println("Init albumsInfo Complete")
+}
 
 
 // func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -764,7 +764,7 @@ func main() {
 	
 	/////////////////////////////////////////////////////
 
-	// r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
+	r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
 	 
 	
 
