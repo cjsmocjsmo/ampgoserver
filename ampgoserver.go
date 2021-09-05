@@ -215,20 +215,19 @@ func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("artistview").Collection("artistview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "initArtistInfo find has failed")
-	var allartist [][]map[string]string
+	var allartist ArtVIEW
 	if err = cur.All(context.TODO(), &allartist); err != nil {
 		log.Fatal(err)
 	}
-	for _, a := range allartist {
+	for _, a := range allartist.Albums {
 		log.Println(a)
 	}
-	log.Println(allartist)
-	log.Printf("%T this is allartist type", allartist)
-	log.Printf("%s this is allartist-", allartist)
-	// w.Header().Set("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(&allartist)
+	log.Println(&allartist.Albums)
+	log.Printf("%T this is allartist type", &allartist.Albums)
+	log.Printf("%s this is allartist-", &allartist.Albums)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allartist.Albums)
 	log.Println("Init Artist Info Complete")
-
 }
 
 
