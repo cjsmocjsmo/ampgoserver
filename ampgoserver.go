@@ -208,41 +208,12 @@ func ArtViewFindOne(db string, coll string, filtertype string, filterstring stri
 	return results
 }
 
-
-
-
 func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
-	
 	log.Println("Starting albumsForArtistHandler")
 	var artistid string = r.URL.Query().Get("selected")
 	log.Printf("%s this is artistid", artistid)
 	log.Printf("%T this is artistid type", artistid)
 	allalbums := ArtViewFindOne("artistview", "artistview", "artistID", artistid)
-	// filter := bson.D{{"artistID", artistid}}
-	// opts := options.Find()
-	// opts.SetProjection(bson.M{"_id": 0, "songs": 0})
-	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	// ServerCheckError(err, "convert to int64 has failed")
-	// filter := bson.D{{}}
-	// opts := options.Find()
-	// opts.SetLimit(int64(limit))
-	// opts.SetProjection(bson.M{"_id": 0, "albums": 1})
-	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	// defer ampgosetup.Close(client, ctx, cancel)
-	// ServerCheckError(err, "MongoDB connection has failed")
-	// coll := client.Database("artistview").Collection("artistview")
-	// cur, err := coll.Find(context.TODO(), filter, opts)
-	// ServerCheckError(err, "initArtistInfo find has failed")
-	// var allartist ArtVIEW
-	// if err = cur.All(context.TODO(), &allartist); err != nil {
-	// 	log.Fatal(err)
-	// }
-	for _, a := range allalbums.Albums {
-		log.Println(a)
-	}
-	log.Println(&allalbums.Albums)
-	log.Printf("%T this is allartist type", &allalbums.Albums)
-	log.Printf("%s this is allartist-", &allalbums.Albums)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&allalbums.Albums)
 	log.Println("Init Artist Info Complete")
@@ -334,7 +305,7 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
 	opts := options.Find()
 	opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1})
+	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1, "httpaddr": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
