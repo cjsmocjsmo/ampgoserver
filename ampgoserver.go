@@ -201,7 +201,7 @@ func initArtistInfo2Handler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
 	opts := options.Find()
 	// opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "artistID": 1, "albcount": 1})
+	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
