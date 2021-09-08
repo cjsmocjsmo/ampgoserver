@@ -795,7 +795,6 @@ func main() {
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
 	r.HandleFunc("/InitArtistInfo2", initArtistInfo2Handler)
 
-	initArtistInfo2Handler
 	// r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
 	r.HandleFunc("/AlbumsForArtist2", albumsForArtist2Handler)
 
