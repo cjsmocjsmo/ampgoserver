@@ -195,6 +195,31 @@ func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func initArtistInfo2Handler(w http.ResponseWriter, r *http.Request) {
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
+	filter := bson.D{{}}
+	opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "artistID": 1, "albcount": 1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("artistview").Collection("artistview")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "initArtistInfo find has failed")
+	var allartist []ArtVIEW
+	if err = cur.All(context.TODO(), &allartist); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s this is allartist-", allartist)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allartist)
+	log.Println("Init Artist Info Complete")
+
+}
+
+
 
 func ArtViewFindOne(db string, coll string, filtertype string, filterstring string) ArtVIEW {
 	filter := bson.M{filtertype: filterstring}
@@ -768,6 +793,9 @@ func main() {
 	r.HandleFunc("/Home", homeHandler)
 
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
+	r.HandleFunc("/InitArtistInfo2", initArtistInfo2Handler)
+
+	initArtistInfo2Handler
 	// r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
 	r.HandleFunc("/AlbumsForArtist2", albumsForArtist2Handler)
 
