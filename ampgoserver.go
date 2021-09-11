@@ -80,17 +80,17 @@ type ArtVIEW struct {
 	Idx      string              `bson:"idx"`
 }
 
-//Albview exported
-type AlbvieW struct {
-	Artist   string              `bson:"artist"`
-	ArtistID string              `bson:"artistID"`
-	Album    string              `bson:"album"`
-	AlbumID  string              `bson:"albumID"`
-	Songs    []map[string]string `bson:"songs"`
-	Page     string              `bson:"page"`
-	NumSongs string              `bson:"numsongs"`
-	PicPath  string              `bson:"picPath"`
-	Idx      string              `bson:"idx"`
+type AlbVieW2 struct {
+	Artist      string              `bson:"artist"`
+	ArtistID    string              `bson:"artistID"`
+	Album       string              `bson:"album"`
+	AlbumID     string              `bson:"albumID"`
+	Songs       []map[string]string `bson:"songs"`
+	AlbumPage   string              `bson:"albumpage"`
+	NumSongs    string              `bson:"numsongs"`
+	PicPath     string              `bson:"picPath"`
+	Idx         string              `bson:"idx"`
+	PicHttpAddr string              `bson:"picHttpAddr"`
 }
 
 type AmpgoRandomPlaylistData struct {
@@ -317,6 +317,7 @@ func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &allalbums); err != nil {
 		log.Fatal(err)
 	}
+
 	log.Printf("%s this is allalbums", allalbums)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&allalbums)
