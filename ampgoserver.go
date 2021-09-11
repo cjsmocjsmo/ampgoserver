@@ -310,7 +310,7 @@ func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("maindb")
+	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "initAlbumInfo find has failed")
 	var allalbums []map[string]string
