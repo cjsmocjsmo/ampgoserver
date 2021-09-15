@@ -339,7 +339,7 @@ func initalbumInfo2Handler(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("albumview").Collection("albumview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "initAlbumInfo find has failed")
-	var allalbums []map[string]string
+	var allalbums []AlbVieW2
 	if err = cur.All(context.TODO(), &allalbums); err != nil {
 		log.Fatal(err)
 	}
