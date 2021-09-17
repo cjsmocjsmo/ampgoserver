@@ -24,18 +24,14 @@ import (
 	"os"
 	"fmt"
 	"log"
-	// "bytes"
 	"time"
-	
 	"strconv"
 	"math/rand"
-	
 	// "path"
 	// "strings"
 	// "io/ioutil"
 	// "sort"
 	"net/http"
-	// "html/template"
 	"encoding/hex"
 	"encoding/json"
 	"github.com/gorilla/mux"
@@ -44,9 +40,6 @@ import (
 	"context"
     "go.mongodb.org/mongo-driver/mongo"
     "go.mongodb.org/mongo-driver/mongo/options"
-	// "github.com/globalsign/mgo"
-	// "github.com/globalsign/mgo/bson"
-	
 	"github.com/cjsmocjsmo/ampgosetup"
 )
 
@@ -142,16 +135,6 @@ func ServerCheckError(err error, msg string) {
 	}
 }
 
-// func sfdbCon() *mgo.Session {
-// 	s, err := mgo.Dial("mongodb://db:27017/ampgodb")
-// 	if err != nil {
-// 		log.Println("Session creation dial error")
-// 		log.Println(err)
-// 	}
-// 	log.Println("Session Connection to db established")
-// 	return s
-// }
-
 func setUpHandler(w http.ResponseWriter, r *http.Request) {
 	ampgosetup.Setup()
 	w.Header().Set("Content-Type", "application/json")
@@ -165,7 +148,6 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Hello From Ampgo Home \n It works")
 	log.Println("homeHandler is complete")
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //Artist Stuff
@@ -192,15 +174,11 @@ func initArtistInfoHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&allartist)
 	log.Println("Init Artist Info Complete")
-
 }
 
 func initArtistInfo2Handler(w http.ResponseWriter, r *http.Request) {
-	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	// ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
-	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -216,10 +194,7 @@ func initArtistInfo2Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&allartist)
 	log.Println("Init Artist Info Complete")
-
 }
-
-
 
 func ArtViewFindOne(db string, coll string, filtertype string, filterstring string) ArtVIEW {
 	filter := bson.M{filtertype: filterstring}
@@ -243,8 +218,6 @@ func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&allalbums.Albums)
 	log.Println("Init Artist Info Complete")
 }
-
-
 
 func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Starting albumsForArtistHandler")
@@ -298,15 +271,9 @@ func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
 //Album Stuff
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
 func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
-	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	// ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
-	// opts.SetLimit(int64(limit))
-	// opts.SetProjection(bson.M{"_id": 0, "artist": 1, "album": 1, "albumID": 1, "picHttpPath": 1}) //must be uppercase did not use a struct
 	opts.SetProjection(bson.M{"_id": 0, "songs": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -326,12 +293,8 @@ func initalbumInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func initalbumInfo2Handler(w http.ResponseWriter, r *http.Request) {
-	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	// ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
-	// opts.SetLimit(int64(limit))
-	// opts.SetProjection(bson.M{"_id": 0, "artist": 1, "album": 1, "albumID": 1, "picHttpPath": 1}) //must be uppercase did not use a struct
 	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -373,8 +336,24 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Initial Song Info Complete")
 }
 
+func playSongHandler(w http.ResponseWriter, r *http.Request) {
+	songid := r.URL.Query().Get("selected")
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
+	filter := bson.D{{"songID", songid}}
+	opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "httpaddr": 1, "artist": 1, "album": 1, "title": 1, "duration": 1, "picHttpAddr": 1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
 
-
+	collection := client.Database("maindb").Collection("maindb")
+	var results map[string]string
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil { log.Fatal(err) }
+	return results
+}
 
 
 
@@ -582,23 +561,6 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(randpics)
 }
-
-// func statsHandler(w http.ResponseWriter, r *http.Request) {
-// 	// ST := ampgolib.GStats()
-// 	ses := sfdbCon()
-// 	defer ses.Close()
-// 	STATc := ses.DB("goampgo").C("dbstats")
-// 	b1 := bson.M{"_id": 0}
-// 	var st map[string]string
-// 	err := STATc.Find(nil).Select(b1).One(&st)
-// 	if err != nil {
-// 		log.Println("stats has fucked up")
-// 		log.Println(err)
-// 	}
-// 	log.Println("GStats is complete")
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&st)
-// }
 
 
 
@@ -848,6 +810,9 @@ func main() {
 	r.HandleFunc("/InitAlbumInfo", initalbumInfoHandler)
 	r.HandleFunc("/InitAlbum2Info", initalbumInfo2Handler)
 	r.HandleFunc("/InitialSongInfo", initialsongInfoHandler)
+
+	r.HandleFunc("/PlaySong", playSongHandler)
+	r.HandleFunc("/PlayPlaylist", playPlaylistHandler)
 	
 
 
@@ -871,8 +836,8 @@ func main() {
 	
 
 	
-	// r.HandleFunc("/RamdomAlbumPicPlaySong", ramdomAlbumPicPlaySongHandler)
-	// r.HandleFunc("/Stats", statsHandler)
+	
+	
 	// r.HandleFunc("/PathArt", pathArtHandler)
 	// r.HandleFunc("/SongSearch", songSearchHandler)
 	// r.HandleFunc("/AlbumSearch", albumSearchHandler)
