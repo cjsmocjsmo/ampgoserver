@@ -352,7 +352,7 @@ func playSongHandler(w http.ResponseWriter, r *http.Request) {
 	err = collection.FindOne(context.Background(), filter).Decode(&results)
 	if err != nil { log.Fatal(err) }
 	var newresults = map[string]string {
-		"httppath" : results["httppath"],
+		"httpaddr" : results["httpaddr"],
 		"artist" : results["artist"],
 		"album" : results["album"],
 		"title" : results["title"],
