@@ -352,7 +352,10 @@ func playSongHandler(w http.ResponseWriter, r *http.Request) {
 	var results map[string]string
 	err = collection.FindOne(context.Background(), filter).Decode(&results)
 	if err != nil { log.Fatal(err) }
-	return results
+	log.Printf("%s this is playSong", results)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&results)
+	log.Println("playSong Song Info Complete")
 }
 
 func playPlaylistHandler(w http.ResponseWriter, r *http.Request) {
@@ -371,7 +374,10 @@ func playPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	var results map[string]string
 	err = collection.FindOne(context.Background(), filter).Decode(&results)
 	if err != nil { log.Fatal(err) }
-	return results
+	log.Printf("%s this is playPlaylist", results)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&results)
+	log.Println("playPlaylist Info Complete")
 }
 
 // func artistPageHandler(w http.ResponseWriter, r *http.Request) {
