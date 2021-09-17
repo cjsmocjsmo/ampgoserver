@@ -343,18 +343,25 @@ func playSongHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{"fileID", fileid}}
 	opts := options.Find()
 	// opts.SetLimit(int64(limit))
-	opts.SetProjection(bson.M{"_id": 0, "httpaddr": 1, "artist": 1, "album": 1, "title": 1, "duration": 1, "picHttpAddr": 1})
+	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-
 	collection := client.Database("maindb").Collection("maindb")
 	var results map[string]string
 	err = collection.FindOne(context.Background(), filter).Decode(&results)
 	if err != nil { log.Fatal(err) }
-	log.Printf("%s this is playSong", results)
+	var newresults = map[string]string {
+		"httppath" : results["httppath"],
+		"artist" : results["artist"],
+		"album" : results["album"],
+		"title" : results["title"],
+		"duration" : results["duration"],
+		"picHttpAddr" : results["picHttpAddr"],
+	}
+	log.Printf("%s this is playSong", newresults)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&results)
+	json.NewEncoder(w).Encode(&newresults)
 	log.Println("playSong Song Info Complete")
 }
 
