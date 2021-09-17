@@ -355,7 +355,24 @@ func playSongHandler(w http.ResponseWriter, r *http.Request) {
 	return results
 }
 
+func playPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+	playlistid := r.URL.Query().Get("selected")
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
+	filter := bson.D{{"playlistID", playlistid}}
+	opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
 
+	collection := client.Database("playlistdb").Collection("playlistdb")
+	var results map[string]string
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil { log.Fatal(err) }
+	return results
+}
 
 // func artistPageHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.D{}
