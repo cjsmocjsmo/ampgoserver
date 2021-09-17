@@ -337,10 +337,10 @@ func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func playSongHandler(w http.ResponseWriter, r *http.Request) {
-	songid := r.URL.Query().Get("selected")
+	fileid := r.URL.Query().Get("selected")
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	// ServerCheckError(err, "convert to int64 has failed")
-	filter := bson.D{{"songID", songid}}
+	filter := bson.D{{"fileID", fileid}}
 	opts := options.Find()
 	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "httpaddr": 1, "artist": 1, "album": 1, "title": 1, "duration": 1, "picHttpAddr": 1})
