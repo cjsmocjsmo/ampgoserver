@@ -687,6 +687,18 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 ///////////////////////////////////////////////////////////////////////////////
 //Playlist Stuff
 ///////////////////////////////////////////////////////////////////////////////
+// 
+func deletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
+	plid := r.URL.Query().Get("playlistid")
+	log.Print("playlistID to delete: %s", plid)
+	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
+	ServerCheckError(err3, "Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := DeleteOne(client, ctx, "randplaylists", "randplaylists", plid)
+	ServerCheckError(err2, "deleteplaylist has failed")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("Playlist deleted")
+}
 
 func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plname := r.URL.Query().Get("name")
@@ -748,7 +760,6 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	var randsongs []map[string]string
 	for _, f := range num_list {
 		ff := strconv.Itoa(f)
-		// log.Printf("this is f: %s", f)
 		filter := bson.D{{"idx", ff}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
@@ -757,11 +768,8 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		var rpics map[string]string
 		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
 		if err != nil { log.Fatal(err) }
-		// log.Printf("rpics: %v", rpics)
-
 		randsongs = append(randsongs, rpics)
 	}
-	// log.Println(randsongs)
 	log.Println(len(randsongs))
 	log.Println(randsongs[:plcount])
 	log.Println(plcount)
@@ -841,7 +849,7 @@ func main() {
 	// r.HandleFunc("/GetCurrentPlaylist", getCurrentPlaylistHandler) 
 	
 
-	// r.HandleFunc("/DeletPlaylist", deletePlaylistHandler)
+	r.HandleFunc("/DeletPlaylist", deletePlaylistHandler)
 	// r.HandleFunc("/EditPlaylist", editPlaylistHandler)
 	// r.HandleFunc("/AddSongToPlaylist", addSongToPlaylistHandler)
 	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
@@ -925,6 +933,12 @@ func Connect(uri string) (*mongo.Client, context.Context, context.CancelFunc, er
 func InsertOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
     collection := client.Database(dataBase).Collection(col)
     result, err := collection.InsertOne(ctx, doc)
+    return result, err
+}
+
+func DeleteOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
+    collection := client.Database(dataBase).Collection(col)
+    result, err := collection.DeleteOne(ctx, doc)
     return result, err
 }
 
