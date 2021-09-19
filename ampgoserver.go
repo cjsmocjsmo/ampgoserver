@@ -714,7 +714,7 @@ func Shuffle(slice []int) {
 	}
 }
 
-func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plname := r.URL.Query().Get("name")
 	plc := r.URL.Query().Get("songcount")
 	log.Printf("planame: %s", plname)
@@ -758,6 +758,8 @@ func createRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		randsongs = append(randsongs, rpics)
 	}
 	log.Println(randsongs)
+	log.Println(len(randsongs))
+	log.Println(randsongs[:plcount])
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
 	plz.PlayListID = plID
@@ -819,7 +821,7 @@ func main() {
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 
 	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
-	r.HandleFunc("/CreateRandomPlaylist", createRandomPlaylistHandler)
+	r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
 	r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
 	
 	r.HandleFunc("/RandomPics", randomPicsHandler)
