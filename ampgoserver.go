@@ -759,6 +759,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println(randsongs)
 	log.Println(len(randsongs))
+	log.Println(randsongs[0])
 	log.Println(randsongs[:plcount])
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
