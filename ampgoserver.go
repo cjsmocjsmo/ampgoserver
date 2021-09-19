@@ -691,10 +691,11 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 func deletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plid := r.URL.Query().Get("playlistid")
 	log.Print("playlistID to delete: %s", plid)
+	filter = bson={{"playlistID":plid}}
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
 	ServerCheckError(err3, "Connections has failed")
 	defer Close(client, ctx, cancel)
-	_, err2 := DeleteOne(client, ctx, "randplaylists", "randplaylists", plid)
+	_, err2 := DeleteOne(client, ctx, "randplaylists", "randplaylists", filter)
 	ServerCheckError(err2, "deleteplaylist has failed")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Playlist deleted")
@@ -938,8 +939,8 @@ func InsertOne(client *mongo.Client, ctx context.Context, dataBase, col string, 
 
 func DeleteOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
     collection := client.Database(dataBase).Collection(col)
-    result, err := collection.DeleteOne(ctx, doc)
-    return result, err
+    result2, err := collection.DeleteOne(ctx, doc)
+    return result2, err
 }
 
 func Query(client *mongo.Client, ctx context.Context, dataBase, col string, query, field interface{}) (result *mongo.Cursor, err error) {
