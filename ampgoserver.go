@@ -89,6 +89,7 @@ type AlbVieW2 struct {
 type AmpgoRandomPlaylistData struct {
 	PlayListName string `bson:"playlistname"`
 	PlayListID string `bson:"playlistID"`
+	PlayListCount string `bson:"playlistcount"`
 	PlayList []map[string]string `bson:"playlist"`
 }
 
@@ -714,9 +715,11 @@ func Shuffle(slice []int) {
 	}
 }
 
+// test with curl http://192.168.0.91:9090/CreateRandomPlaylist?songcount=25&&name=RucRandom
+
 func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
-	plname := r.URL.Query().Get("name")
 	plc := r.URL.Query().Get("songcount")
+	plname := r.URL.Query().Get("name")
 	log.Printf("planame: %s", plname)
 	log.Printf("plc: %s", plc)
 	plcount, _ := strconv.Atoi(plc)
@@ -732,6 +735,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	ServerCheckError(err, "allIdx has failed")
 	var indexlist []map[string]string
 	if err = cur.All(context.TODO(), &indexlist); err != nil {
+		log.Println("randplaylist dbcall has fucked up")
 		log.Fatal(err)
 	}
 	var num_list []int
@@ -744,7 +748,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	var randsongs []map[string]string
 	for _, f := range num_list {
 		ff := strconv.Itoa(f)
-		log.Printf("this is f: %s", f)
+		// log.Printf("this is f: %s", f)
 		filter := bson.D{{"idx", ff}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
@@ -753,20 +757,22 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		var rpics map[string]string
 		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
 		if err != nil { log.Fatal(err) }
-		log.Printf("rpics: %v", rpics)
+		// log.Printf("rpics: %v", rpics)
 
 		randsongs = append(randsongs, rpics)
 	}
-	log.Println(randsongs)
+	// log.Println(randsongs)
 	log.Println(len(randsongs))
+	log.Println(randsongs[:plcount])
 	log.Println(plcount)
 	log.Printf("this is plcount type %T", plcount)
 
 	log.Println(randsongs[:2])
-	log.Println(randsongs[:plcount])
+	
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
 	plz.PlayListID = plID
+	plz.PlaylistCount = plc
 	plz.PlayList = randsongs[:plcount]
 	log.Println("This is plz")
 	log.Println(plz)
