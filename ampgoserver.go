@@ -533,8 +533,9 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plzz)
 	ServerCheckError(err2, "plz insertion has failed")
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&plzz)
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode(&plzz)
+	allPlaylistsHandler(w, r)
 }
 
 func Shuffle(slice []int) {
@@ -607,8 +608,9 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plz)
 	ServerCheckError(err2, "plz insertion has failed")
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Playlist Created")
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode("Playlist Created")
+	allPlaylistsHandler(w, r)
 }
 
 func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
