@@ -661,10 +661,10 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plid := r.URL.Query().Get("playlistid")
 	log.Printf("fileID: %s", fileID)
 	log.Printf("plid: %s", plid)
-	songinfo := songInfoFindOne("maindb", "maindb", "FileID", fileID, )
+	songinfo := songInfoFindOne("maindb", "maindb", "fileID", fileID, )
 	log.Println("This is songinfo")
 	log.Println(songinfo)
-	playlistInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "PlayListID", plid)
+	playlistInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "playListID", plid)
 	log.Println("this is playlistinfo")
 	log.Println(playlistInfo)
 	var newPlayListInfo AmpgoRandomPlaylistData
