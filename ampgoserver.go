@@ -508,7 +508,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 func deletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plid := r.URL.Query().Get("playlistid")
 	log.Print("playlistID to delete: %s", plid)
-	filter := bson.M{"playlistID":plid}
+	filter := bson.M{"PlayListID":plid}
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
 	ServerCheckError(err3, "Connections has failed")
 	defer Close(client, ctx, cancel)
@@ -632,6 +632,48 @@ func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func songInfoFindOne(db string, coll string, filtertype string, filterstring string) map[string]string {
+	filter := bson.M{filtertype: filterstring}
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	collection := client.Database(db).Collection(coll)
+	var results map[string]string
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil { log.Fatal(err) }
+	return results
+}
+
+func playlistInfoFromPlaylistID(db string, coll string, filtertype string, filterstring string) (AmpgoRandomPlaylistData) {
+	filter := bson.M{filtertype: filterstring}
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	collection := client.Database(db).Collection(coll)
+	var results AmpgoRandomPlaylistData
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil { log.Fatal(err) }
+	return results
+}
+
+func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+	fileID := r.URL.Query().Get("songid")
+	plid := r.URL.Query().Get("playlistid")
+	log.Printf("fileID: %s", fileID)
+	log.Printf("plid: %s", plid)
+	songinfo := songInfoFindOne("maindb", "maindb", "fileID", fileID, )
+	playlistInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "PlayListID", plid)
+	var newPlayListInfo AmpgoRandomPlaylistData
+	newPlayListInfo.PlayListName = playlistInfo.PlayListName
+	newPlayListInfo.PlayListID = playlistInfo.PlayListID
+	newPlayListInfo.PlayListCount = playlistInfo.PlayListCount
+
+	newPlayListInfo.PlayList = append(newPlayListInfo.PlayList, songinfo)
+	log.Println(newPlayListInfo)
+	fmt.Println(newPlayListInfo)
+}
+
+
 func init() {
 	ampgosetup.SetUpCheck()
 	var logging_status string = StartServerLogging()
@@ -651,15 +693,19 @@ func main() {
 
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 
-	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
-	r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
-	r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
+	
 	
 	r.HandleFunc("/RandomPics", randomPicsHandler)
 	////////////////////////////////////////////////////////////////
 
-	r.HandleFunc("/DeletePlaylist", deletePlaylistHandler)
+	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
+	r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
+	r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
+
+	r.HandleFunc("/DeletePlaylist", deletePlaylistHandler) //not working
 	// r.HandleFunc("/EditPlaylist", editPlaylistHandler)
+
+	r.HandleFunc("/AddSongToPlaylist", addSongToPlaylistHandler)
 	
 	/////////////////////////////////////////////////////
 
