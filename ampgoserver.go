@@ -657,7 +657,7 @@ func playlistInfoFromPlaylistID(db string, coll string, filtertype string, filte
 }
 
 func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
-	fileID := r.URL.Query().Get("songid")
+	fileID := r.URL.Query().Get("fileid")
 	plid := r.URL.Query().Get("playlistid")
 	log.Printf("fileID: %s", fileID)
 	log.Printf("plid: %s", plid)
