@@ -667,7 +667,7 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		PlayListCount : playlistInfo.PlayListCount,
 	}
 
-	newPlayListInfo = append(newPlayListInfo.PlayList, songinfo)
+	// newPlayListInfo = append(newPlayListInfo.PlayList, songinfo)
 	log.Println(newPlayListInfo)
 	fmt.Println(newPlayListInfo)
 }
