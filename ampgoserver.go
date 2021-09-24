@@ -451,11 +451,6 @@ func playPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(TDist)
 // }
 
-
-
-
-
-
 func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.D{{}}
 	opts := options.Find()
@@ -499,16 +494,14 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(randpics)
 }
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 //Playlist Stuff
 ///////////////////////////////////////////////////////////////////////////////
-// 
+
 func deletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plid := r.URL.Query().Get("playlistid")
 	log.Print("playlistID to delete: %s", plid)
-	filter := bson.M{"PlayListID":plid}
+	filter := bson.M{"playlistID":plid}
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
 	ServerCheckError(err3, "Connections has failed")
 	defer Close(client, ctx, cancel)
@@ -664,15 +657,17 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	songinfo := songInfoFindOne("maindb", "maindb", "fileID", fileID, )
 	log.Println("This is songinfo")
 	log.Println(songinfo)
+
 	playlistInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "playlistID", plid)
 	log.Println("this is playlistinfo")
 	log.Println(playlistInfo)
-	var newPlayListInfo AmpgoRandomPlaylistData
-	newPlayListInfo.PlayListName = playlistInfo.PlayListName
-	newPlayListInfo.PlayListID = playlistInfo.PlayListID
-	newPlayListInfo.PlayListCount = playlistInfo.PlayListCount
+	var newPlayListInfo := AmpgoRandomPlaylistData{
+		"PlayListName" : playlistInfo.PlayListName,
+		"PlayListID" : playlistInfo.PlayListID,
+		"PlayListCount" : playlistInfo.PlayListCount
+	}
 
-	newPlayListInfo.PlayList = append(newPlayListInfo.PlayList, songinfo)
+	newPlayListInfo := append(newPlayListInfo.PlayList, songinfo)
 	log.Println(newPlayListInfo)
 	fmt.Println(newPlayListInfo)
 }
@@ -688,25 +683,18 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
-
 	r.HandleFunc("/InitArtistInfo", initArtistInfoHandler)
 	r.HandleFunc("/InitArtistInfo2", initArtistInfo2Handler)
-
 	r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
 	r.HandleFunc("/AlbumsForArtist2", albumsForArtist2Handler)
-
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
-
-	
-	
 	r.HandleFunc("/RandomPics", randomPicsHandler)
 	////////////////////////////////////////////////////////////////
 
 	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
 	r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
 	r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
-
-	r.HandleFunc("/DeletePlaylist", deletePlaylistHandler) //not working
+	r.HandleFunc("/DeletePlayList", deletePlaylistHandler) //not working
 	// r.HandleFunc("/EditPlaylist", editPlaylistHandler)
 
 	r.HandleFunc("/AddSongToPlaylist", addSongToPlaylistHandler)
@@ -720,17 +708,11 @@ func main() {
 	r.HandleFunc("/PlaySong", playSongHandler)
 	r.HandleFunc("/PlayPlaylist", playPlaylistHandler)
 
-	// r.HandleFunc("/ArtistAlpha", artistPageHandler)
-	// r.HandleFunc("/AlbumAlpha", albumPageHandler)
-	// r.HandleFunc("/TitleAlpha", titlePageHandler)
-
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("/root/static/"))))
 	r.PathPrefix("/fsData/").Handler(http.StripPrefix("/fsData/", http.FileServer(http.Dir("/root/fsData/"))))
 	http.ListenAndServe(":9090", handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), 
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS"}), 
 		handlers.AllowedOrigins([]string{"*"}))(r))
-
-
 }
 
 
