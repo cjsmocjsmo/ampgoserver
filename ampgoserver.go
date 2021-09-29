@@ -519,7 +519,7 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plzz.PlayListName = plname
 	plzz.PlayListID = plID
 	plzz.PlayList = emptymap
-	plzz.PlayListCount = "0"
+	// plzz.PlayListCount = "0"
 	log.Println("This is plzz")
 	log.Println(plzz)
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
