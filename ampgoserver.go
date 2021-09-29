@@ -519,6 +519,7 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plzz.PlayListName = plname
 	plzz.PlayListID = plID
 	plzz.PlayList = emptymap
+	plzz.PlayListCount = "0"
 	log.Println("This is plzz")
 	log.Println(plzz)
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
@@ -654,6 +655,7 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plid := r.URL.Query().Get("playlistid")
 	log.Printf("fileID: %s", fileID)
 	log.Printf("plid: %s", plid)
+
 	songinfo := songInfoFindOne("maindb", "maindb", "fileID", fileID, )
 	log.Println("This is songinfo")
 	log.Println(songinfo)
@@ -661,15 +663,33 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	playlistInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "playlistID", plid)
 	log.Println("this is playlistinfo")
 	log.Println(playlistInfo)
+
+	var newcontainer []map[string]string
+	//Put old items into new list
+	for _, item := range playlistInfo.PlayList {
+		newcontainer = append(newcontainer, item)
+	}
+	//Put new song into new list
+	newcontainer = append(newcontainer, songinfo)
+
 	var newPlayListInfo AmpgoRandomPlaylistData = AmpgoRandomPlaylistData{
 		PlayListName : playlistInfo.PlayListName,
 		PlayListID : playlistInfo.PlayListID,
 		PlayListCount : playlistInfo.PlayListCount,
+		PlayList : newcontainer,
 	}
-
-	// newPlayListInfo = append(newPlayListInfo.PlayList, songinfo)
 	log.Println(newPlayListInfo)
 	fmt.Println(newPlayListInfo)
+
+	//Put new info into 
+	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
+	ServerCheckError(err3, "Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &newPlayListInfo)
+	ServerCheckError(err2, "newPlayListInfo insertion has failed")
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("Inserted Into DataBase")
 }
 
 
