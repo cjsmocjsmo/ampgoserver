@@ -315,11 +315,11 @@ func initalbumInfo2Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
-	limit, err := strconv.ParseInt(OFFSET, 10, 64)
-	ServerCheckError(err, "convert to int64 has failed")
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
 	filter := bson.D{{}}
 	opts := options.Find()
-	opts.SetLimit(int64(limit))
+	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1, "httpaddr": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)

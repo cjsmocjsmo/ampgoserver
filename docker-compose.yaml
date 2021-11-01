@@ -19,7 +19,6 @@ services:
     build: .
     environment:
       - AMPGO_SETUP=1
-      - AMPGO_OFFSET=25
       - AMPGO_SETUP_LOG_PATH=/root/logs/ampgo_setup_log.txt
       - AMPGO_LIB_LOG_PATH=/root/logs/ampgo_lib_log.txt
       - AMPGO_SERVER_LOG_PATH=/root/logs/ampgo_server_log.txt
