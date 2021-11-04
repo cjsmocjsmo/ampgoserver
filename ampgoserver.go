@@ -181,7 +181,7 @@ func artistInfoByPageHandler(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	// ServerCheckError(err, "convert to int64 has failed")
-	filter := bson.M{"artistpage": page}
+	filter := bson.M{"page": page}
 	opts := options.Find()
 	// opts.SetLimit(int64(limit))
 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "artistID": 1, "albcount": 1})
