@@ -15,10 +15,11 @@ services:
 
 
   ampgoserver:
-    image: ampgo:0.1.10
+    image: ampgo:0.1.11
     build: .
     environment:
       - AMPGO_SETUP=1
+      - AMPGO_OFFSET=35
       - AMPGO_SETUP_LOG_PATH=/root/logs/ampgo_setup_log.txt
       - AMPGO_LIB_LOG_PATH=/root/logs/ampgo_lib_log.txt
       - AMPGO_SERVER_LOG_PATH=/root/logs/ampgo_server_log.txt

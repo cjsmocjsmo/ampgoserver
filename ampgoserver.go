@@ -314,6 +314,33 @@ func initalbumInfo2Handler(w http.ResponseWriter, r *http.Request) {
 	log.Println("Init albumsInfo Complete")
 }
 
+
+func songInfoByPageHandler(w http.ResponseWriter, r *http.Request) {
+	page := r.URL.Query().Get("page")
+	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
+	// ServerCheckError(err, "convert to int64 has failed")
+	filter := bson.M{"titlepage": page}
+	opts := options.Find()
+	// opts.SetLimit(int64(limit))
+	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1, "httpaddr": 1})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "ArtPipeline find has failed")
+	var tv []map[string]string
+	if err = cur.All(context.TODO(), &tv); err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("%s this is tv", tv)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&tv)
+	log.Println("Initial Song Info Complete")
+}
+
+
+// titlepage
 func initialsongInfoHandler(w http.ResponseWriter, r *http.Request) {
 	// limit, err := strconv.ParseInt(OFFSET, 10, 64)
 	// ServerCheckError(err, "convert to int64 has failed")
@@ -718,6 +745,10 @@ func main() {
 	// r.HandleFunc("/EditPlaylist", editPlaylistHandler)
 
 	r.HandleFunc("/AddSongToPlaylist", addSongToPlaylistHandler)
+
+
+
+	r.HandleFunc("/SongInfoByPage", songInfoByPageHandler)
 	
 	/////////////////////////////////////////////////////
 
@@ -727,6 +758,10 @@ func main() {
 
 	r.HandleFunc("/PlaySong", playSongHandler)
 	r.HandleFunc("/PlayPlaylist", playPlaylistHandler)
+
+	
+
+
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("/root/static/"))))
 	r.PathPrefix("/fsData/").Handler(http.StripPrefix("/fsData/", http.FileServer(http.Dir("/root/fsData/"))))
