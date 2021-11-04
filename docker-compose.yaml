@@ -15,7 +15,7 @@ services:
 
 
   ampgoserver:
-    image: ampgo:0.1.11
+    image: ampgo:0.1.12
     build: .
     environment:
       - AMPGO_SETUP=1
