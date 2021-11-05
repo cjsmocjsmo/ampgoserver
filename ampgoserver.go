@@ -191,7 +191,7 @@ func artistInfoByPageHandler(w http.ResponseWriter, r *http.Request) {
 	coll := client.Database("artistview").Collection("artistview")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "initArtistInfo find has failed")
-	var allartist []map[string]string
+	var allartist []ArtVIEW
 	if err = cur.All(context.TODO(), &allartist); err != nil {
 		log.Fatal(err)
 	}
