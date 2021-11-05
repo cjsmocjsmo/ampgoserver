@@ -21,6 +21,7 @@ RUN \
   mkdir ./data && \
   mkdir ./data/db && \
   mkdir ./static && \
+  mkdir ./static/crap && \
   chmod -R +rwx ./static
 
 COPY assets/p1thumb.jpg ./static/
