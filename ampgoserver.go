@@ -558,8 +558,6 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println(newPlayListInfo)
 	fmt.Println(newPlayListInfo)
-
-	//Put new info into 
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
 	ServerCheckError(err3, "Connections has failed")
 	defer Close(client, ctx, cancel)
@@ -584,7 +582,7 @@ func main() {
 	r.HandleFunc("/AlbumsForArtist2", albumsForArtist2Handler)
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 	r.HandleFunc("/RandomPics", randomPicsHandler)
-	
+
 	////////////////////////////////////////////////////////////////
 
 	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
