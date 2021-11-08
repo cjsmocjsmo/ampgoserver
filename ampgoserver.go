@@ -567,6 +567,39 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Inserted Into DataBase")
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// alphabet stuff
+///////////////////////////////////////////////////////////////////////////////
+
+// func artistAlpha(w http.ResponseWriter, r *http.Request) {
+
+// }
+
+// func albumAlpha(w http.ResponseWriter, r *http.Request) {
+
+// }
+
+func songAlphaHandler(w http.ResponseWriter, r *http.Request) {
+	alpha := r.URL.Query().Get("alpha")
+
+	filter := bson.D{{}}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "songAlpha: MongoDB connection has failed")
+	coll := client.Database("songalpha").Collection(alpha)
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "songAlpha: allIdx has failed")
+	var allItems []map[string]string
+	if err = cur.All(context.TODO(), &allItems); err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allItems)
+}
+
+
 
 func init() {
 	ampgosetup.SetUpCheck()
@@ -583,7 +616,7 @@ func main() {
 	r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 	r.HandleFunc("/RandomPics", randomPicsHandler)
 
-	////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	r.HandleFunc("/AddPlaylist", addPlaylistHandler)
 	r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
@@ -594,10 +627,14 @@ func main() {
 	r.HandleFunc("/AlbumInfoByPage", albumInfoByPageHandler)
 	r.HandleFunc("/SongInfoByPage", songInfoByPageHandler)
 	
-	/////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
 
 	r.HandleFunc("/PlaySong", playSongHandler)
 	r.HandleFunc("/PlayPlaylist", playPlaylistHandler)
+
+	///////////////////////////////////////////////////////////////////////////
+
+	r.HandleFunc("SongAlpha", songAlphaHandler)
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("/root/static/"))))
 	r.PathPrefix("/fsData/").Handler(http.StripPrefix("/fsData/", http.FileServer(http.Dir("/root/fsData/"))))
