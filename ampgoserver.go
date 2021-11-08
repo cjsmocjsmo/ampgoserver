@@ -634,7 +634,7 @@ func main() {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	r.HandleFunc("SongAlpha", songAlphaHandler)
+	r.HandleFunc("/SongAlpha", songAlphaHandler)
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("/root/static/"))))
 	r.PathPrefix("/fsData/").Handler(http.StripPrefix("/fsData/", http.FileServer(http.Dir("/root/fsData/"))))
