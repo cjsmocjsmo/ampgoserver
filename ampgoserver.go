@@ -602,7 +602,6 @@ func albumAlphaHandler(w http.ResponseWriter, r *http.Request) {
 		err = collection.FindOne(context.Background(), filter).Decode(&results)
 		if err != nil { log.Fatal(err) }
 		NewAllItems = append(NewAllItems, results)
-		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&NewAllItems)
