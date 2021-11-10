@@ -571,9 +571,37 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 // alphabet stuff
 ///////////////////////////////////////////////////////////////////////////////
 
-// func artistAlphaHander(w http.ResponseWriter, r *http.Request) {
+func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
+	alpha := r.URL.Query().Get("alpha")
+	filter := bson.D{{}}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "artistAlpha: MongoDB connection has failed")
+	coll := client.Database("artistalpha").Collection(alpha)
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "albumAlpha: allIdx has failed")
+	var allItems []map[string]string
+	if err = cur.All(context.TODO(), &allItems); err != nil {
+		log.Fatal(err)
+	}
 
-// }
+	var NewAllItems []ArtVIEW
+	for _, item := range allItems {
+		filter := bson.M{"artist": item["artist"]}
+		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+		defer ampgosetup.Close(client, ctx, cancel)
+		ServerCheckError(err, "albumAlpha: MongoDB connection has failed")
+		collection := client.Database("artistview").Collection("artistview")
+		var results ArtVIEW
+		err = collection.FindOne(context.Background(), filter).Decode(&results)
+		if err != nil { log.Fatal(err) }
+		NewAllItems = append(NewAllItems, results)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&NewAllItems)
+}
 
 func albumAlphaHandler(w http.ResponseWriter, r *http.Request) {
 	alpha := r.URL.Query().Get("alpha")
@@ -661,6 +689,7 @@ func main() {
 
 	///////////////////////////////////////////////////////////////////////////
 
+	r.HandleFunc("/ArtistAlpha", artistAlphaHandler)
 	r.HandleFunc("/AlbumAlpha", albumAlphaHandler)
 	r.HandleFunc("/SongAlpha", songAlphaHandler)
 
