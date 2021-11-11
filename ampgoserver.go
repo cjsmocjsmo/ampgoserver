@@ -475,7 +475,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		ranN := genrandom(newTotal)
 		log.Println(ranN)
 		num_list = append(num_list, ranN)
-		fmt.Println(num)
+		// fmt.Println(num)
 
 	}
 	log.Println(num_list)
