@@ -459,10 +459,17 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	for _, item := range num_map {
 		somenum = item["total"]
 	}
+
+	// for i := 1; i <= plcount; i++ {
+	// 	fmt.Println(i)
+	//   }
+
+
 	log.Println(somenum)
 	var num_list []int
-	log.Println(plc)
-	for _, num := range plc {
+	log.Println(plcount)
+	// for _, num := range plcount {
+	for i := 1; i <= plcount; i++ {
 		newTotal, _ := strconv.Atoi(somenum)
 		log.Println(newTotal)
 		ranN := genrandom(newTotal)
@@ -536,7 +543,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plz)
 	ServerCheckError(err2, "plz insertion has failed")
-	// allPlaylistsHandler(w, r)
+	allPlaylistsHandler(w, r)
 }
 
 func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
