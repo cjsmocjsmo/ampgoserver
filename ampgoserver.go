@@ -427,41 +427,51 @@ func Shuffle(slice []int) {
 
 func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
-
-
-	// var intlist := []int
-	// for i, _ := range total {
-	// 	intlist = append(intlist, i)
-	// }
-
-
-
 	plc := r.URL.Query().Get("songcount")
 	plname := r.URL.Query().Get("name")
 	log.Printf("planame: %s", plname)
 	log.Printf("plc: %s", plc)
 	plcount, _ := strconv.Atoi(plc)
 	plID, _ := UUID()
+
 	filter := bson.D{{}}
-	opts := options.Find()
-	opts.SetProjection(bson.M{"_id": 0, "idx": 1})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("maindb").Collection("maindb")
-	cur, err := coll.Find(context.TODO(), filter, opts)
-	ServerCheckError(err, "allIdx has failed")
-	var indexlist []map[string]string
-	if err = cur.All(context.TODO(), &indexlist); err != nil {
-		log.Println("randplaylist dbcall has fucked up")
-		log.Fatal(err)
-	}
+	ampgosetup.CheckError(err, "MongoDB connection has failed")
+	collection := client.Database("songtotal").Collection("total")
+	var allInts map[string]int
+	err = collection.FindOne(context.Background(), filter).Decode(&allInts)
+	if err != nil { log.Fatal(err) }
+
 	var num_list []int
-	for _, idx := range indexlist {
-		index := idx["idx"]
-		index1, _ := strconv.Atoi(index)
-		num_list = append(num_list, index1)
+	for i, _ := range allInts {
+		ff, _ := strconv.Atoi(i)
+		num_list = append(num_list, ff)
 	}
+
+	// filter := bson.D{{}}
+	// opts := options.Find()
+	// opts.SetProjection(bson.M{"_id": 0, "idx": 1})
+	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	// defer ampgosetup.Close(client, ctx, cancel)
+	// ServerCheckError(err, "MongoDB connection has failed")
+	// coll := client.Database("maindb").Collection("maindb")
+	// cur, err := coll.Find(context.TODO(), filter, opts)
+	// ServerCheckError(err, "allIdx has failed")
+	// var indexlist []map[string]string
+	// if err = cur.All(context.TODO(), &indexlist); err != nil {
+	// 	log.Println("randplaylist dbcall has fucked up")
+	// 	log.Fatal(err)
+	// }
+
+
+	// var num_list []int
+	// for _, idx := range indexlist {
+	// 	index := idx["idx"]
+	// 	index1, _ := strconv.Atoi(index)
+	// 	num_list = append(num_list, index1)
+	// }
+
 	Shuffle(num_list)
 	var randsongs []map[string]string
 	for _, f := range num_list {
