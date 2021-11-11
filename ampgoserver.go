@@ -446,7 +446,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "MongoDB connection has failed")
-	coll := client.Database("songcount").Collection("total")
+	coll := client.Database("songtotal").Collection("total")
 	cur, err := coll.Find(context.TODO(), filter, opts)
 	ServerCheckError(err, "allIdx has failed")
 	var num_map []map[string]string
