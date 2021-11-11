@@ -519,7 +519,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		collection := client.Database("maindb").Collection("maindb")
 		var rplaylists map[string]string
 		err = collection.FindOne(context.Background(), filter).Decode(&rplaylists)
-		if err != nil { log.Println(ff); log.Fatal(err) }
+		if err != nil { log.Println(ff); continue } //log.Fatal(err) }
 		randsongs = append(randsongs, rplaylists)
 		if len(randsongs) == plcount {
 			break
