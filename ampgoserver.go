@@ -465,7 +465,8 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(plcount)
 	// for _, num := range plcount {
 	for i := 1; i <= plcount; i++ {
-		newTotal, _ := strconv.Atoi(somenum)
+		nT, _ := strconv.Atoi(somenum)
+		newTotal := nT * 2
 		log.Println(newTotal)
 		ranN := genrandom(newTotal)
 		log.Println(ranN)
@@ -505,6 +506,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 	Shuffle(num_list)
 	var randsongs []map[string]string
+	
 	for _, f := range num_list {
 		ff := strconv.Itoa(f)
 		log.Println(ff)
@@ -519,7 +521,11 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		err = collection.FindOne(context.Background(), filter).Decode(&rplaylists)
 		if err != nil { log.Println(ff); log.Fatal(err) }
 		randsongs = append(randsongs, rplaylists)
+		if len(randsongs) == plcount {
+			break
+		}
 	}
+	
 	log.Println(len(randsongs))
 	log.Println(randsongs[:plcount])
 	log.Println(plcount)
