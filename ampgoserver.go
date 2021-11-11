@@ -426,9 +426,9 @@ func Shuffle(slice []int) {
 // test with curl http://192.168.0.91:9090/CreateRandomPlaylist?songcount=25&&name=RucRandom
 func genrandom(maxx int) int {
 	rand.Seed(time.Now().UnixNano())
-    min := 10
-    max := maxx
-    return rand.Intn(max - min + 1) + min
+    // min := 10
+    // max := maxx
+    return rand.Intn(maxx - 10 + 1) + 10
 }
 
 func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
@@ -462,10 +462,14 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	var num_list []int
 	for _, num := range plc {
 		newTotal, _ := strconv.Atoi(somenum)
+		log.Println(newTotal)
 		ranN := genrandom(newTotal)
+		log.Println(ranN)
 		num_list = append(num_list, ranN)
 		fmt.Println(num)
+
 	}
+	log.Println(num_list)
 
 
 
@@ -530,7 +534,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plz)
 	ServerCheckError(err2, "plz insertion has failed")
-	allPlaylistsHandler(w, r)
+	// allPlaylistsHandler(w, r)
 }
 
 func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
