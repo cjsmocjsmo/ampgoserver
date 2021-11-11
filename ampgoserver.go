@@ -426,6 +426,16 @@ func Shuffle(slice []int) {
 // test with curl http://192.168.0.91:9090/CreateRandomPlaylist?songcount=25&&name=RucRandom
 
 func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+
+
+
+	// var intlist := []int
+	// for i, _ := range total {
+	// 	intlist = append(intlist, i)
+	// }
+
+
+
 	plc := r.URL.Query().Get("songcount")
 	plname := r.URL.Query().Get("name")
 	log.Printf("planame: %s", plname)
