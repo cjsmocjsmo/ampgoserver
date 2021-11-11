@@ -460,11 +460,6 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		somenum = item["total"]
 	}
 
-	// for i := 1; i <= plcount; i++ {
-	// 	fmt.Println(i)
-	//   }
-
-
 	log.Println(somenum)
 	var num_list []int
 	log.Println(plcount)
@@ -475,8 +470,6 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		ranN := genrandom(newTotal)
 		log.Println(ranN)
 		num_list = append(num_list, ranN)
-		// fmt.Println(num)
-
 	}
 	log.Println(num_list)
 
@@ -519,10 +512,10 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		defer ampgosetup.Close(client, ctx, cancel)
 		ampgosetup.CheckError(err, "MongoDB connection has failed")
 		collection := client.Database("maindb").Collection("maindb")
-		var rpics map[string]string
-		err = collection.FindOne(context.Background(), filter).Decode(&rpics)
-		if err != nil { log.Fatal(err) }
-		randsongs = append(randsongs, rpics)
+		var rplaylists map[string]string
+		err = collection.FindOne(context.Background(), filter).Decode(&rplaylists)
+		if err != nil { log.Println(ff); log.Fatal(err) }
+		randsongs = append(randsongs, rplaylists)
 	}
 	log.Println(len(randsongs))
 	log.Println(randsongs[:plcount])
