@@ -599,10 +599,11 @@ func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil { log.Fatal(err) }
 		NewAllItems = append(NewAllItems, results)
 	}
-	z := []map[string]string{}
-	x := map[string]string{}
-	z = append(z, x)
+	
 	if len(NewAllItems) < 1 {
+		z := []map[string]string{}
+		x := map[string]string{}
+		z = append(z, x)
 		var noresult ArtVIEW = ArtVIEW{
 			Artist: "None Found",
 			ArtistID: "None Found",
@@ -610,8 +611,10 @@ func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 			Page: "None Found",
 			Idx: "None Found",
 		}
+		zoo := []ArtVIEW{}
+		zoo = append(zoo, noresult)
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(&noresult)
+		json.NewEncoder(w).Encode(&zoo)
 	} else {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(&NewAllItems)
