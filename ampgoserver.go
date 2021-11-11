@@ -581,7 +581,7 @@ func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 	ServerCheckError(err, "artistAlpha: MongoDB connection has failed")
 	coll := client.Database("artistalpha").Collection(alpha)
 	cur, err := coll.Find(context.TODO(), filter, opts)
-	ServerCheckError(err, "albumAlpha: allIdx has failed")
+	ServerCheckError(err, "artistAlpha: allIdx has failed")
 	var allItems []map[string]string
 	if err = cur.All(context.TODO(), &allItems); err != nil {
 		log.Fatal(err)
@@ -592,16 +592,44 @@ func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 		filter := bson.M{"artist": item["artist"]}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
-		ServerCheckError(err, "albumAlpha: MongoDB connection has failed")
+		ServerCheckError(err, "artistAlpha: MongoDB connection has failed")
 		collection := client.Database("artistview").Collection("artistview")
 		var results ArtVIEW
 		err = collection.FindOne(context.Background(), filter).Decode(&results)
 		if err != nil { log.Fatal(err) }
 		NewAllItems = append(NewAllItems, results)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&NewAllItems)
+	z := []map[string]string{}
+	x := map[string]string{}
+	z = append(z, x)
+	if len(NewAllItems) < 1 {
+		var noresult ArtVIEW = ArtVIEW{
+			Artist: "None Found",
+			ArtistID: "None Found",
+			Albums: z,
+			Page: "None Found",
+			Idx: "None Found",
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(&noresult)
+	} else {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(&NewAllItems)
+	}
+	
 }
+
+
+		// type ArtVIEW struct {
+		// 	Artist   string              `bson:"artist"`
+		// 	ArtistID string              `bson:"artistID"`
+		// 	Albums   []map[string]string `bson:"albums"`
+		// 	Page     string              `bson:"page"`
+		// 	Idx      string              `bson:"idx"`
+		// }
+		
+
+
 
 func albumAlphaHandler(w http.ResponseWriter, r *http.Request) {
 	alpha := r.URL.Query().Get("alpha")
