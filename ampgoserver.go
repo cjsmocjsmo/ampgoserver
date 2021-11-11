@@ -507,6 +507,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	var randsongs []map[string]string
 	for _, f := range num_list {
 		ff := strconv.Itoa(f)
+		log.Println(ff)
 		filter := bson.D{{"idx", ff}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
