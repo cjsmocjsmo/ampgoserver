@@ -586,21 +586,8 @@ func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 	if err = cur.All(context.TODO(), &allItems); err != nil {
 		log.Fatal(err)
 	}
-
-	var NewAllItems []ArtVIEW
-	for _, item := range allItems {
-		filter := bson.M{"artist": item["artist"]}
-		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-		defer ampgosetup.Close(client, ctx, cancel)
-		ServerCheckError(err, "artistAlpha: MongoDB connection has failed")
-		collection := client.Database("artistview").Collection("artistview")
-		var results ArtVIEW
-		err = collection.FindOne(context.Background(), filter).Decode(&results)
-		if err != nil { log.Fatal(err) }
-		NewAllItems = append(NewAllItems, results)
-	}
 	
-	if len(NewAllItems) < 1 {
+	if len(allItems) < 1 {
 		z := []map[string]string{}
 		x := map[string]string{}
 		z = append(z, x)
@@ -616,23 +603,23 @@ func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(&zoo)
 	} else {
+		var NewAllItems []ArtVIEW
+		for _, item := range allItems {
+			filter := bson.M{"artist": item["artist"]}
+			client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+			defer ampgosetup.Close(client, ctx, cancel)
+			ServerCheckError(err, "artistAlpha: MongoDB connection has failed")
+			collection := client.Database("artistview").Collection("artistview")
+			var results ArtVIEW
+			err = collection.FindOne(context.Background(), filter).Decode(&results)
+			if err != nil { log.Fatal(err) }
+			NewAllItems = append(NewAllItems, results)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(&NewAllItems)
 	}
 	
 }
-
-
-		// type ArtVIEW struct {
-		// 	Artist   string              `bson:"artist"`
-		// 	ArtistID string              `bson:"artistID"`
-		// 	Albums   []map[string]string `bson:"albums"`
-		// 	Page     string              `bson:"page"`
-		// 	Idx      string              `bson:"idx"`
-		// }
-		
-
-
 
 func albumAlphaHandler(w http.ResponseWriter, r *http.Request) {
 	alpha := r.URL.Query().Get("alpha")
@@ -650,20 +637,42 @@ func albumAlphaHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	var NewAllItems []AlbVieW2
-	for _, item := range allItems {
-		filter := bson.M{"album": item["album"]}
-		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-		defer ampgosetup.Close(client, ctx, cancel)
-		ServerCheckError(err, "MongoDB connection has failed")
-		collection := client.Database("albumview").Collection("albumview")
-		var results AlbVieW2
-		err = collection.FindOne(context.Background(), filter).Decode(&results)
-		if err != nil { log.Fatal(err) }
-		NewAllItems = append(NewAllItems, results)
+	if len(allItems) < 1 {
+		z := []map[string]string{}
+		x := map[string]string{}
+		z = append(z, x)
+		var noresult AlbVieW2 = AlbVieW2{
+			Artist: "None Found",
+			ArtistID: "None Found",
+			Album: "None Found",
+			AlbumID: "None Found",
+			Songs: z,
+			AlbumPage: "None Found",
+			NumSongs: "None Found",
+			PicPath: "None Found",
+			Idx: "None Found",
+			PicHttpAddr: "None Found",
+		}
+		zoo := []AlbVieW2{}
+		zoo = append(zoo, noresult)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(&zoo)
+	} else {
+		var NewAllItems []AlbVieW2
+		for _, item := range allItems {
+			filter := bson.M{"album": item["album"]}
+			client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+			defer ampgosetup.Close(client, ctx, cancel)
+			ServerCheckError(err, "MongoDB connection has failed")
+			collection := client.Database("albumview").Collection("albumview")
+			var results AlbVieW2
+			err = collection.FindOne(context.Background(), filter).Decode(&results)
+			if err != nil { log.Fatal(err) }
+			NewAllItems = append(NewAllItems, results)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(&NewAllItems)
 	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&NewAllItems)
 }
 
 func songAlphaHandler(w http.ResponseWriter, r *http.Request) {
