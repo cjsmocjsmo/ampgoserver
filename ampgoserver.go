@@ -441,18 +441,27 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plID, _ := UUID()
 
 	filter := bson.D{{}}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
-	ampgosetup.CheckError(err, "MongoDB connection has failed")
-	collection := client.Database("songtotal").Collection("total")
-
-	var allInts map[string]string
-	err = collection.FindOne(context.Background(), filter).Decode(&allInts)
-	if err != nil { log.Fatal(err) }
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("songcount").Collection("total")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "allIdx has failed")
+	var num_map []map[string]string
+	if err = cur.All(context.TODO(), &num_map); err != nil {
+		log.Println("randplaylist dbcall has fucked up")
+		log.Fatal(err)
+	}
+	somenum := "";
+	for _, item := range num_map {
+		somenum = item["total"]
+	}
 
 	var num_list []int
 	for _, num := range plc {
-		newTotal, _ := strconv.Atoi(allInts["total"])
+		newTotal, _ := strconv.Atoi(somenum)
 		ranN := genrandom(newTotal)
 		num_list = append(num_list, ranN)
 		fmt.Println(num)
