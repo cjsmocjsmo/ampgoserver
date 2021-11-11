@@ -508,7 +508,9 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	for _, f := range num_list {
 		ff := strconv.Itoa(f)
 		log.Println(ff)
-		filter := bson.D{{"idx", ff}}
+		log.Printf("this is ff type: %T", ff)
+		log.Printf("this is f type: %T", f)
+		filter := bson.D{{"idx", f}}
 		client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 		defer ampgosetup.Close(client, ctx, cancel)
 		ampgosetup.CheckError(err, "MongoDB connection has failed")
