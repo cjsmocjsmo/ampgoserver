@@ -454,12 +454,14 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("randplaylist dbcall has fucked up")
 		log.Fatal(err)
 	}
+	log.Println(num_map)
 	somenum := "";
 	for _, item := range num_map {
 		somenum = item["total"]
 	}
-
+	log.Println(somenum)
 	var num_list []int
+	log.Println(plc)
 	for _, num := range plc {
 		newTotal, _ := strconv.Atoi(somenum)
 		log.Println(newTotal)
