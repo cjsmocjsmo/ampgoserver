@@ -424,6 +424,12 @@ func Shuffle(slice []int) {
 }
 
 // test with curl http://192.168.0.91:9090/CreateRandomPlaylist?songcount=25&&name=RucRandom
+func genrandom(maxx int) int {
+	rand.Seed(time.Now().UnixNano())
+    min := 10
+    max := maxx
+    return rand.Intn(max - min + 1) + min
+}
 
 func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -444,10 +450,18 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil { log.Fatal(err) }
 
 	var num_list []int
-	for i, _ := range allInts {
-		ff, _ := strconv.Atoi(i)
-		num_list = append(num_list, ff)
+	for _, num := range plc {
+		ranN := genrandom(allInts["total"])
+		num_list = append(num_list, ranN)
+		fmt.Println(num)
 	}
+
+
+
+	// for i, _ := range allInts {
+	// 	ff, _ := strconv.Atoi(i)
+	// 	num_list = append(num_list, ff)
+	// }
 
 	// filter := bson.D{{}}
 	// opts := options.Find()
