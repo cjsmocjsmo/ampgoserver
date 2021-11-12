@@ -426,7 +426,7 @@ func Shuffle(slice []int) {
 // test with curl http://192.168.0.91:9090/CreateRandomPlaylist?songcount=25&&name=RucRandom
 func genrandom(maxx int) int {
 	rand.Seed(time.Now().UnixNano())
-    min := 10
+    // min := 10
     // max := maxx
     // return rand.Intn(maxx - min + 1) + 10
 	return rand.Intn(maxx)
@@ -493,7 +493,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
 	plz.PlayListID = plID
-	plz.PlayListCount = len(randsongs)
+	plz.PlayListCount = strconv.Itoa(len(randsongs))
 	plz.PlayList = randsongs
 	log.Println("This is plz")
 	log.Println(plz)
