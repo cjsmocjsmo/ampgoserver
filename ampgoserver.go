@@ -508,6 +508,9 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	var randsongs []map[string]string
 	
 	for _, f := range num_list {
+		if len(randsongs) == plcount {
+			break
+		}
 		ff := strconv.Itoa(f)
 		log.Println(ff)
 		log.Printf("this is ff type: %T", ff)
@@ -521,13 +524,10 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		err = collection.FindOne(context.Background(), filter).Decode(&rplaylists)
 		if err != nil { log.Println(ff); continue } //log.Fatal(err) }
 		randsongs = append(randsongs, rplaylists)
-		if len(randsongs) == plcount {
-			break
-		}
 	}
 	
 	log.Println(len(randsongs))
-	log.Println(randsongs[:plcount])
+	// log.Println(randsongs[:plcount])
 	log.Println(plcount)
 	log.Printf("this is plcount type %T", plcount)
 
@@ -537,7 +537,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plz.PlayListName = plname
 	plz.PlayListID = plID
 	plz.PlayListCount = plc
-	plz.PlayList = randsongs[:plcount]
+	plz.PlayList = randsongs
 	log.Println("This is plz")
 	log.Println(plz)
 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
