@@ -432,14 +432,12 @@ func genrandom(maxx int) int {
 }
 
 func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
-
 	plc := r.URL.Query().Get("songcount")
 	plname := r.URL.Query().Get("name")
 	log.Printf("planame: %s", plname)
 	log.Printf("plc: %s", plc)
 	plcount, _ := strconv.Atoi(plc)
 	plID, _ := UUID()
-
 	filter := bson.D{{}}
 	opts := options.Find()
 	opts.SetProjection(bson.M{"_id": 0})
@@ -459,11 +457,9 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	for _, item := range num_map {
 		somenum = item["total"]
 	}
-
 	log.Println(somenum)
 	var num_list []int
 	log.Println(plcount)
-	// for _, num := range plcount {
 	for i := 1; i <= plcount; i++ {
 		nT, _ := strconv.Atoi(somenum)
 		newTotal := nT * 2
@@ -473,40 +469,8 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		num_list = append(num_list, ranN)
 	}
 	log.Println(num_list)
-
-
-
-	// for i, _ := range allInts {
-	// 	ff, _ := strconv.Atoi(i)
-	// 	num_list = append(num_list, ff)
-	// }
-
-	// filter := bson.D{{}}
-	// opts := options.Find()
-	// opts.SetProjection(bson.M{"_id": 0, "idx": 1})
-	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	// defer ampgosetup.Close(client, ctx, cancel)
-	// ServerCheckError(err, "MongoDB connection has failed")
-	// coll := client.Database("maindb").Collection("maindb")
-	// cur, err := coll.Find(context.TODO(), filter, opts)
-	// ServerCheckError(err, "allIdx has failed")
-	// var indexlist []map[string]string
-	// if err = cur.All(context.TODO(), &indexlist); err != nil {
-	// 	log.Println("randplaylist dbcall has fucked up")
-	// 	log.Fatal(err)
-	// }
-
-
-	// var num_list []int
-	// for _, idx := range indexlist {
-	// 	index := idx["idx"]
-	// 	index1, _ := strconv.Atoi(index)
-	// 	num_list = append(num_list, index1)
-	// }
-
 	Shuffle(num_list)
 	var randsongs []map[string]string
-	
 	for _, f := range num_list {
 		if len(randsongs) == plcount {
 			break
@@ -525,14 +489,6 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil { log.Println(ff); continue } //log.Fatal(err) }
 		randsongs = append(randsongs, rplaylists)
 	}
-	
-	log.Println(len(randsongs))
-	// log.Println(randsongs[:plcount])
-	log.Println(plcount)
-	log.Printf("this is plcount type %T", plcount)
-
-	log.Println(randsongs[:2])
-	
 	var plz AmpgoRandomPlaylistData
 	plz.PlayListName = plname
 	plz.PlayListID = plID
