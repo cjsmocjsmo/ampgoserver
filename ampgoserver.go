@@ -393,8 +393,23 @@ func deletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := DeleteOne(client, ctx, "randplaylists", "randplaylists", filter)
 	ServerCheckError(err2, "deleteplaylist has failed")
+	// w.Header().Set("Content-Type", "application/json")
+	// json.NewEncoder(w).Encode("Playlist deleted")
+	filter := bson.D{{}}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("randplaylists").Collection("randplaylists")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "allIdx has failed")
+	var allplaylists []AmpgoRandomPlaylistData
+	if err = cur.All(context.TODO(), &allplaylists); err != nil {
+		log.Fatal(err)
+	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Playlist deleted")
+	json.NewEncoder(w).Encode(&allplaylists)
 }
 
 func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
@@ -412,7 +427,23 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plzz)
 	ServerCheckError(err2, "plz insertion has failed")
-	allPlaylistsHandler(w, r)
+
+
+	filter := bson.D{{}}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("randplaylists").Collection("randplaylists")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "allIdx has failed")
+	var allplaylists []AmpgoRandomPlaylistData
+	if err = cur.All(context.TODO(), &allplaylists); err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allplaylists)
 }
 
 func Shuffle(slice []int) {
@@ -426,9 +457,6 @@ func Shuffle(slice []int) {
 // test with curl http://192.168.0.91:9090/CreateRandomPlaylist?songcount=25&&name=RucRandom
 func genrandom(maxx int) int {
 	rand.Seed(time.Now().UnixNano())
-    // min := 10
-    // max := maxx
-    // return rand.Intn(maxx - min + 1) + 10
 	return rand.Intn(maxx)
 }
 
@@ -501,7 +529,22 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plz)
 	ServerCheckError(err2, "plz insertion has failed")
-	allPlaylistsHandler(w, r)
+	
+	filter := bson.D{{}}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("randplaylists").Collection("randplaylists")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "allIdx has failed")
+	var allplaylists []AmpgoRandomPlaylistData
+	if err = cur.All(context.TODO(), &allplaylists); err != nil {
+		log.Fatal(err)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allplaylists)
 }
 
 func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
@@ -555,6 +598,7 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	songinfo := songInfoFindOne("maindb", "maindb", "fileID", fileID, )
 	log.Println("This is songinfo")
 	log.Println(songinfo)
+	
 	playlistInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "playlistID", plid)
 	log.Println("this is playlistinfo")
 	log.Println(playlistInfo)
