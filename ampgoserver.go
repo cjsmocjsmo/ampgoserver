@@ -591,6 +591,12 @@ func playlistInfoFromPlaylistID(db string, coll string, filtertype string, filte
 	return results
 }
 
+func increasePlayListCount(astring string) string {
+	newint, _ := strconv.Atoi(astring)
+	newnewint := newint + 1
+	return strconv.Itoa(newnewint)
+}
+
 func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	fileID := r.URL.Query().Get("fileid")
 	plid := r.URL.Query().Get("playlistid")
@@ -606,8 +612,11 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(playlistInfo)
 
 	playlistInfo.PlayList = append(playlistInfo.PlayList, songinfo)
+	newcount := increasePlayListCount(playlistInfo.PlayListCount)
 
-	update := bson.M{"$set": bson.M{"playlist": playlistInfo.PlayList}}
+	update := bson.M{"$set": bson.M{
+		"playlistcount": newcount,
+		"playlist": playlistInfo.PlayList}}
 
 	filter := bson.M{"playlistID": plid}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
