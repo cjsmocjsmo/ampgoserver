@@ -616,7 +616,9 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{"$set": bson.M{
 		"playlistcount": newcount,
-		"playlist": playlistInfo.PlayList}}
+		"playlist": playlistInfo.PlayList,
+		},
+	}
 
 	filter := bson.M{"playlistID": plid}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
