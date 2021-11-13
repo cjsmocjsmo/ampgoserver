@@ -416,6 +416,8 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plname := r.URL.Query().Get("name")
 	plID, _ := UUID()
 	var emptymap []map[string]string
+	var emptyitem map[string]string = map[string]string{"title": "None Found"}
+	emptymap = append(emptymap, emptyitem)
 	var plzz AmpgoRandomPlaylistData
 	plzz.PlayListName = plname
 	plzz.PlayListID = plID
@@ -427,7 +429,6 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plzz)
 	ServerCheckError(err2, "plz insertion has failed")
-
 
 	filter := bson.D{{}}
 	opts := options.Find()
