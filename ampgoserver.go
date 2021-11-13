@@ -548,7 +548,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func allPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
-	filter := bson.D{{}}
+	filter := bson.M{}
 	opts := options.Find()
 	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
@@ -633,7 +633,7 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 	alpha := r.URL.Query().Get("alpha")
-	filter := bson.D{{}}
+	filter := bson.M{}
 	opts := options.Find()
 	opts.SetProjection(bson.M{"_id": 0})
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
