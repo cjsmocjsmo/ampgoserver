@@ -596,6 +596,7 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	plid := r.URL.Query().Get("playlistid")
 	log.Printf("fileID: %s", fileID)
 	log.Printf("plid: %s", plid)
+
 	songinfo := songInfoFindOne("maindb", "maindb", "fileID", fileID, )
 	log.Println("This is songinfo")
 	log.Println(songinfo)
@@ -603,29 +604,53 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	playlistInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "playlistID", plid)
 	log.Println("this is playlistinfo")
 	log.Println(playlistInfo)
-	var newcontainer []map[string]string
-	//Put old items into new list
-	for _, item := range playlistInfo.PlayList {
-		newcontainer = append(newcontainer, item)
-	}
-	//Put new song into new list
-	newcontainer = append(newcontainer, songinfo)
 
-	var newPlayListInfo AmpgoRandomPlaylistData = AmpgoRandomPlaylistData{
-		PlayListName : playlistInfo.PlayListName,
-		PlayListID : playlistInfo.PlayListID,
-		PlayListCount : playlistInfo.PlayListCount,
-		PlayList : newcontainer,
-	}
-	log.Println(newPlayListInfo)
-	fmt.Println(newPlayListInfo)
-	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
-	ServerCheckError(err3, "Connections has failed")
-	defer Close(client, ctx, cancel)
-	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &newPlayListInfo)
-	ServerCheckError(err2, "newPlayListInfo insertion has failed")
+	playlistInfo.PlayList = append(playlistInfo.PlayList, songinfo)
+
+	update := bson.M{"$set": bson.M{"playlist": playlistInfo.PlayList}}
+
+	filter := bson.M{"playlistID": plid}
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	collection := client.Database("randplaylists").Collection("randplaylists")
+	// var results AmpgoRandomPlaylistData
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil { log.Fatal(err) }
+	// return results
+
+	// type AmpgoRandomPlaylistData struct {
+	// 	PlayListName string `bson:"playlistname"`
+	// 	PlayListID string `bson:"playlistID"`
+	// 	PlayListCount string `bson:"playlistcount"`
+	// 	PlayList []map[string]string `bson:"playlist"`
+	// }
+
+	// var newcontainer []map[string]string
+	// //Put old items into new list
+	// for _, item := range playlistInfo.PlayList {
+	// 	newcontainer = append(newcontainer, item)
+	// }
+	// //Put new song into new list
+	// newcontainer = append(newcontainer, songinfo)
+
+	// var newPlayListInfo AmpgoRandomPlaylistData = AmpgoRandomPlaylistData{
+	// 	PlayListName : playlistInfo.PlayListName,
+	// 	PlayListID : playlistInfo.PlayListID,
+	// 	PlayListCount : playlistInfo.PlayListCount,
+	// 	PlayList : newcontainer,
+	// }
+	// log.Println(newPlayListInfo)
+	// fmt.Println(newPlayListInfo)
+
+	// client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
+	// ServerCheckError(err3, "Connections has failed")
+	// defer Close(client, ctx, cancel)
+	// _, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &newPlayListInfo)
+	// ServerCheckError(err2, "newPlayListInfo insertion has failed")
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Inserted Into DataBase")
+	json.NewEncoder(w).Encode("Playlist updated")
 }
 
 ///////////////////////////////////////////////////////////////////////////////
