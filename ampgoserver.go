@@ -663,19 +663,22 @@ func deleteSongFromPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	newPlayListInfo := remove(PlayListInfo.PlayList, toRemoveIndex)
 	newcount := decreasePlayListCount(PlayListInfo.PlayListCount)
 
-	update := bson.M{"$set": bson.M{
-		"playlistcount": newcount,
-		"playlist": newPlayListInfo.PlayList,
-		},
-	}
+	log.Println(newPlayListInfo)
+	log.Println(newcount)
 
-	filter := bson.M{"playlistID": plid}
-	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	defer ampgosetup.Close(client, ctx, cancel)
-	ServerCheckError(err, "MongoDB connection has failed")
-	collection := client.Database("randplaylists").Collection("randplaylists")
-	_, err = collection.UpdateOne(context.Background(), filter, update)
-	if err != nil { log.Fatal(err) }
+	// update := bson.M{"$set": bson.M{
+	// 	"playlistcount": newcount,
+	// 	"playlist": newPlayListInfo.PlayList,
+	// 	},
+	// }
+
+	// filter := bson.M{"playlistID": plid}
+	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	// defer ampgosetup.Close(client, ctx, cancel)
+	// ServerCheckError(err, "MongoDB connection has failed")
+	// collection := client.Database("randplaylists").Collection("randplaylists")
+	// _, err = collection.UpdateOne(context.Background(), filter, update)
+	// if err != nil { log.Fatal(err) }
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Playlist updated")
 
