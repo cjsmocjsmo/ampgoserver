@@ -597,6 +597,12 @@ func increasePlayListCount(astring string) string {
 	return strconv.Itoa(newnewint)
 }
 
+func decreasePlayListCount(astring string) string {
+	newint, _ := strconv.Atoi(astring)
+	newnewint := newint - 1
+	return strconv.Itoa(newnewint)
+}
+
 func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	fileID := r.URL.Query().Get("fileid")
 	plid := r.URL.Query().Get("playlistid")
@@ -629,6 +635,50 @@ func addSongToPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil { log.Fatal(err) }
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode("Playlist updated")
+}
+
+func remove(s []map[string]string, i int) []map[string]string {
+    s[i] = s[len(s)-1]
+    return s[:len(s)-1]
+}
+
+// func RemoveIndex(s []map[string]string, index int) []map[string]string {
+//     return append(s[:index], s[index+1:]...)
+// }
+
+func deleteSongFromPlaylistHandler(w http.ResponseWriter, r *http.Request) {
+	fileID := r.URL.Query().Get("fileid")
+	plid := r.URL.Query().Get("playlistid")
+	log.Printf("fileID: %s", fileID)
+	log.Printf("plid: %s", plid)
+
+	PlayListInfo := playlistInfoFromPlaylistID("randplaylists", "randplaylists", "playlistID", plid)
+	var toRemoveIndex int;
+	for i, song := range PlayListInfo.PlayList {
+		if song["fileID"] == fileID {
+			toRemoveIndex = i
+		}
+	}
+
+	newPlayListInfo := remove(PlayListInfo.PlayList, toRemoveIndex)
+	newcount := decreasePlayListCount(PlayListInfo.PlayListCount)
+
+	update := bson.M{"$set": bson.M{
+		"playlistcount": newcount,
+		"playlist": newPlayListInfo.PlayList,
+		},
+	}
+
+	filter := bson.M{"playlistID": plid}
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	collection := client.Database("randplaylists").Collection("randplaylists")
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil { log.Fatal(err) }
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("Playlist updated")
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -785,6 +835,8 @@ func main() {
 	r.HandleFunc("/ArtistInfoByPage", artistInfoByPageHandler)
 	r.HandleFunc("/AlbumInfoByPage", albumInfoByPageHandler)
 	r.HandleFunc("/SongInfoByPage", songInfoByPageHandler)
+
+	r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
 	
 	///////////////////////////////////////////////////////////////////////////
 
