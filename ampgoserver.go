@@ -573,7 +573,7 @@ func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil { log.Fatal(err) }
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode("Playlist updated")
+	json.NewEncoder(w).Encode(&curplaylistname)
 
 }
 
