@@ -539,7 +539,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func getCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
-	filter := bson.M{}
+	filter := bson.M{"record": "1"}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
@@ -554,7 +554,7 @@ func getCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	curplaylistname := r.URL.Query().Get("curplaylistname")
 	curplaylistid := r.URL.Query().Get("curplaylistid")
-	filter := bson.M{}
+	filter := bson.M{"record": "1"}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
