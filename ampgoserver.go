@@ -442,7 +442,7 @@ func addPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&allplaylists)
 }
 
-func Shuffle(slice []int) {
+func shuffle(slice []int) {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	for n := len(slice); n > 0; n-- {
 	   randIndex := r.Intn(n)
@@ -493,7 +493,7 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		num_list = append(num_list, ranN)
 	}
 	log.Println(num_list)
-	Shuffle(num_list)
+	shuffle(num_list)
 	var randsongs []map[string]string
 	for _, f := range num_list {
 		if len(randsongs) == plcount {
@@ -855,7 +855,8 @@ func main() {
 	r.HandleFunc("/SongInfoByPage", songInfoByPageHandler)
 
 	r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
-	r.HandleFunc("/UpdateCurrentPlayListName", updateCurrentPlayListNameHandler) 
+	r.HandleFunc("/UpdateCurrentPlayListName", updateCurrentPlayListNameHandler)
+	r.HandleFunc("/GetCurrentPlayListName", getCurrentPlayListNameHandler)
 	
 	///////////////////////////////////////////////////////////////////////////
 
