@@ -538,13 +538,18 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
-
-
-
-
-
-
-
+func getCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
+	filter := bson.M{}
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
+	collection := client.Database("curplaylistname").Collection("curplaylistname")
+	var results map[string]string
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil { log.Fatal(err) }
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&results)
+}
 
 func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	curplaylistname := r.URL.Query().Get("curplaylistname")
