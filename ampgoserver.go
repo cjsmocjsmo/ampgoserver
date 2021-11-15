@@ -533,6 +533,57 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
+	curplaylistname := r.URL.Query().Get("curplaylistname")
+	filter := bson.M{}
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
+	collection := client.Database("curplaylistname").Collection("curplaylistname")
+	var results map[string]string
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil { log.Fatal(err) }
+
+	update := bson.M{"$set": bson.M{ "curplaylistname": curplaylistname }}
+
+	// filter = bson.M{}
+	// client, ctx, cancel, err = ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	// defer ampgosetup.Close(client, ctx, cancel)
+	// ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
+	// collection = client.Database("curplaylistname").Collection("curplaylistname")
+	_, err = collection.UpdateOne(context.Background(), filter, update)
+	if err != nil { log.Fatal(err) }
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode("Playlist updated")
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func songInfoFindOne(db string, coll string, filtertype string, filterstring string) map[string]string {
 	filter := bson.M{filtertype: filterstring}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
@@ -799,6 +850,7 @@ func main() {
 	r.HandleFunc("/SongInfoByPage", songInfoByPageHandler)
 
 	r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
+	r.HandleFunc("/UpdateCurrentPlayListName", updateCurrentPlayListNameHandler) 
 	
 	///////////////////////////////////////////////////////////////////////////
 
