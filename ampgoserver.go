@@ -357,7 +357,7 @@ func randomPicsHandler(w http.ResponseWriter, r *http.Request) {
 		index1, _ := strconv.Atoi(indexx)
 		num_list = append(num_list, index1)
 	}
-	Shuffle(num_list)
+	shuffle(num_list)
 	log.Println(num_list)
 	var randpics []string
 	for _, f := range num_list[:12] {
