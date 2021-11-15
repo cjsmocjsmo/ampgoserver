@@ -553,6 +553,7 @@ func getCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 
 func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	curplaylistname := r.URL.Query().Get("curplaylistname")
+	curplaylistid := r.URL.Query().Get("curplaylistid")
 	filter := bson.M{}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
 	defer ampgosetup.Close(client, ctx, cancel)
@@ -562,7 +563,7 @@ func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	err = collection.FindOne(context.Background(), filter).Decode(&results)
 	if err != nil { log.Fatal(err) }
 
-	update := bson.M{"$set": bson.M{ "curplaylistname": curplaylistname }}
+	update := bson.M{"$set": bson.M{ "curplaylistname": curplaylistname, "curplaylistID": curplaylistid}}
 
 	// filter = bson.M{}
 	// client, ctx, cancel, err = ampgosetup.Connect("mongodb://db:27017/ampgodb")
