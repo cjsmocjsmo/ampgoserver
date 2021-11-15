@@ -572,8 +572,17 @@ func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	// collection = client.Database("curplaylistname").Collection("curplaylistname")
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil { log.Fatal(err) }
+
+	// filter := bson.M{}
+	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	// defer ampgosetup.Close(client, ctx, cancel)
+	// ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
+	// collection := client.Database("curplaylistname").Collection("curplaylistname")
+	var find_results map[string]string
+	err = collection.FindOne(context.Background(), filter).Decode(&find_results)
+	if err != nil { log.Fatal(err) }
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&curplaylistname)
+	json.NewEncoder(w).Encode(&find_results)
 
 }
 
