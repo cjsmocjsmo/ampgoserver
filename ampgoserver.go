@@ -530,14 +530,6 @@ func addRandomPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&allplaylists)
 }
 
-
-
-
-
-
-
-
-
 func getCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	filter := bson.M{"record": "1"}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
@@ -562,32 +554,33 @@ func updateCurrentPlayListNameHandler(w http.ResponseWriter, r *http.Request) {
 	var results map[string]string
 	err = collection.FindOne(context.Background(), filter).Decode(&results)
 	if err != nil { log.Fatal(err) }
-
 	update := bson.M{"$set": bson.M{ "curplaylistname": curplaylistname, "curplaylistID": curplaylistid}}
-
-	// filter = bson.M{}
-	// client, ctx, cancel, err = ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	// defer ampgosetup.Close(client, ctx, cancel)
-	// ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
-	// collection = client.Database("curplaylistname").Collection("curplaylistname")
 	_, err = collection.UpdateOne(context.Background(), filter, update)
 	if err != nil { log.Fatal(err) }
-
-	// filter := bson.M{}
-	// client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
-	// defer ampgosetup.Close(client, ctx, cancel)
-	// ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
-	// collection := client.Database("curplaylistname").Collection("curplaylistname")
 	var find_results map[string]string
 	err = collection.FindOne(context.Background(), filter).Decode(&find_results)
 	if err != nil { log.Fatal(err) }
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&find_results)
-
 }
 
-
-
+func playListByIDHandler(w http.ResponseWriter, r *http.Request) {
+	playlistid := r.URL.Query().Get("playlistid")
+	filter := bson.M{"playlistID": playlistid}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "MongoDB connection has failed")
+	coll := client.Database("randplaylists").Collection("randplaylists")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "allIdx has failed")
+	var allplaylists []AmpgoRandomPlaylistData
+	if err = cur.All(context.TODO(), &allplaylists); err != nil {
+		log.Fatal(err)
+	}
+	return allplaylists
+}
 
 
 
@@ -867,6 +860,8 @@ func main() {
 	r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
 	r.HandleFunc("/UpdateCurrentPlayListName", updateCurrentPlayListNameHandler)
 	r.HandleFunc("/GetCurrentPlayListName", getCurrentPlayListNameHandler)
+
+	r.HandleFunc("/PlayListByID", playListByIDHandler)
 	
 	///////////////////////////////////////////////////////////////////////////
 
