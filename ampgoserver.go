@@ -571,7 +571,7 @@ func playListByIDHandler(w http.ResponseWriter, r *http.Request) {
 	defer ampgosetup.Close(client, ctx, cancel)
 	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
 	collection := client.Database("randplaylists").Collection("randplaylists")
-	var results map[string]string
+	var results AmpgoRandomPlaylistData
 	err = collection.FindOne(context.Background(), filter).Decode(&results)
 	if err != nil { log.Fatal(err) }
 	w.Header().Set("Content-Type", "application/json")
