@@ -588,6 +588,10 @@ func playListByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 
 
+
+
+
+
 func songInfoFindOne(db string, coll string, filtertype string, filterstring string) map[string]string {
 	filter := bson.M{filtertype: filterstring}
 	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
