@@ -30,9 +30,7 @@ RUN \
   mkdir ./fsData && \
   mkdir ./fsData/thumb && \
   mkdir ./fsData/crap && \
-  chmod -R +rwx ./fsData && \
-  mkdir ./logs && \
-  chmod -R +rwx ./logs
+  chmod -R +rwx ./fsData 
 
 STOPSIGNAL SIGINT
 CMD ["./main"]
