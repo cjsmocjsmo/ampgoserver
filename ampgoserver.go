@@ -23,10 +23,13 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
+
 	// "log"
 	"math/rand"
 	"strconv"
 	"time"
+
 	// "path"
 	// "strings"
 	// "io/ioutil"
@@ -34,13 +37,14 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"net/http"
+
 	"github.com/cjsmocjsmo/ampgosetup"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"net/http"
 )
 
 // type plist struct {
@@ -718,6 +722,79 @@ func deleteSongFromPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 // alphabet stuff
 ///////////////////////////////////////////////////////////////////////////////
 
+func Unique(arr []string) []string {
+	occured := map[string]bool{}
+	result := []string{}
+	for e := range arr {
+		if !occured[arr[e]] {
+			occured[arr[e]] = true
+			result = append(result, arr[e])
+		}
+	}
+	return result
+}
+
+func getMainDbMeta() []map[string]string {
+	filter := bson.M{}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := ampgosetup.Connect("mongodb://db:27017/ampgodb")
+	defer ampgosetup.Close(client, ctx, cancel)
+	ServerCheckError(err, "artistFirstLetterHandler: MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	ServerCheckError(err, "artistFirstLetterHandler: allIdx has failed")
+	var letters []map[string]string
+	if err = cur.All(context.TODO(), &letters); err != nil {
+		fmt.Println(err)
+	}
+	return letters
+}
+
+func artistFirstLetterHandler(w http.ResponseWriter, r *http.Request) {
+	theletters := getMainDbMeta()
+	var newlist []string
+	for _, fl := range theletters {
+		fmt.Println(fl)
+		boo := fl["artstart"]
+		newlist = append(newlist, boo)
+	}
+	uniquelist := Unique(newlist)
+	sort.Strings(uniquelist)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(uniquelist)
+
+}
+
+func albumFirstLetterHandler(w http.ResponseWriter, r *http.Request) {
+	theletters := getMainDbMeta()
+	var newlist []string
+	for _, fl := range theletters {
+		fmt.Println(fl)
+		boo := fl["albstart"]
+		newlist = append(newlist, boo)
+	}
+	uniquelist := Unique(newlist)
+	sort.Strings(uniquelist)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(uniquelist)
+
+}
+
+func songFirstLetterHandler(w http.ResponseWriter, r *http.Request) {
+	theletters := getMainDbMeta()
+	var newlist []string
+	for _, fl := range theletters {
+		fmt.Println(fl)
+		boo := fl["titstart"]
+		newlist = append(newlist, boo)
+	}
+	uniquelist := Unique(newlist)
+	sort.Strings(uniquelist)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(uniquelist)
+}
+
 func artistAlphaHandler(w http.ResponseWriter, r *http.Request) {
 	alpha := r.URL.Query().Get("alpha")
 	filter := bson.M{}
@@ -887,6 +964,10 @@ func main() {
 	r.HandleFunc("/ArtistAlpha", artistAlphaHandler)
 	r.HandleFunc("/AlbumAlpha", albumAlphaHandler)
 	r.HandleFunc("/SongAlpha", songAlphaHandler)
+
+	r.HandleFunc("/ArtistFirstLetter", artistFirstLetterHandler)
+	r.HandleFunc("/AlbumFirstLetter", albumFirstLetterHandler)
+	r.HandleFunc("/SongFirstLetter", songFirstLetterHandler)
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("/root/static/"))))
 	r.PathPrefix("/fsData/").Handler(http.StripPrefix("/fsData/", http.FileServer(http.Dir("/root/fsData/"))))
