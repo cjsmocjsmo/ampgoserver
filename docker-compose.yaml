@@ -27,8 +27,9 @@ services:
       - AMPGO_THUMB_PATH=/root/static/
       - AMPGO_TEMPLATE_ADDRESS=/root/static/templates/
       - AMPGO_SERVER_PORT=9090
-      - AMPGO_SERVER_ADDRESS=http://192.168.0.90
-      # - AMPGO_SERVER_ADDRESS=http://192.168.0.91
+      - AMPGO_SERVER_ADDRESS=http://192.168.0.91
+      # - AMPGO_SERVER_ADDRESS=http://192.168.0.90
+      
     networks:
       - ampgo
     ports:
@@ -48,24 +49,24 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      # device: /home/pipi/Data/db
-      device: /home/charliepi/PISTUFF/Data/db
+      device: /home/pipi/Data/db
+      # device: /home/charliepi/PISTUFF/Data/db
       o: bind
 
   ampgovol:
     driver: local
     driver_opts:
       type: none
-      # device: /media/pipi/FOO/music
-      device: /home/charliepi/PISTUFF/music
+      device: /media/pipi/FOO/music
+      # device: /home/charliepi/PISTUFF/music
       o: bind
 
   ampgopicvol:
     driver: local
     driver_opts:
       type: none
-      # device: /home/pipi/Thumbnails
-      device: /home/charliepi/PISTUFF/Thumbnails
+      device: /home/pipi/Thumbnails
+      # device: /home/charliepi/PISTUFF/Thumbnails
       o: bind
 
 
