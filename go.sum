@@ -9,6 +9,8 @@ github.com/cjsmocjsmo/ampgosetup v0.5.38 h1:1pqrZG4AXEy8nQSDNUOTQ1rup0pivfT2jVA1
 github.com/cjsmocjsmo/ampgosetup v0.5.38/go.mod h1:/2pgKK/gy2wzt/MW+EMhJuFPdMfXwgr4orYrE9lmxK4=
 github.com/cjsmocjsmo/ampgosetup v0.6.0 h1:rqkV/eQyOGBdNHsS87U7GlZrLq5imrWaFnlEuf5de1s=
 github.com/cjsmocjsmo/ampgosetup v0.6.0/go.mod h1:/2pgKK/gy2wzt/MW+EMhJuFPdMfXwgr4orYrE9lmxK4=
+github.com/cjsmocjsmo/ampgosetup v0.6.1 h1:ZJq5t33KFdFgPjLVNCBigFeYwP2MEj8JALlWKabXmYk=
+github.com/cjsmocjsmo/ampgosetup v0.6.1/go.mod h1:/2pgKK/gy2wzt/MW+EMhJuFPdMfXwgr4orYrE9lmxK4=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

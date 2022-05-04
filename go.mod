@@ -3,7 +3,7 @@ module github.com/cjsmocjsmo/ampgoserver
 go 1.18
 
 require (
-	github.com/cjsmocjsmo/ampgosetup v0.6.0
+	github.com/cjsmocjsmo/ampgosetup v0.6.1
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	go.mongodb.org/mongo-driver v1.9.0
