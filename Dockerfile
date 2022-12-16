@@ -44,6 +44,7 @@ COPY assets/p1thumb.jpg ./static/
 
 RUN \
   mkdir ./fsData && \
+<<<<<<< HEAD
   mkdir ./fsData/music && \
   mkdir ./fsData/thumb
 
@@ -51,6 +52,11 @@ RUN \
   mkdir ./metadata && \
   chmod -R +rwx ./metadata
 
+=======
+  mkdir ./fsData/thumb && \
+  mkdir ./fsData/crap && \
+  chmod -R +rwx ./fsData 
+>>>>>>> f20da2ddcb7a98082434f6523561d1aa4ff66f68
 
 STOPSIGNAL SIGINT
 CMD ["./main"]
