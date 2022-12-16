@@ -2,9 +2,10 @@ version: "3.3"
 
 services:
   db:
-    image: mongo:4.4
-    # image: andresvidal/rpi3-mongodb3:latest
-    container_name: "ampgodb_container"
+    # image: andresvidal/rpi3-mongodb3
+    image: mongo:4.4.0
+    # image: arm64v8/mongo
+    container_name: "mongo_container"
     volumes:
       - mongovol:/root/data/db
     networks:
@@ -13,30 +14,31 @@ services:
       - 27017:27017
 
   ampgoserver:
-    image: ampgo:0.1.12
+    image: ampgo:0.1.59
     build: .
     environment:
       - AMPGO_SETUP=1
       - AMPGO_OFFSET=35
       - AMPGO_SETUP_LOG_PATH=/root/logs/ampgo_setup_log.txt
-      - AMPGO_LIB_LOG_PATH=/root/logs/ampgo_lib_log.txt
       - AMPGO_SERVER_LOG_PATH=/root/logs/ampgo_server_log.txt
       - AMPGO_AMPDB_ADDR=mongodb://db:27017/ampgodb
       - AMPGO_MONGODB_THUMB_ADDRESS=mongodb://db:27017/ampgothumb
-      - AMPGO_TEMP_DIRPATH=/root/fsData/tmp
+      # - AMPGO_TEMP_DIRPATH=/root/fsData/tmp
       - AMPGO_NUM_RAND_PICS=25
-      - AMPGO_MEDIA_PATH=/root/fsData
+      - AMPGO_MEDIA_PATH=/root/fsData/music/music/
+      - AMPGO_MEDIA_METADATA_PATH=/root/fsData/music/metadata/
       - AMPGO_NO_ART_PIC_PATH=/root/static/p1thumb.jpg
       - AMPGO_THUMB_PATH=/root/static/
-      - AMPGO_TEMPLATE_ADDRESS=./static/templates/
+      - AMPGO_TEMPLATE_ADDRESS=/root/static/templates/
       - AMPGO_SERVER_PORT=9090
-      - AMPGO_SERVER_ADDRESS=http://192.168.0.91
+      - AMPGO_SERVER_ADDRESS=http://192.168.0.90
+      # - AMPGO_SERVER_ADDRESS=http://192.168.0.91
     networks:
       - ampgo
     ports:
       - 9090:9090
     volumes:
-      - ampgovol:/root/fsData/
+      - ampgovol:/root/fsData/music
       - ampgopicvol:/root/static
       - ampgologvol:/root/logs/
     depends_on:
@@ -50,27 +52,31 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /home/pipi/Data/db
+      # device: /home/pipi/Data/db
+      device: /home/charliepi/PISTUFF/Data/db
       o: bind
 
   ampgovol:
     driver: local
     driver_opts:
       type: none
-      device: /media/pipi/FOO/music
+      # device: /media/pipi/FOO/music
+      device: /media/charliepi/FOO/music
       o: bind
 
   ampgopicvol:
     driver: local
     driver_opts:
       type: none
-      device: /home/pipi/Thumbnails
+      # device: /home/pipi/Thumbnails
+      device: /home/charliepi/PISTUFF/Thumbnails
       o: bind
 
   ampgologvol:
     driver: local
     driver_opts:
       type: none
-      device: /home/pipi/Ampgologs
+      # device: /home/pipi/Ampgologs
+      device: /home/charliepi/PISTUFF/Ampgologs
       o: bind
 

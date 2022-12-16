@@ -11,7 +11,8 @@ from mutagen.mp3 import MP3
 class FindDuration:
 
     def __init__(self):
-        self.mp3_path = "/media/pipi/FOO/music"
+        # self.mp3_path = "/media/pipi/FOO/music"
+        self.mp3_path = "/home/charliepi/PISTUFF/music"
 
     def convert_to_json(self, alist):
         jsonStr = json.dumps(alist)
