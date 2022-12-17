@@ -18,59 +18,59 @@ import (
 	"os"
 	// "path/filepath"
 	"strconv"
-	
+
 	"strings"
 	// "time"
 )
 
 type JsonJPG struct {
-	BaseDir string
-    Full_Filename string
-    File_Size string
-    Ext string
-    Filename string
-    Dir_catagory string
-    Dir_artist string
-    Dir_album string
-    Index string
-    Dir_delem string
-    File_id string
-    Jpg_width string
-    Jpg_height string
-    File_delem string
-    Img_base64_str string
+	BaseDir        string
+	Full_Filename  string
+	File_Size      string
+	Ext            string
+	Filename       string
+	Dir_catagory   string
+	Dir_artist     string
+	Dir_album      string
+	Index          string
+	Dir_delem      string
+	File_id        string
+	Jpg_width      string
+	Jpg_height     string
+	File_delem     string
+	Img_base64_str string
 }
 
 type JsonMP3 struct {
-    BaseDir string
-    Full_Filename string
-    File_Size string
-    Ext string
-    Dir string
-    Filename string
-    Dir_catagory string
-    Dir_artist string
-    Dir_album string
-    Dir_delem string
-    File_delem string
-    Track string
-    File_artist string
-    File_album string
-    File_song string
-	Index string
-    File_id string
-    Tags_artist string
-    Tags_album string
-    Tags_song string
-    Artist_first string
-    Album_first string
-    Song_first string
+	BaseDir        string
+	Full_Filename  string
+	File_Size      string
+	Ext            string
+	Dir            string
+	Filename       string
+	Dir_catagory   string
+	Dir_artist     string
+	Dir_album      string
+	Dir_delem      string
+	File_delem     string
+	Track          string
+	File_artist    string
+	File_album     string
+	File_song      string
+	Index          string
+	File_id        string
+	Tags_artist    string
+	Tags_album     string
+	Tags_song      string
+	Artist_first   string
+	Album_first    string
+	Song_first     string
 	Img_base64_str string
-    Play_length string
+	Play_length    string
 }
 
 type JsonPage struct {
-	Page string
+	Page     string
 	PageList []JsonMP3
 }
 
@@ -110,7 +110,7 @@ func Read_File_mp3(apath string) {
 	CheckError(err, "unmarshal has fucked up")
 	// fmt.Println(jsonmp3)
 	InsertMP3Json("maindb", "mp3s", jsonmp3)
-	log.Printf("%s : Read_File_mp3 complete", apath)
+	// log.Printf("%s : Read_File_mp3 complete", apath)
 }
 
 func Read_File_jpg(apath string) {
@@ -121,7 +121,7 @@ func Read_File_jpg(apath string) {
 	CheckError(err, "jpg unmarshal has fucked up")
 	// fmt.Println(jsonjpg)
 	InsertJPGJson("maindb", "jpgs", jsonjpg)
-	log.Printf("%s : Read_File_jpg complete", apath)
+	// log.Printf("%s : Read_File_jpg complete", apath)
 }
 
 func Read_File_pages(apath string) {
@@ -132,54 +132,40 @@ func Read_File_pages(apath string) {
 	CheckError(err, "file pages unmarshal has fucked up")
 	// fmt.Println(jsonpages)
 	InsertPagesJson("maindb", "pages", jsonpages)
-	log.Printf("%s : Read_File_pages complete", apath)
+	// log.Printf("%s : Read_File_pages complete", apath)
 }
 
-func UpdateMainDB(m2 JsonMP3) (Doko map[string]string) {
-	
-	fmt.Println(m2.Filename)
-
-	artID := gArtistInfo(m2.Tags_artist)
+func UpdateMainDB(m2 JsonMP3) {
+	artid := gArtistInfo(m2.Tags_artist)
+	artID := artid["artistID"]
+	fmt.Println("this is artID")
 	fmt.Println(artID)
 
-	albID := gAlbumInfo(m2.Tags_album)
+	albid := gAlbumInfo(m2.Tags_album)
+	albID := albid["albumID"]
 	fmt.Println("this is albID")
 	fmt.Println(albID)
 
-	fullpath := m2.Full_Filename
-	fmt.Println(fullpath)
-
-	duration := m2.Play_length
-	fmt.Println("this is duration")
-	fmt.Println(duration)
-
-
+	Doko := make(map[string]string)
 	Doko["Dir"] = m2.Dir
+	Doko["Full_Filename"] = m2.Full_Filename
 	Doko["Filename"] = m2.Filename
 	Doko["Ext"] = m2.Ext
 	Doko["File_id"] = m2.File_id
 	Doko["File_Size"] = m2.File_Size
 	Doko["Artist"] = m2.Tags_artist
-	Doko["ArtistID"] = artID["artistID"]
+	Doko["ArtistID"] = artID
+	Doko["Artist_first"] = strings.ToUpper(m2.Artist_first)
 	Doko["Album"] = m2.Tags_album
-	Doko["AlbumID"] = albID["albumID"]
+	Doko["AlbumID"] = albID
+	Doko["Album_first"] = strings.ToUpper(m2.Album_first)
 	Doko["Song"] = m2.Tags_song
+	Doko["SongID"] = m2.File_id
+	Doko["Song_first"] = strings.ToUpper(m2.Song_first)
 	// Doko.Genre = m2["genre"]
 	Doko["Index"] = m2.Index
 	Doko["Play_length"] = m2.Play_length
-	Doko["Artist_first"] = strings.ToUpper(m2.Artist_first)
-	Doko["Album_first"] = strings.ToUpper(m2.Album_first)
-	Doko["Song_first"] = strings.ToUpper(m2.Song_first)
-
-	// Doko.PicID = m2["picID"]
-	// Doko.TitlePage = m2["titlepage"]
-	
-	// Doko.PicPath = m2["picPath"]
-	// Doko.PicHttpAddr = m2["picHttpAddr"]
-	// Doko.HttpAddr = m2["httpaddr"]
-	
-	// Doko.ArtStart = StartsWith(m2["artist"])
-	
+	Doko["Img_base64_str"] = m2.Img_base64_str
 	log.Println(Doko)
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	CheckError(err, "UpdateMainDB: Connections has failed")
@@ -199,33 +185,58 @@ func UpdateMainDB(m2 JsonMP3) (Doko map[string]string) {
 
 
 
-// Tagmap exported
-type Tagmap struct {
-	Dirpath     string `bson:"dirpath"`
-	Filename    string `bson:"filename"`
-	Extension   string `bson:"extension"`
-	FileID      string `bson:"fileID"`
-	Filesize    string `bson:"filesize"`
-	Artist      string `bson:"artist"`
-	ArtistID    string `bson:"artistID"`
-	Album       string `bson:"album"`
-	AlbumID     string `bson:"albumID"`
-	Title       string `bson:"title"`
-	Genre       string `bson:"genre"`
-	TitlePage   string `bson:"titlepage"`
-	PicID       string `bson:"picID"`
-	PicDB       string `bson:"picDB"`
-	PicPath     string `bson:"picPath"`
-	PicHttpAddr string `bson:"picHttpAddr"`
-	Idx         string `bson:"idx"`
-	HttpAddr    string `bson:"httpaddr"`
-	Duration    string `bson:"duration"`
 
-	ArtStart string `bson:"artstart"`
-	AlbStart string `bson:"albstart"`
-	TitStart string `bson:"titstart"`
-	Howl     string `bson:"howl"`
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Tagmap exported
+// type Tagmap struct {
+// 	Dirpath     string `bson:"dirpath"`
+// 	Filename    string `bson:"filename"`
+// 	Extension   string `bson:"extension"`
+// 	FileID      string `bson:"fileID"`
+// 	Filesize    string `bson:"filesize"`
+// 	Artist      string `bson:"artist"`
+// 	ArtistID    string `bson:"artistID"`
+// 	Album       string `bson:"album"`
+// 	AlbumID     string `bson:"albumID"`
+// 	Title       string `bson:"title"`
+// 	Genre       string `bson:"genre"`
+// 	TitlePage   string `bson:"titlepage"`
+// 	PicID       string `bson:"picID"`
+// 	PicDB       string `bson:"picDB"`
+// 	PicPath     string `bson:"picPath"`
+// 	PicHttpAddr string `bson:"picHttpAddr"`
+// 	Idx         string `bson:"idx"`
+// 	HttpAddr    string `bson:"httpaddr"`
+// 	Duration    string `bson:"duration"`
+
+// 	ArtStart string `bson:"artstart"`
+// 	AlbStart string `bson:"albstart"`
+// 	TitStart string `bson:"titstart"`
+// 	Howl     string `bson:"howl"`
+// }
 
 type ArtVieW2 struct {
 	Artist   string              `bson:"artist"`
@@ -360,7 +371,7 @@ func GetAllObjects() (Main2SL []JsonMP3) {
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
 	CheckError(err, "GetAllObjects: MongoDB connection has failed")
-	collection := client.Database("tempdb1").Collection("meta1")
+	collection := client.Database("maindb").Collection("mp3s")
 	cur, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		fmt.Println(err)

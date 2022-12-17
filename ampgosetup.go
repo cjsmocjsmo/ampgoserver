@@ -55,18 +55,18 @@ func SetUp() {
     }
 
 	log.Println("starting walk")
-	for idx, foo := range files {
+	for _, foo := range files {
 		switch{
 		case strings.Contains(foo, "mp3"):
-			log.Println(idx, foo)
+			// log.Println(idx, foo)
 			Read_File_mp3(foo)
 
 		case strings.Contains(foo, "jpg"):
-			log.Println(idx, foo)
+			// log.Println(idx, foo)
 			Read_File_jpg(foo)
 
 		case strings.Contains(foo, "page"):
-			log.Println(idx, foo)
+			// log.Println(idx, foo)
 			Read_File_pages(foo)
 		}
 	}
@@ -75,7 +75,7 @@ func SetUp() {
 	log.Println("starting GetDistAlbumMeta1")
 	// dalb := AmpgoDistinct("tempdb1", "meta1", "album")
 	dalb := AmpgoDistinct("maindb", "mp3s", "tags_album")
-	log.Println(dalb)
+	// log.Println(dalb)
 	// fmt.Println(dalb)
 	log.Println("GetDistAlbumMeta1 is complete ")
 
@@ -94,7 +94,7 @@ func SetUp() {
 	log.Println("starting GDistArtist")
 	// dart := AmpgoDistinct("tempdb1", "meta1", "artist")
 	dart := AmpgoDistinct("maindb", "mp3s", "tags_artist")
-	log.Println(dart)
+	// log.Println(dart)
 	log.Println("GDistArtist is complete ")
 
 	log.Println("starting InsArtistID")
@@ -111,13 +111,14 @@ func SetUp() {
 
 	log.Println("starting GetAllObjects")
 	AllObjs := GetAllObjects()
+	log.Println(AllObjs)
 	log.Println("GetAllObjects is complete ")
-	fmt.Println(AllObjs)
+	
 
 	log.Println("starting UpdateMainDB")
 	var wg3 sync.WaitGroup
 	for _, blob := range AllObjs {
-		log.Println(blob)
+		// log.Println(blob)
 		wg3.Add(1)
 		go func(blob JsonMP3) {
 			UpdateMainDB(blob)
@@ -127,31 +128,31 @@ func SetUp() {
 	}
 	log.Println("UpdateMainDB is complete ")
 
-	// fmt.Println("starting ArtistFirst ")
-	// var wg99a sync.WaitGroup
-	// for _, art := range dart {
-	// 	wg99a.Add(1)
-	// 	go func(art string) {
-	// 		ArtistFirst(art)
-	// 		wg99a.Done()
-	// 	}(art)
-	// 	wg99a.Wait()
-	// }
-	// fmt.Println("ArtistFirst is complete ")
+	log.Println("starting ArtistFirst ")
+	var wg99a sync.WaitGroup
+	for _, art := range dart {
+		wg99a.Add(1)
+		go func(art string) {
+			ArtistFirst(art)
+			wg99a.Done()
+		}(art)
+		wg99a.Wait()
+	}
+	log.Println("ArtistFirst is complete ")
 
-	// fmt.Println("starting AlbumFirst ")
-	// var wg99 sync.WaitGroup
-	// for _, alb := range dalb {
-	// 	wg99.Add(1)
-	// 	go func(alb string) {
-	// 		AlbumFirst(alb)
-	// 		wg99.Done()
-	// 	}(alb)
-	// 	wg99.Wait()
-	// }
-	// fmt.Println("AlbumFirst is complete ")
+	log.Println("starting AlbumFirst ")
+	var wg99 sync.WaitGroup
+	for _, alb := range dalb {
+		wg99.Add(1)
+		go func(alb string) {
+			AlbumFirst(alb)
+			wg99.Done()
+		}(alb)
+		wg99.Wait()
+	}
+	log.Println("AlbumFirst is complete ")
 
-	// SongFirst()
+	SongFirst()
 
 	// fmt.Println("starting GetPicForAlbum ")
 	// var wg133 sync.WaitGroup

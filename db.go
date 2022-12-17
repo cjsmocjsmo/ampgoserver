@@ -134,7 +134,7 @@ func AmpgoDistinct(db string, coll string, fieldd string) []string {
 func InsAlbumID(alb string) {
 	uuid, _ := UUID()
 	Albid := map[string]string{"album": alb, "albumID": uuid}
-	AmpgoInsertOne("albumids", "albumid", Albid)
+	AmpgoInsertOne("ids", "albumid", Albid)
 }
 
 // func InsertAlbumIDS(db string, coll string, ablob AlbumIDLIST) {
@@ -148,7 +148,7 @@ func InsAlbumID(alb string) {
 func InsArtistID(art string) {
 	uuid, _ := UUID()
 	Artid := map[string]string{"artist": art, "artistID": uuid}
-	AmpgoInsertOne("artistids", "artistid", Artid)
+	AmpgoInsertOne("ids", "artistid", Artid)
 }
 
 // func InsertArtistIDS(db string, coll string, ablob ArtistIDLIST) {
@@ -165,7 +165,7 @@ func gArtistInfo(Art string) map[string]string {
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
 	CheckError(err, "gArtistInfo: MongoDB connection has failed")
-	collection := client.Database("artistids").Collection("artistid")
+	collection := client.Database("ids").Collection("artistid")
 	var ArtInfo map[string]string = make(map[string]string)
 	err = collection.FindOne(context.Background(), filter).Decode(&ArtInfo)
 	if err != nil {
@@ -180,7 +180,7 @@ func gAlbumInfo(Alb string) map[string]string {
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
 	CheckError(err, "gAlbumInfo: MongoDB connection has failed")
-	collection := client.Database("albumids").Collection("albumid")
+	collection := client.Database("ids").Collection("albumid")
 	var AlbInfo map[string]string = make(map[string]string)
 	err = collection.FindOne(context.Background(), filter).Decode(&AlbInfo)
 	if err != nil {
