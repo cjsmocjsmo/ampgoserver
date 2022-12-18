@@ -22,14 +22,16 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"log"
 	"os"
+	"strings"
+
 	// "path"
 	"runtime"
 
 	"sync"
 	"time"
+
 	// "context"
 	// "encoding/json"
 	"path/filepath"
@@ -37,7 +39,7 @@ import (
 	// "gopkg.in/yaml.v3"
 )
 
-// var OFFSET string = os.Getenv("AMPGO_OFFSET")
+var OFFSET string = os.Getenv("AMPGO_OFFSET")
 var OffSet int = ConvertSTR(OFFSET)
 
 func SetUp() {
@@ -51,12 +53,12 @@ func SetUp() {
 	log.Println(address)
 	files, err := filepath.Glob(address)
 	if err != nil {
-        log.Println(err)
-    }
+		log.Println(err)
+	}
 
 	log.Println("starting walk")
 	for _, foo := range files {
-		switch{
+		switch {
 		case strings.Contains(foo, "mp3"):
 			// log.Println(idx, foo)
 			Read_File_mp3(foo)
@@ -109,11 +111,10 @@ func SetUp() {
 	}
 	log.Println("InsArtistID is complete ")
 
-	log.Println("starting GetAllObjects")
-	AllObjs := GetAllObjects()
+	log.Println("starting GetAllMP3Objects")
+	AllObjs := GetAllMP3Objects()
 	// log.Println(AllObjs)
-	log.Println("GetAllObjects is complete ")
-	
+	log.Println("GetAllMP3Objects is complete ")
 
 	log.Println("starting UpdateMainDB")
 	var wg3 sync.WaitGroup
@@ -158,7 +159,7 @@ func SetUp() {
 	log.Println("starting GDistArtistForAgg")
 	DistArtist := GDistArtistForAgg()
 	// log.Println(DistArtist)
-	fmt.Println(DistArtist)
+	// fmt.Println(DistArtist)
 	log.Println("GDistArtistForAgg is complete ")
 
 	fmt.Println("starting AggArtist")
@@ -184,7 +185,6 @@ func SetUp() {
 	}
 	fmt.Println("AggArtists is complete")
 	log.Println("AggArtists is complete")
-	
 
 	//AggAlbum
 	log.Println("AggAlbum has started")
@@ -212,13 +212,12 @@ func SetUp() {
 		}(APLX)
 		wg6.Wait()
 	}
-	
+
 	// CreateRandomPicsDB()
 
 	// CreateRandomPlaylistDB()
 
 	// CreateCurrentPlayListNameDB()
-
 
 	t2 := time.Now().Sub(ti)
 	fmt.Println(t2)

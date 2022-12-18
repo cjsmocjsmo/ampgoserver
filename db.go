@@ -2,21 +2,12 @@ package main
 
 import (
 	"context"
-	// "crypto/rand"
-	// "encoding/hex"
-	// "encoding/json"
 	"fmt"
 	// "github.com/bogem/id3v2"
 	// "github.com/disintegration/imaging"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	// "io/ioutil"
-	// "log"
-	// "os"
-	// "path/filepath"
-	// "strconv"
-	// "strings"
 	"time"
 )
 
@@ -90,6 +81,12 @@ func AmpgoInsertOne(db string, coll string, ablob map[string]string) {
 	CheckError(err2, "AmpgoInsertOne has failed")
 }
 
+func DeleteOne(client *mongo.Client, ctxx context.Context, dataBase, col string, doc interface{}) (*mongo.DeleteResult, error) {
+	collection := client.Database(dataBase).Collection(col)
+	result2, err1 := collection.DeleteOne(ctxx, doc)
+	return result2, err1
+}
+
 func InsertMP3Json(db string, coll string, ablob JsonMP3) {
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	CheckError(err, "InsertMP3Json: Connections has failed")
@@ -114,18 +111,35 @@ func InsertPagesJson(db string, coll string, ablob JsonPage) {
 	CheckError(err2, "InsertPagesJson has failed")
 }
 
-func GetAllObjects() (Main2SL []JsonMP3) {
+func GetAllMP3Objects() (Main2SL []JsonMP3) {
 	filter := bson.D{}
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
-	CheckError(err, "GetAllObjects: MongoDB connection has failed")
+	CheckError(err, "GetAllMP3Objects: MongoDB connection has failed")
 	collection := client.Database("maindb").Collection("mp3s")
 	cur, err := collection.Find(context.Background(), filter)
 	if err != nil {
 		fmt.Println(err)
 	}
 	if err = cur.All(context.Background(), &Main2SL); err != nil {
-		fmt.Println("GetAllObjects: cur.All has failed")
+		fmt.Println("GetAllMP3Objects: cur.All has failed")
+		fmt.Println(err)
+	}
+	return
+}
+
+func GetAllJPGObjects() (Main2S []JsonJPG) {
+	filter := bson.D{}
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "GetAllJPGObjects: MongoDB connection has failed")
+	collection := client.Database("maindb").Collection("jpgs")
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err = cur.All(context.Background(), &Main2S); err != nil {
+		fmt.Println("GetAllJPGObjects: cur.All has failed")
 		fmt.Println(err)
 	}
 	return
@@ -175,7 +189,6 @@ func InsArtistID(art string) {
 // 	_, err2 := InsertOne(client, ctx, db, coll, ablob)
 // 	CheckError(err2, "InsertArtistIDS has failed")
 // }
-
 
 func gArtistInfo(Art string) map[string]string {
 	filter := bson.M{"artist": Art}

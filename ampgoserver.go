@@ -24,7 +24,7 @@ import (
 	"fmt"
 	// "log"
 	// "math/rand"
-	"os"
+	// "os"
 	// "os/exec"
 	// "io"
 	// "strconv"
@@ -44,62 +44,10 @@ import (
 	// "github.com/cjsmocjsmo/ampgosetup"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	// "go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	// "go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
+	// "go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-// // type plist struct {
-// // 	PLName string              `bson:"PLName"`
-// // 	PLId   string              `bson:"PLId"`
-// // 	Songs  []map[string]string `bson:"Songs"`
-// // }
-
-// // type iMgfa struct {
-// // 	Album   string              `bson:"album"`
-// // 	PicPath string              `bson:"picPath"`
-// // 	Songs   []map[string]string `bson:"songs"`
-// // }
-
-// // type rAlbinfo struct {
-// // 	Songs   []map[string]string `bson:"songs"`
-// // 	HSImage string              `bson:"hsimage"`
-// // }
-
-// // type voodoo struct {
-// // 	Playlists []map[string]string `bson:"playlists"`
-// // }
-
-// //ArtVIEW exported
-// type ArtVIEW struct {
-// 	Artist   string              `bson:"artist"`
-// 	ArtistID string              `bson:"artistID"`
-// 	Albums   []map[string]string `bson:"albums"`
-// 	Page     string              `bson:"page"`
-// 	Idx      string              `bson:"idx"`
-// }
-
-// type AlbVieW2 struct {
-// 	Artist      string              `bson:"artist"`
-// 	ArtistID    string              `bson:"artistID"`
-// 	Album       string              `bson:"album"`
-// 	AlbumID     string              `bson:"albumID"`
-// 	Songs       []map[string]string `bson:"songs"`
-// 	AlbumPage   string              `bson:"albumpage"`
-// 	NumSongs    string              `bson:"numsongs"`
-// 	PicPath     string              `bson:"picPath"`
-// 	Idx         string              `bson:"idx"`
-// 	PicHttpAddr string              `bson:"picHttpAddr"`
-// }
-
-// type AmpgoRandomPlaylistData struct {
-// 	PlayListName  string              `bson:"playlistname"`
-// 	PlayListID    string              `bson:"playlistID"`
-// 	PlayListCount string              `bson:"playlistcount"`
-// 	PlayList      []map[string]string `bson:"playlist"`
-// }
-
-var OFFSET string = os.Getenv("AMPGO_OFFSET")
 
 // func RemoveLogFile(logtxtfile string) bool {
 // 	// var logtxtfile string = os.Getenv("AMPGO_SERVER_LOG_PATH")
@@ -134,14 +82,6 @@ var OFFSET string = os.Getenv("AMPGO_OFFSET")
 // 	return "Logging started"
 // }
 
-func ServerCheckError(err error, msg string) {
-	if err != nil {
-		fmt.Println(msg)
-		fmt.Println(msg)
-		panic(err)
-	}
-}
-
 func setUpHandler(w http.ResponseWriter, r *http.Request) {
 	// Setup()
 	w.Header().Set("Content-Type", "application/json")
@@ -160,40 +100,40 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 //Artist Stuff
 ///////////////////////////////////////////////////////////////////////////////
 
-// func artistInfoByPageHandler(w http.ResponseWriter, r *http.Request) {
-// 	page := r.URL.Query().Get("page")
-// 	filter := bson.M{"page": page}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
-// 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("artistview").Collection("artistview")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "initArtistInfo find has failed")
-// 	var allartist []ArtVIEW
-// 	if err = cur.All(context.TODO(), &allartist); err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Printf("%s this is allartist-", allartist)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&allartist)
-// 	fmt.Println("Init Artist Info Complete")
-// }
+func artistInfoByPageHandler(w http.ResponseWriter, r *http.Request) {
+	page := r.URL.Query().Get("page")
+	filter := bson.M{"page": page}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("artistview").Collection("artistview")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	CheckError(err, "initArtistInfo find has failed")
+	var allartist []ArtVIEW
+	if err = cur.All(context.TODO(), &allartist); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%s this is allartist-", allartist)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allartist)
+	fmt.Println("Init Artist Info Complete")
+}
 
-// func ArtViewFindOne(db string, coll string, filtertype string, filterstring string) ArtVIEW {
-// 	filter := bson.M{filtertype: filterstring}
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
-// 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
-// 	collection := client.Database(db).Collection(coll)
-// 	var results ArtVIEW
-// 	err = collection.FindOne(context.Background(), filter).Decode(&results)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	return results
-// }
+func ArtViewFindOne(db string, coll string, filtertype string, filterstring string) ArtVIEW {
+	filter := bson.M{filtertype: filterstring}
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "MongoDB connection has failed")
+	collection := client.Database(db).Collection(coll)
+	var results ArtVIEW
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return results
+}
 
 // func albumsForArtist2Handler(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println("Starting albumsForArtistHandler")
@@ -206,53 +146,53 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println("Init Artist Info Complete")
 // }
 
-// func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("Starting albumsForArtistHandler")
-// 	var artistid string = r.URL.Query().Get("selected")
-// 	fmt.Printf("%s this is artistid", artistid)
-// 	fmt.Printf("%T this is artistid type", artistid)
-// 	filter := bson.M{"artistID": artistid}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0, "songs": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
-// 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("albumview").Collection("albumview")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "initArtistInfo find has failed")
-// 	var allalbum []map[string]string
-// 	if err = cur.All(context.TODO(), &allalbum); err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Printf("%s this is allalbum-", allalbum)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&allalbum)
-// 	fmt.Println("Init Album Info Complete")
-// }
+func albumsForArtistHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Starting albumsForArtistHandler")
+	var artistid string = r.URL.Query().Get("selected")
+	fmt.Printf("%s this is artistid", artistid)
+	fmt.Printf("%T this is artistid type", artistid)
+	filter := bson.M{"artistID": artistid}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0, "songs": 0})
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("albumview").Collection("albumview")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	CheckError(err, "initArtistInfo find has failed")
+	var allalbum []map[string]string
+	if err = cur.All(context.TODO(), &allalbum); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%s this is allalbum-", allalbum)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allalbum)
+	fmt.Println("Init Album Info Complete")
+}
 
-// func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("Starting songsForAlbumHandler")
-// 	var albumid string = r.URL.Query().Get("selected")
-// 	fmt.Printf("%s this is albumid", albumid)
-// 	fmt.Printf("%T this is albumid type", albumid)
-// 	filter := bson.M{"albumID": albumid}
-// 	opts := options.Find()
-// 	opts.SetProjection(bson.M{"_id": 0})
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
-// 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
-// 	coll := client.Database("maindb").Collection("maindb")
-// 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "songsForAlbumHandler find has failed")
-// 	var allalbum []map[string]string
-// 	if err = cur.All(context.TODO(), &allalbum); err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	fmt.Printf("%s this is allalbum-", allalbum)
-// 	w.Header().Set("Content-Type", "application/json")
-// 	json.NewEncoder(w).Encode(&allalbum)
-// 	fmt.Println("songsForAlbumHandler Complete")
-// }
+func songsForAlbumHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Starting songsForAlbumHandler")
+	var albumid string = r.URL.Query().Get("selected")
+	fmt.Printf("%s this is albumid", albumid)
+	fmt.Printf("%T this is albumid type", albumid)
+	filter := bson.M{"albumID": albumid}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	CheckError(err, "songsForAlbumHandler find has failed")
+	var allalbum []map[string]string
+	if err = cur.All(context.TODO(), &allalbum); err != nil {
+		fmt.Println(err)
+	}
+	fmt.Printf("%s this is allalbum-", allalbum)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&allalbum)
+	fmt.Println("songsForAlbumHandler Complete")
+}
 
 // ///////////////////////////////////////////////////////////////////////////////
 // //Album Stuff
@@ -265,10 +205,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	coll := client.Database("albumview").Collection("albumview")
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "initAlbumInfo find has failed")
+// 	CheckError(err, "initAlbumInfo find has failed")
 // 	var allalbums []AlbVieW2
 // 	if err = cur.All(context.TODO(), &allalbums); err != nil {
 // 		fmt.Println(err)
@@ -286,10 +226,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0, "artist": 1, "title": 1, "fileID": 1, "httpaddr": 1})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	coll := client.Database("maindb").Collection("maindb")
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "ArtPipeline find has failed")
+// 	CheckError(err, "ArtPipeline find has failed")
 // 	var tv []map[string]string
 // 	if err = cur.All(context.TODO(), &tv); err != nil {
 // 		fmt.Println(err)
@@ -307,7 +247,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	collection := client.Database("maindb").Collection("maindb")
 // 	var results map[string]string
 // 	err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -335,7 +275,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	collection := client.Database("playlistdb").Collection("playlistdb")
 // 	var results map[string]string
 // 	err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -354,10 +294,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0, "index": 1})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	coll := client.Database("coverart").Collection("coverart")
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "randomPicsHandler has failed")
+// 	CheckError(err, "randomPicsHandler has failed")
 // 	var indexliststring []map[string]string
 // 	if err = cur.All(context.TODO(), &indexliststring); err != nil {
 // 		fmt.Println(err)
@@ -401,10 +341,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	coll := client.Database("randplaylists").Collection("randplaylists")
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "allIdx has failed")
+// 	CheckError(err, "allIdx has failed")
 // 	var allplaylists []AmpgoRandomPlaylistData
 // 	if err = cur.All(context.TODO(), &allplaylists); err != nil {
 // 		fmt.Println(err)
@@ -422,10 +362,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	plid := r.URL.Query().Get("playlistid")
 // 	filter := bson.M{"playlistID": plid}
 // 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
-// 	ServerCheckError(err3, "Connections has failed")
+// 	CheckError(err3, "Connections has failed")
 // 	defer Close(client, ctx, cancel)
 // 	_, err2 := DeleteOne(client, ctx, "randplaylists", "randplaylists", filter)
-// 	ServerCheckError(err2, "deleteplaylist has failed")
+// 	CheckError(err2, "deleteplaylist has failed")
 // 	allplaylists := AllPlayListsFunc()
 // 	w.Header().Set("Content-Type", "application/json")
 // 	json.NewEncoder(w).Encode(&allplaylists)
@@ -444,10 +384,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println("This is plzz")
 // 	fmt.Println(plzz)
 // 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
-// 	ServerCheckError(err3, "Connections has failed")
+// 	CheckError(err3, "Connections has failed")
 // 	defer Close(client, ctx, cancel)
 // 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plzz)
-// 	ServerCheckError(err2, "plz insertion has failed")
+// 	CheckError(err2, "plz insertion has failed")
 // 	allplaylists := AllPlayListsFunc()
 // 	w.Header().Set("Content-Type", "application/json")
 // 	json.NewEncoder(w).Encode(&allplaylists)
@@ -479,10 +419,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	coll := client.Database("songtotal").Collection("total")
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "allIdx has failed")
+// 	CheckError(err, "allIdx has failed")
 // 	var num_map []map[string]string
 // 	if err = cur.All(context.TODO(), &num_map); err != nil {
 // 		fmt.Println("randplaylist dbcall has fucked up")
@@ -535,10 +475,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	fmt.Println("This is plz")
 // 	fmt.Println(plz)
 // 	client, ctx, cancel, err3 := Connect("mongodb://db:27017/ampgodb")
-// 	ServerCheckError(err3, "Connections has failed")
+// 	CheckError(err3, "Connections has failed")
 // 	defer Close(client, ctx, cancel)
 // 	_, err2 := InsertOne(client, ctx, "randplaylists", "randplaylists", &plz)
-// 	ServerCheckError(err2, "plz insertion has failed")
+// 	CheckError(err2, "plz insertion has failed")
 // 	allplaylists := AllPlayListsFunc()
 // 	w.Header().Set("Content-Type", "application/json")
 // 	json.NewEncoder(w).Encode(&allplaylists)
@@ -548,7 +488,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{"record": "1"}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
+// 	CheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
 // 	collection := client.Database("curplaylistname").Collection("curplaylistname")
 // 	var results map[string]string
 // 	err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -565,7 +505,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{"record": "1"}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
+// 	CheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
 // 	collection := client.Database("curplaylistname").Collection("curplaylistname")
 // 	var results map[string]string
 // 	err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -591,7 +531,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{"playlistID": playlistid}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
+// 	CheckError(err, "updateCurrentPlayListName: MongoDB connection has failed")
 // 	collection := client.Database("randplaylists").Collection("randplaylists")
 // 	var results AmpgoRandomPlaylistData
 // 	err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -606,7 +546,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{filtertype: filterstring}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	collection := client.Database(db).Collection(coll)
 // 	var results map[string]string
 // 	err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -620,7 +560,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{filtertype: filterstring}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	collection := client.Database(db).Collection(coll)
 // 	var results AmpgoRandomPlaylistData
 // 	err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -668,7 +608,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{"playlistID": plid}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	collection := client.Database("randplaylists").Collection("randplaylists")
 // 	_, err = collection.UpdateOne(context.Background(), filter, update)
 // 	if err != nil {
@@ -708,7 +648,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	filter := bson.M{"playlistID": plid}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "MongoDB connection has failed")
+// 	CheckError(err, "MongoDB connection has failed")
 // 	collection := client.Database("randplaylists").Collection("randplaylists")
 // 	_, err = collection.UpdateOne(context.Background(), filter, update)
 // 	if err != nil {
@@ -730,10 +670,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "artistFirstLetterHandler: MongoDB connection has failed")
+// 	CheckError(err, "artistFirstLetterHandler: MongoDB connection has failed")
 // 	coll := client.Database("maindb").Collection("maindb")
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "artistFirstLetterHandler: allIdx has failed")
+// 	CheckError(err, "artistFirstLetterHandler: allIdx has failed")
 // 	var letters []map[string]string
 // 	if err = cur.All(context.TODO(), &letters); err != nil {
 // 		fmt.Println(err)
@@ -792,10 +732,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "artistAlpha: MongoDB connection has failed")
+// 	CheckError(err, "artistAlpha: MongoDB connection has failed")
 // 	coll := client.Database("artistalpha").Collection(alpha)
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "artistAlpha: allIdx has failed")
+// 	CheckError(err, "artistAlpha: allIdx has failed")
 // 	var allItems []map[string]string
 // 	if err = cur.All(context.TODO(), &allItems); err != nil {
 // 		fmt.Println(err)
@@ -822,7 +762,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 			filter := bson.M{"artist": item["artist"]}
 // 			client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 			defer Close(client, ctx, cancel)
-// 			ServerCheckError(err, "artistAlpha: MongoDB connection has failed")
+// 			CheckError(err, "artistAlpha: MongoDB connection has failed")
 // 			collection := client.Database("artistview").Collection("artistview")
 // 			var results ArtVIEW
 // 			err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -844,10 +784,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "albumAlpha: MongoDB connection has failed")
+// 	CheckError(err, "albumAlpha: MongoDB connection has failed")
 // 	coll := client.Database("albumalpha").Collection(alpha)
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "albumAlpha: allIdx has failed")
+// 	CheckError(err, "albumAlpha: allIdx has failed")
 // 	var allItems []map[string]string
 // 	if err = cur.All(context.TODO(), &allItems); err != nil {
 // 		fmt.Println(err)
@@ -879,7 +819,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 			filter := bson.M{"album": item["album"]}
 // 			client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 			defer Close(client, ctx, cancel)
-// 			ServerCheckError(err, "MongoDB connection has failed")
+// 			CheckError(err, "MongoDB connection has failed")
 // 			collection := client.Database("albumview").Collection("albumview")
 // 			var results AlbVieW2
 // 			err = collection.FindOne(context.Background(), filter).Decode(&results)
@@ -900,10 +840,10 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 // 	opts.SetProjection(bson.M{"_id": 0})
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	ServerCheckError(err, "songAlpha: MongoDB connection has failed")
+// 	CheckError(err, "songAlpha: MongoDB connection has failed")
 // 	coll := client.Database("songalpha").Collection(alpha)
 // 	cur, err := coll.Find(context.TODO(), filter, opts)
-// 	ServerCheckError(err, "songAlpha: allIdx has failed")
+// 	CheckError(err, "songAlpha: allIdx has failed")
 // 	var allItems []map[string]string
 // 	if err = cur.All(context.TODO(), &allItems); err != nil {
 // 		fmt.Println(err)
@@ -922,7 +862,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/SetUp", setUpHandler)
 	r.HandleFunc("/Home", homeHandler)
-	// r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
+	r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
 	// r.HandleFunc("/AlbumsForArtist2", albumsForArtist2Handler)
 	// r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
 	// r.HandleFunc("/RandomPics", randomPicsHandler)
@@ -934,7 +874,7 @@ func main() {
 	// r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
 	// r.HandleFunc("/DeletePlayList", deletePlaylistHandler)
 	// r.HandleFunc("/AddSongToPlaylist", addSongToPlaylistHandler)
-	// r.HandleFunc("/ArtistInfoByPage", artistInfoByPageHandler)
+	r.HandleFunc("/ArtistInfoByPage", artistInfoByPageHandler)
 	// r.HandleFunc("/AlbumInfoByPage", albumInfoByPageHandler)
 	// r.HandleFunc("/SongInfoByPage", songInfoByPageHandler)
 
@@ -946,32 +886,9 @@ func main() {
 
 	///////////////////////////////////////////////////////////////////////////
 
-	// r := mux.NewRouter()
-	// // r.HandleFunc("/SetUp", setUpHandler)
-	// r.HandleFunc("/Home", homeHandler)
-	// r.HandleFunc("/AlbumsForArtist", albumsForArtistHandler)
-	// r.HandleFunc("/AlbumsForArtist2", albumsForArtist2Handler)
-	// r.HandleFunc("/SongsForAlbum", songsForAlbumHandler)
-	// r.HandleFunc("/RandomPics", randomPicsHandler)
+	
 
-	///////////////////////////////////////////////////////////////////////////
-
-	// r.HandleFunc("/AddPlaylist", addPlaylistHandler)
-	// r.HandleFunc("/AddRandomPlaylist", addRandomPlaylistHandler)
-	// r.HandleFunc("/AllPlaylists", allPlaylistsHandler)
-	// r.HandleFunc("/DeletePlayList", deletePlaylistHandler)
-	// r.HandleFunc("/AddSongToPlaylist", addSongToPlaylistHandler)
-	// r.HandleFunc("/ArtistInfoByPage", artistInfoByPageHandler)
-	// r.HandleFunc("/AlbumInfoByPage", albumInfoByPageHandler)
-	// r.HandleFunc("/SongInfoByPage", songInfoByPageHandler)
-
-	// r.HandleFunc("/DeleteSongFromPlaylist", deleteSongFromPlaylistHandler)
-	// r.HandleFunc("/UpdateCurrentPlayListName", updateCurrentPlayListNameHandler)
-	// r.HandleFunc("/GetCurrentPlayListName", getCurrentPlayListNameHandler)
-
-	// r.HandleFunc("/PlayListByID", playListByIDHandler)
-
-	// ///////////////////////////////////////////////////////////////////////////
+	
 
 	// r.HandleFunc("/PlaySong", playSongHandler)
 	// r.HandleFunc("/PlayPlaylist", playPlaylistHandler)
@@ -999,37 +916,10 @@ func main() {
 	// 	handlers.AllowedOrigins([]string{"*"}))(r))
 }
 
-// func Close(client *mongo.Client, ctx context.Context, cancel context.CancelFunc) {
-// 	defer cancel()
-// 	defer func() {
-// 		if err := client.Disconnect(ctx); err != nil {
-// 			panic(err)
-// 		}
-// 	}()
-// }
 
-// func Connect(uri string) (*mongo.Client, context.Context, context.CancelFunc, error) {
-// 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-// 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
-// 	return client, ctx, cancel, err
-// }
 
-// func InsertOne(client *mongo.Client, ctx context.Context, dataBase, col string, doc interface{}) (*mongo.InsertOneResult, error) {
+// func DeleteOne(client *mongo.Client, ctxx context.Context, dataBase, col string, doc interface{}) (*mongo.DeleteResult, error) {
 // 	collection := client.Database(dataBase).Collection(col)
-// 	result, err := collection.InsertOne(ctx, doc)
-// 	return result, err
+// 	result2, err1 := collection.DeleteOne(ctxx, doc)
+// 	return result2, err1
 // }
-
-func DeleteOne(client *mongo.Client, ctxx context.Context, dataBase, col string, doc interface{}) (*mongo.DeleteResult, error) {
-	collection := client.Database(dataBase).Collection(col)
-	result2, err1 := collection.DeleteOne(ctxx, doc)
-	return result2, err1
-}
-
-// func Query(client *mongo.Client, ctx context.Context, dataBase, col string, query, field interface{}) (result *mongo.Cursor, err error) {
-// 	collection := client.Database(dataBase).Collection(col)
-// 	result, err = collection.Find(ctx, query, options.Find().SetProjection(field))
-// 	return
-// }
-
-

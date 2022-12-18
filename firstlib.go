@@ -1,8 +1,8 @@
 package main
 
 import (
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func ArtistFirst(astring string) string {

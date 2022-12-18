@@ -16,6 +16,7 @@ import (
 	// "io/ioutil"
 	"log"
 	"os"
+
 	// "path/filepath"
 	"strconv"
 
@@ -191,8 +192,6 @@ func AlbPipeline(DAlb map[string]string, page int, idx int) (MyAlbview AlbVieW2)
 	return
 }
 
-
-
 //////////////////////////////////////////////////////////////////////////
 
 func getFileInfo(apath string) (filename string, size string) {
@@ -228,22 +227,20 @@ func resizeImage(infile string, outfile string) string {
 	return outfile
 }
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-// func GetAllObjects() (Main2SL []JsonMP3) {
+// func GetAllMP3Objects() (Main2SL []JsonMP3) {
 // 	filter := bson.D{}
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 // 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "GetAllObjects: MongoDB connection has failed")
+// 	CheckError(err, "GetAllMP3Objects: MongoDB connection has failed")
 // 	collection := client.Database("maindb").Collection("mp3s")
 // 	cur, err := collection.Find(context.Background(), filter)
 // 	if err != nil {
 // 		fmt.Println(err)
 // 	}
 // 	if err = cur.All(context.Background(), &Main2SL); err != nil {
-// 		fmt.Println("GetAllObjects: cur.All has failed")
+// 		fmt.Println("GetAllMP3Objects: cur.All has failed")
 // 		fmt.Println(err)
 // 	}
 // 	return
