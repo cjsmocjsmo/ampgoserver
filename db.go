@@ -114,6 +114,23 @@ func InsertPagesJson(db string, coll string, ablob JsonPage) {
 	CheckError(err2, "InsertPagesJson has failed")
 }
 
+func GetAllObjects() (Main2SL []JsonMP3) {
+	filter := bson.D{}
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "GetAllObjects: MongoDB connection has failed")
+	collection := client.Database("maindb").Collection("mp3s")
+	cur, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err = cur.All(context.Background(), &Main2SL); err != nil {
+		fmt.Println("GetAllObjects: cur.All has failed")
+		fmt.Println(err)
+	}
+	return
+}
+
 func AmpgoDistinct(db string, coll string, fieldd string) []string {
 	filter := bson.D{}
 	opts := options.Distinct().SetMaxTime(2 * time.Second)
@@ -188,4 +205,20 @@ func gAlbumInfo(Alb string) map[string]string {
 		fmt.Println(err)
 	}
 	return AlbInfo
+}
+
+func InsArtPipeline(AV1 ArtVieW2) {
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	CheckError(err, "InsArtPipeline: Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := InsertOne(client, ctx, "artistview", "artistview", &AV1)
+	CheckError(err2, "InsArtPipeline: artistview insertion has failed")
+}
+
+func InsAlbViewID(MyAlbview AlbVieW2) {
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	CheckError(err, "InsAlbViewID: Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := InsertOne(client, ctx, "albumview", "albumview", &MyAlbview)
+	CheckError(err2, "InsAlbViewID: AmpgoInsertOne has failed")
 }

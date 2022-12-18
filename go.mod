@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/bogem/id3v2 v1.2.0 // indirect
-	// github.com/cjsmocjsmo/ampgosetup v0.6.28 // indirect
 	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/golang/snappy v0.0.4 // indirect

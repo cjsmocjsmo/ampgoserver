@@ -111,7 +111,7 @@ func SetUp() {
 
 	log.Println("starting GetAllObjects")
 	AllObjs := GetAllObjects()
-	log.Println(AllObjs)
+	// log.Println(AllObjs)
 	log.Println("GetAllObjects is complete ")
 	
 
@@ -154,84 +154,64 @@ func SetUp() {
 
 	SongFirst()
 
-	// fmt.Println("starting GetPicForAlbum ")
-	// var wg133 sync.WaitGroup
-	// for _, alb := range dalb {
-	// 	wg133.Add(1)
-	// 	go func(alb string) {
-	// 		zoo := GetPicForAlbum(alb)
-	// 		fmt.Println(zoo)
-	// 		wg133.Done()
-	// 	}(alb)
-	// 	wg133.Wait()
-	// }
-	// fmt.Println("GetPicForAlbum is complete")
-
 	// // //AggArtist
-	// fmt.Println("starting UpdateMainDB")
-	// DistArtist := GDistArtist2()
-	// fmt.Println("GDistArtist2 is complete ")
+	log.Println("starting GDistArtistForAgg")
+	DistArtist := GDistArtistForAgg()
+	// log.Println(DistArtist)
+	fmt.Println(DistArtist)
+	log.Println("GDistArtistForAgg is complete ")
 
-	// fmt.Println("starting GArtInfo2")
-	// var wg5 sync.WaitGroup
-	// // var wg15 sync.WaitGroup
-	// var artpage int = 0
-	// for artIdsx, DArtt := range DistArtist {
-	// 	if artIdsx < OffSet {
-	// 		artpage = 1
-	// 	} else if artIdsx%OffSet == 0 {
-	// 		artpage++
-	// 	} else {
-	// 		artpage = artpage + 0
-	// 	}
+	fmt.Println("starting AggArtist")
+	var wg5 sync.WaitGroup
+	var artpage int = 0
+	for artIdsx, DArtt := range DistArtist {
+		if artIdsx < OffSet {
+			artpage = 1
+		} else if artIdsx%OffSet == 0 {
+			artpage++
+		} else {
+			artpage = artpage + 0
+		}
 
-	// 	APL := ArtPipline(DArtt, artpage, artIdsx)
+		APL := ArtPipline(DArtt, artpage, artIdsx)
 
-	// 	wg5.Add(1)
-	// 	go func(APL ArtVieW2) {
-	// 		InsArtPipeline(APL)
-	// 		wg5.Done()
-	// 	}(APL)
-	// 	wg5.Wait()
+		wg5.Add(1)
+		go func(APL ArtVieW2) {
+			InsArtPipeline(APL)
+			wg5.Done()
+		}(APL)
+		wg5.Wait()
+	}
+	fmt.Println("AggArtists is complete")
+	log.Println("AggArtists is complete")
+	
 
-	// 	// APL2 := ArtPipline2(DArtt, artpage, artIdsx)
+	//AggAlbum
+	log.Println("AggAlbum has started")
 
-	// 	// wg15.Add(1)
-	// 	// go func(APL2 ArtVieW3) {
-	// 	// 	InsArtPipeline2(APL2)
-	// 	// 	wg15.Done()
-	// 	// }(APL2)
-	// 	// wg15.Wait()
-	// }
-	// fmt.Println("AggArtists is complete")
-	// fmt.Println("AggArtists is complete")
-	// // // ArtistOffSet()w11
-	// // // fmt.Println("ArtistOffSet is complete")
+	log.Println("Starting GDistAlbum3")
+	DistAlbum := GDistAlbum()
 
-	// // //AggAlbum
-	// // fmt.Println("AggAlbum has started")
-
-	// fmt.Println("Starting GDistAlbum3")
-	// DistAlbum := GDistAlbum()
-
-	// var wg6 sync.WaitGroup
-	// var albpage int = 0
-	// for albIdx, DAlb := range DistAlbum {
-	// 	wg6.Add(1)
-	// 	if albIdx < OffSet {
-	// 		albpage = 1
-	// 	} else if albIdx%OffSet == 0 {
-	// 		albpage++
-	// 	} else {
-	// 		albpage = albpage + 0
-	// 	}
-	// 	APLX := AlbPipeline(DAlb, albpage, albIdx)
-	// 	go func(APLX AlbVieW2) {
-	// 		InsAlbViewID(APLX)
-	// 		wg6.Done()
-	// 	}(APLX)
-	// 	wg6.Wait()
-	// }
+	var wg6 sync.WaitGroup
+	var albpage int = 0
+	for albIdx, DAlb := range DistAlbum {
+		wg6.Add(1)
+		if albIdx < OffSet {
+			albpage = 1
+		} else if albIdx%OffSet == 0 {
+			albpage++
+		} else {
+			albpage = albpage + 0
+		}
+		APLX := AlbPipeline(DAlb, albpage, albIdx)
+		log.Println("this is aplx")
+		log.Println(APLX)
+		go func(APLX AlbVieW2) {
+			InsAlbViewID(APLX)
+			wg6.Done()
+		}(APLX)
+		wg6.Wait()
+	}
 	
 	// CreateRandomPicsDB()
 
@@ -239,50 +219,8 @@ func SetUp() {
 
 	// CreateCurrentPlayListNameDB()
 
-	// var lines = []string{
-	// 	"Go",
-	// 	"is",
-	// 	"the",
-	// 	"best",
-	// 	"programming",
-	// 	"language",
-	// 	"in",
-	// 	"the",
-	// 	"world",
-	// }
 
-	// f, err := os.Create("setup.txt")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// // remember to close the file
-	// defer f.Close()
-
-	// for _, line := range lines {
-	// 	_, err := f.WriteString(line + "\n")
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// }
-
-	// fmt.Println("AlbumOffSet is complete")
 	t2 := time.Now().Sub(ti)
 	fmt.Println(t2)
 	fmt.Println("THE END")
-
-	// func Update() {
-	// 	logtxtfile := os.Getenv("AMPGO_SETUP_LOG_PATH")
-	// 	// If the file doesn't exist, create it or append to the file
-	// 	file, err := os.OpenFile(logtxtfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// 	fmt.SetOutput(file)
-	// 	fmt.Println("Logging started")
-
-	// ti = time.Now()
-	// fmt.Println(ti)
-	// fmt.Println(ti)
-	// runtime.GOMAXPROCS(runtime.NumCPU())
-
 }
