@@ -70,50 +70,53 @@ func SetUp() {
 		case strings.Contains(foo, "page"):
 			// log.Println(idx, foo)
 			Read_File_pages(foo)
+
+		case strings.Contains(foo, "Artist_ID"):
+			// log.Println(idx, foo)
+			Read_Artist_ID_List(foo)
+
+		case strings.Contains(foo, "Album_ID"):
+			// log.Println(idx, foo)
+			Read_Album_ID_List(foo)
 		}
 	}
 	log.Println("walk is complete")
 
 	log.Println("starting GetDistAlbumMeta1")
-	// dalb := AmpgoDistinct("tempdb1", "meta1", "album")
-	dalb := AmpgoDistinct("maindb", "mp3s", "tags_album")
-	// log.Println(dalb)
-	// fmt.Println(dalb)
+	dalb := AmpgoDistinct("maindb", "mp3s", "Tags_album")
 	log.Println("GetDistAlbumMeta1 is complete ")
 
-	log.Println("starting InsAlbumID")
-	var wg1 sync.WaitGroup
-	for _, alb := range dalb {
-		wg1.Add(1)
-		go func(alb string) {
-			InsAlbumID(alb)
-			wg1.Done()
-		}(alb)
-		wg1.Wait()
-	}
-	log.Println("InsAlbumID is complete ")
+	// log.Println("starting InsAlbumID")
+	// var wg1 sync.WaitGroup
+	// for _, alb := range dalb {
+	// 	wg1.Add(1)
+	// 	go func(alb string) {
+	// 		InsAlbumID(alb)
+	// 		wg1.Done()
+	// 	}(alb)
+	// 	wg1.Wait()
+	// }
+	// log.Println("InsAlbumID is complete ")
 
 	log.Println("starting GDistArtist")
-	// dart := AmpgoDistinct("tempdb1", "meta1", "artist")
-	dart := AmpgoDistinct("maindb", "mp3s", "tags_artist")
-	// log.Println(dart)
+	dart := AmpgoDistinct("maindb", "mp3s", "Tags_artist")
+	log.Println(dart)
 	log.Println("GDistArtist is complete ")
 
-	log.Println("starting InsArtistID")
-	var wg2 sync.WaitGroup
-	for _, art := range dart {
-		wg2.Add(1)
-		go func(art string) {
-			InsArtistID(art)
-			wg2.Done()
-		}(art)
-		wg2.Wait()
-	}
-	log.Println("InsArtistID is complete ")
+	// log.Println("starting InsArtistID")
+	// var wg2 sync.WaitGroup
+	// for _, art := range dart {
+	// 	wg2.Add(1)
+	// 	go func(art string) {
+	// 		InsArtistID(art)
+	// 		wg2.Done()
+	// 	}(art)
+	// 	wg2.Wait()
+	// }
+	// log.Println("InsArtistID is complete ")
 
 	log.Println("starting GetAllMP3Objects")
 	AllObjs := GetAllMP3Objects()
-	// log.Println(AllObjs)
 	log.Println("GetAllMP3Objects is complete ")
 
 	log.Println("starting UpdateMainDB")
@@ -158,8 +161,6 @@ func SetUp() {
 	// // //AggArtist
 	log.Println("starting GDistArtistForAgg")
 	DistArtist := GDistArtistForAgg()
-	// log.Println(DistArtist)
-	// fmt.Println(DistArtist)
 	log.Println("GDistArtistForAgg is complete ")
 
 	fmt.Println("starting AggArtist")
@@ -204,8 +205,6 @@ func SetUp() {
 			albpage = albpage + 0
 		}
 		APLX := AlbPipeline(DAlb, albpage, albIdx)
-		log.Println("this is aplx")
-		log.Println(APLX)
 		go func(APLX AlbVieW2) {
 			InsAlbViewID(APLX)
 			wg6.Done()

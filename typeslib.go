@@ -58,6 +58,24 @@ type AmpgoRandomPlaylistData struct {
 	PlayList      []map[string]string `bson:"playlist"`
 }
 
+type ARID struct {
+	Artist string `bson:"Artist"`
+	ArtistID string `bson:"ArtistID"`
+}
+
+type ArtID struct {
+	ArtistIDList []ARID `bson:"ArtistIDList"`
+}
+
+type ALID struct {
+	Album string `bson:"Album"`
+	AlbumID string `bson:"AlbumID"`
+}
+
+type AlbID struct {
+	AlbumIDList []ALID `bson:"AlbumIDList"`
+}
+
 type JsonJPG struct {
 	BaseDir        string `bson:"BaseDir"`
 	Full_Filename  string `bson:"Full_Filename"`

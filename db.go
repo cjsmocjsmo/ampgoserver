@@ -111,6 +111,22 @@ func InsertPagesJson(db string, coll string, ablob JsonPage) {
 	CheckError(err2, "InsertPagesJson has failed")
 }
 
+func InsertArtistIDSJson(db string, coll string, ablob map[string]string) {
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	CheckError(err, "InsertArtistIDSJson: Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := InsertOne(client, ctx, db, coll, ablob)
+	CheckError(err2, "InsertArtistIDSJson has failed")
+}
+
+func InsertAlbumIDSJson(db string, coll string, ablob AlbID) {
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	CheckError(err, "InsertAlbumIDSJson: Connections has failed")
+	defer Close(client, ctx, cancel)
+	_, err2 := InsertOne(client, ctx, db, coll, ablob)
+	CheckError(err2, "InsertAlbumIDSJson has failed")
+}
+
 func GetAllMP3Objects() (Main2SL []JsonMP3) {
 	filter := bson.D{}
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
@@ -162,11 +178,11 @@ func AmpgoDistinct(db string, coll string, fieldd string) []string {
 	return DAlbum1
 }
 
-func InsAlbumID(alb string) {
-	uuid, _ := UUID()
-	Albid := map[string]string{"album": alb, "albumID": uuid}
-	AmpgoInsertOne("ids", "albumid", Albid)
-}
+// func InsAlbumID(alb string) {
+// 	uuid, _ := UUID()
+// 	Albid := map[string]string{"album": alb, "albumID": uuid}
+// 	AmpgoInsertOne("ids", "albumid", Albid)
+// }
 
 // func InsertAlbumIDS(db string, coll string, ablob AlbumIDLIST) {
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
@@ -176,11 +192,11 @@ func InsAlbumID(alb string) {
 // 	CheckError(err2, "InsertAlbumIDS has failed")
 // }
 
-func InsArtistID(art string) {
-	uuid, _ := UUID()
-	Artid := map[string]string{"artist": art, "artistID": uuid}
-	AmpgoInsertOne("ids", "artistid", Artid)
-}
+// func InsArtistID(art string) {
+// 	uuid, _ := UUID()
+// 	Artid := map[string]string{"artist": art, "artistID": uuid}
+// 	AmpgoInsertOne("ids", "artistid", Artid)
+// }
 
 // func InsertArtistIDS(db string, coll string, ablob ArtistIDLIST) {
 // 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
@@ -191,11 +207,11 @@ func InsArtistID(art string) {
 // }
 
 func gArtistInfo(Art string) map[string]string {
-	filter := bson.M{"artist": Art}
+	filter := bson.M{"Artist": Art}
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
 	CheckError(err, "gArtistInfo: MongoDB connection has failed")
-	collection := client.Database("ids").Collection("artistid")
+	collection := client.Database("ids").Collection("artistids")
 	var ArtInfo map[string]string = make(map[string]string)
 	err = collection.FindOne(context.Background(), filter).Decode(&ArtInfo)
 	if err != nil {
@@ -206,11 +222,11 @@ func gArtistInfo(Art string) map[string]string {
 }
 
 func gAlbumInfo(Alb string) map[string]string {
-	filter := bson.M{"album": Alb}
+	filter := bson.M{"Album": Alb}
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	defer Close(client, ctx, cancel)
 	CheckError(err, "gAlbumInfo: MongoDB connection has failed")
-	collection := client.Database("ids").Collection("albumid")
+	collection := client.Database("ids").Collection("albumids")
 	var AlbInfo map[string]string = make(map[string]string)
 	err = collection.FindOne(context.Background(), filter).Decode(&AlbInfo)
 	if err != nil {
@@ -234,4 +250,35 @@ func InsAlbViewID(MyAlbview AlbVieW2) {
 	defer Close(client, ctx, cancel)
 	_, err2 := InsertOne(client, ctx, "albumview", "albumview", &MyAlbview)
 	CheckError(err2, "InsAlbViewID: AmpgoInsertOne has failed")
+}
+
+func GetMainDbMeta() []map[string]string {
+	filter := bson.M{}
+	opts := options.Find()
+	opts.SetProjection(bson.M{"_id": 0})
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "GetMainDbMeta: MongoDB connection has failed")
+	coll := client.Database("maindb").Collection("maindb")
+	cur, err := coll.Find(context.TODO(), filter, opts)
+	CheckError(err, "GetMainDbMeta: allIdx has failed")
+	var letters []map[string]string
+	if err = cur.All(context.TODO(), &letters); err != nil {
+		fmt.Println(err)
+	}
+	return letters
+}
+
+func ArtViewFindOne(db string, coll string, filtertype string, filterstring string) ArtVIEW {
+	filter := bson.M{filtertype: filterstring}
+	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
+	defer Close(client, ctx, cancel)
+	CheckError(err, "MongoDB connection has failed")
+	collection := client.Database(db).Collection(coll)
+	var results ArtVIEW
+	err = collection.FindOne(context.Background(), filter).Decode(&results)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return results
 }

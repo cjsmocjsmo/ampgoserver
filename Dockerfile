@@ -33,7 +33,6 @@ RUN \
 RUN \
   mkdir ./logs && \
   touch ./logs/ampgo_setup_log.txt && \
-  touch ./logs/ampgo_server_log.txt && \
   chmod -R +rwx ./logs
 
 COPY assets/p1thumb.jpg ./static/

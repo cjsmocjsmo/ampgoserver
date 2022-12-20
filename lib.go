@@ -85,14 +85,49 @@ func Read_File_pages(apath string) {
 	// log.Printf("%s : Read_File_pages complete", apath)
 }
 
+func Read_Artist_ID_List(apath string) {
+	var artids ArtID
+	data, er := os.ReadFile(apath)
+	CheckError(er, "Read_Artist_ID_List has fucked up")
+	err := json.Unmarshal(data, &artids)
+	CheckError(err, "Read_Artist_ID_List unmarshal has fucked up")
+	// fmt.Println(jsonpages)
+	for _, aid := range artids.ArtistIDList {
+		voodoo := make(map[string]string)
+		voodoo["Artist"] = aid.Artist
+		voodoo["ArtistID"] = aid.ArtistID
+		AmpgoInsertOne("ids", "artistids", voodoo)
+	}
+	// log.Printf("%s : Read_File_pages complete", apath)
+}
+
+func Read_Album_ID_List(apath string) {
+	var albids AlbID
+	data, er := os.ReadFile(apath)
+	CheckError(er, "Read_Album_ID_List has fucked up")
+	err := json.Unmarshal(data, &albids)
+	CheckError(err, "Read_Album_ID_List unmarshal has fucked up")
+	// fmt.Println(jsonpages)
+	for _, aaid := range albids.AlbumIDList {
+		vd := make(map[string]string)
+		vd["Album"] = aaid.Album
+		vd["AlbumID"] = aaid.AlbumID
+		AmpgoInsertOne("ids", "albumids", vd)
+	}
+	InsertAlbumIDSJson("ids", "albumids", albids)
+	// log.Printf("%s : Read_File_pages complete", apath)
+}
+
+
+
 func UpdateMainDB(m2 JsonMP3) {
 	artid := gArtistInfo(m2.Tags_artist)
-	artID := artid["artistID"]
+	artID := artid["ArtistID"]
 	fmt.Println("this is artID")
 	fmt.Println(artID)
 
 	albid := gAlbumInfo(m2.Tags_album)
-	albID := albid["albumID"]
+	albID := albid["AlbumID"]
 	fmt.Println("this is albID")
 	fmt.Println(albID)
 
@@ -116,7 +151,6 @@ func UpdateMainDB(m2 JsonMP3) {
 	Doko["Index"] = m2.Index
 	Doko["Play_length"] = m2.Play_length
 	Doko["Img_base64_str"] = m2.Img_base64_str
-	// log.Println(Doko)
 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
 	CheckError(err, "UpdateMainDB: Connections has failed")
 	defer Close(client, ctx, cancel)
@@ -139,6 +173,18 @@ func create_just_albumID_list(alist []map[string]string) (just_albumID_list []st
 		just_albumID_list = append(just_albumID_list, albID["AlbumID"])
 	}
 	return
+}
+
+func Unique(arr []string) []string {
+	occured := map[string]bool{}
+	result := []string{}
+	for e := range arr {
+		if !occured[arr[e]] {
+			occured[arr[e]] = true
+			result = append(result, arr[e])
+		}
+	}
+	return result
 }
 
 func get_albums_for_artist(fullalblist []map[string]string) (final_alblist []map[string]string) {
@@ -173,6 +219,39 @@ func GDistAlbum() (DAlbAll []map[string]string) {
 		DAlbAll = append(DAlbAll, DAlb)
 	}
 	return
+}
+
+func get_songs_for_album(fullsonglist []map[string]string) (final_songlist []map[string]string) {
+	//a list of just albumid's
+	var just_songID_list []string
+	for _, song := range fullsonglist {
+		just_songID_list = append(just_songID_list, song["File_id"])
+	}
+	//remove double songID entries
+	unique_items := Unique(just_songID_list)
+	for _, uitem := range unique_items {
+		songINFO := AmpgoFindOne("maindb", "maindb", "File_id", uitem)
+		si := make(map[string]string)
+		si["Index"] = songINFO["Index"]
+		si["Filename"] = songINFO["Filename"]
+		si["ArtistID"] = songINFO["ArtistID"]
+		si["AlbumID"] = songINFO["AlbumID"]
+		si["SongID"] = songINFO["SongID"]
+		si["Dir"] = songINFO["Dir"]
+		si["Ext"] = songINFO["Ext"]
+		si["Play_length"] = songINFO["Play_length"]
+		si["Full_Filename"] = songINFO["Full_Filename"]
+		si["File_id"] = songINFO["File_id"]
+		si["File_Size"] = songINFO["File_Size"]
+		si["Album_first"] = songINFO["Album_first"]
+		si["Song_first"] = songINFO["Song_first"]
+		si["Artist"] = songINFO["Artist"]
+		si["Artist_first"] = songINFO["Artist_first"]
+		si["Album"] = songINFO["Album"]
+		si["Song"] = songINFO["Song"]
+		final_songlist = append(final_songlist, si)
+	}
+	return final_songlist
 }
 
 func AlbPipeline(DAlb map[string]string, page int, idx int) (MyAlbview AlbVieW2) {
@@ -228,50 +307,6 @@ func resizeImage(infile string, outfile string) string {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-
-// func GetAllMP3Objects() (Main2SL []JsonMP3) {
-// 	filter := bson.D{}
-// 	client, ctx, cancel, err := Connect("mongodb://db:27017/ampgodb")
-// 	defer Close(client, ctx, cancel)
-// 	CheckError(err, "GetAllMP3Objects: MongoDB connection has failed")
-// 	collection := client.Database("maindb").Collection("mp3s")
-// 	cur, err := collection.Find(context.Background(), filter)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	if err = cur.All(context.Background(), &Main2SL); err != nil {
-// 		fmt.Println("GetAllMP3Objects: cur.All has failed")
-// 		fmt.Println(err)
-// 	}
-// 	return
-// }
-
-func Unique(arr []string) []string {
-	occured := map[string]bool{}
-	result := []string{}
-	for e := range arr {
-		if !occured[arr[e]] {
-			occured[arr[e]] = true
-			result = append(result, arr[e])
-		}
-	}
-	return result
-}
-
-func get_songs_for_album(fullsonglist []map[string]string) (final_songlist []map[string]string) {
-	//a list of just albumid's
-	var just_songID_list []string
-	for _, song := range fullsonglist {
-		just_songID_list = append(just_songID_list, song["File_id"])
-	}
-	//remove double songID entries
-	unique_items := Unique(just_songID_list)
-	for _, uitem := range unique_items {
-		songINFO := AmpgoFindOne("maindb", "maindb", "File_id", uitem)
-		final_songlist = append(final_songlist, songINFO)
-	}
-	return final_songlist
-}
 
 // func CreateRandomPlaylistDB() string {
 // 	var ranDBInfo randDb

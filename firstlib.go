@@ -3,6 +3,7 @@ package main
 import (
 	"strconv"
 	"strings"
+	"log"
 )
 
 func ArtistFirst(astring string) string {
@@ -11,6 +12,7 @@ func ArtistFirst(astring string) string {
 	defer Close(client, ctx, cancel)
 
 	char := strings.ToUpper(astring[:1])
+	log.Println(char)
 
 	switch {
 	case char == "A":
